@@ -300,6 +300,36 @@ export type Database = {
           },
         ]
       }
+      task_reports: {
+        Row: {
+          created_at: string | null
+          id: string
+          pdf_path: string | null
+          report_data: Json
+          status: string
+          task_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          pdf_path?: string | null
+          report_data: Json
+          status?: string
+          task_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          pdf_path?: string | null
+          report_data?: Json
+          status?: string
+          task_id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       usuarios: {
         Row: {
           admin: boolean | null
