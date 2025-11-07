@@ -295,9 +295,12 @@ export type Database = {
       }
       task_reports: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           created_at: string
           id: string
           pdf_path: string | null
+          rejection_reason: string | null
           report_data: Json
           status: string
           task_id: string
@@ -305,9 +308,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           id?: string
           pdf_path?: string | null
+          rejection_reason?: string | null
           report_data: Json
           status: string
           task_id: string
@@ -315,9 +321,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           id?: string
           pdf_path?: string | null
+          rejection_reason?: string | null
           report_data?: Json
           status?: string
           task_id?: string
