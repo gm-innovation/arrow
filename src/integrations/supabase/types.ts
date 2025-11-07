@@ -14,7 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      task_reports: {
+        Row: {
+          created_at: string
+          id: string
+          pdf_path: string | null
+          report_data: Json
+          status: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pdf_path?: string | null
+          report_data: Json
+          status: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pdf_path?: string | null
+          report_data?: Json
+          status?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
