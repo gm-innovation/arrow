@@ -221,42 +221,54 @@ export type Database = {
       }
       service_orders: {
         Row: {
+          access: string | null
           client_id: string | null
           company_id: string
           completed_date: string | null
           created_at: string
           description: string | null
           id: string
+          location: string | null
           order_number: string
           scheduled_date: string | null
+          service_date_time: string | null
+          single_report: boolean | null
           status: Database["public"]["Enums"]["service_order_status"] | null
           supervisor_id: string | null
           updated_at: string
           vessel_id: string | null
         }
         Insert: {
+          access?: string | null
           client_id?: string | null
           company_id: string
           completed_date?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          location?: string | null
           order_number: string
           scheduled_date?: string | null
+          service_date_time?: string | null
+          single_report?: boolean | null
           status?: Database["public"]["Enums"]["service_order_status"] | null
           supervisor_id?: string | null
           updated_at?: string
           vessel_id?: string | null
         }
         Update: {
+          access?: string | null
           client_id?: string | null
           company_id?: string
           completed_date?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          location?: string | null
           order_number?: string
           scheduled_date?: string | null
+          service_date_time?: string | null
+          single_report?: boolean | null
           status?: Database["public"]["Enums"]["service_order_status"] | null
           supervisor_id?: string | null
           updated_at?: string
