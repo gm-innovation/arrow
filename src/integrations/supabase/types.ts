@@ -474,33 +474,42 @@ export type Database = {
       }
       technician_documents: {
         Row: {
+          certificate_name: string | null
           created_at: string
           document_type: string
+          expiry_date: string | null
           file_name: string
           file_path: string
           id: string
+          issue_date: string | null
           metadata: Json | null
           technician_id: string
           uploaded_at: string
           valid_until: string | null
         }
         Insert: {
+          certificate_name?: string | null
           created_at?: string
           document_type: string
+          expiry_date?: string | null
           file_name: string
           file_path: string
           id?: string
+          issue_date?: string | null
           metadata?: Json | null
           technician_id: string
           uploaded_at?: string
           valid_until?: string | null
         }
         Update: {
+          certificate_name?: string | null
           created_at?: string
           document_type?: string
+          expiry_date?: string | null
           file_name?: string
           file_path?: string
           id?: string
+          issue_date?: string | null
           metadata?: Json | null
           technician_id?: string
           uploaded_at?: string
