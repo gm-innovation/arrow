@@ -39,7 +39,7 @@ serve(async (req) => {
               {
                 type: 'image_url',
                 image_url: {
-                  url: `data:application/pdf;base64,${fileBase64}`
+                  url: `data:image/png;base64,${fileBase64}`
                 }
               }
             ]
