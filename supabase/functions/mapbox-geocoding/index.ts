@@ -23,16 +23,35 @@ serve(async (req) => {
     const MAPBOX_TOKEN = Deno.env.get('VITE_MAPBOX_ACCESS_TOKEN');
     
     if (!MAPBOX_TOKEN) {
+      console.error('Mapbox token not configured');
       throw new Error('Mapbox token not configured');
     }
 
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&language=pt&country=BR&limit=5`;
+    // Using Search Box API for better autocomplete results
+    const url = `https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(query)}&language=pt&country=BR&limit=5&session_token=${crypto.randomUUID()}&access_token=${MAPBOX_TOKEN}`;
+    
+    console.log('Fetching from Mapbox Search Box API:', url.replace(MAPBOX_TOKEN, 'HIDDEN'));
     
     const response = await fetch(url);
     const data = await response.json();
+    
+    console.log('Mapbox response status:', response.status);
+    console.log('Mapbox response data:', JSON.stringify(data).substring(0, 200));
+    
+    // Transform Search Box API response to match expected format
+    const features = data.suggestions?.map((suggestion: any) => ({
+      id: suggestion.mapbox_id,
+      place_name: suggestion.full_address || suggestion.name,
+      name: suggestion.name,
+      feature_type: suggestion.feature_type
+    })) || [];
+    
+    const transformedData = {
+      features: features
+    };
 
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify(transformedData),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
