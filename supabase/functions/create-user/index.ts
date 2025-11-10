@@ -19,6 +19,8 @@ serve(async (req) => {
 
     const { email, password, full_name, phone, company_id, role } = await req.json();
 
+    console.log('Creating user with email:', email);
+
     // Create auth user
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
@@ -29,10 +31,21 @@ serve(async (req) => {
       },
     });
 
-    if (authError) throw authError;
-    if (!authData.user) throw new Error('Usuário não foi criado');
+    if (authError) {
+      console.error('Auth error:', authError);
+      throw authError;
+    }
+    if (!authData.user) {
+      console.error('No user data returned');
+      throw new Error('Usuário não foi criado');
+    }
 
-    // Update profile with company_id and phone
+    console.log('User created, ID:', authData.user.id);
+
+    // Wait a bit for the trigger to create the profile
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Update profile with company_id and phone (profile should exist from trigger)
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
       .update({
@@ -41,7 +54,12 @@ serve(async (req) => {
       })
       .eq('id', authData.user.id);
 
-    if (profileError) throw profileError;
+    if (profileError) {
+      console.error('Profile error:', profileError);
+      throw profileError;
+    }
+
+    console.log('Profile updated');
 
     // Create user role
     const roleValue = role === 'tech' ? 'technician' : role;
@@ -52,7 +70,12 @@ serve(async (req) => {
         role: roleValue,
       });
 
-    if (roleError) throw roleError;
+    if (roleError) {
+      console.error('Role error:', roleError);
+      throw roleError;
+    }
+
+    console.log('Role created:', roleValue);
 
     // If role is tech, create technician entry
     if (role === 'tech') {
@@ -64,8 +87,15 @@ serve(async (req) => {
           active: true,
         });
 
-      if (techError) throw techError;
+      if (techError) {
+        console.error('Technician error:', techError);
+        throw techError;
+      }
+
+      console.log('Technician entry created');
     }
+
+    console.log('User creation completed successfully');
 
     return new Response(
       JSON.stringify({ success: true, user_id: authData.user.id }),
@@ -75,6 +105,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    console.error('Function error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
