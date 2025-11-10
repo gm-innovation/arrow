@@ -472,33 +472,107 @@ export type Database = {
           },
         ]
       }
+      technician_documents: {
+        Row: {
+          created_at: string
+          document_type: string
+          file_name: string
+          file_path: string
+          id: string
+          metadata: Json | null
+          technician_id: string
+          uploaded_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_type: string
+          file_name: string
+          file_path: string
+          id?: string
+          metadata?: Json | null
+          technician_id: string
+          uploaded_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_type?: string
+          file_name?: string
+          file_path?: string
+          id?: string
+          metadata?: Json | null
+          technician_id?: string
+          uploaded_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technician_documents_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technicians: {
         Row: {
           active: boolean | null
+          aso_valid_until: string | null
+          birth_date: string | null
+          blood_rh_factor: string | null
+          blood_type: string | null
           certifications: string[] | null
           company_id: string
+          cpf: string | null
           created_at: string
+          gender: string | null
+          height: number | null
           id: string
+          medical_status: string | null
+          nationality: string | null
+          rg: string | null
           specialty: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           active?: boolean | null
+          aso_valid_until?: string | null
+          birth_date?: string | null
+          blood_rh_factor?: string | null
+          blood_type?: string | null
           certifications?: string[] | null
           company_id: string
+          cpf?: string | null
           created_at?: string
+          gender?: string | null
+          height?: number | null
           id?: string
+          medical_status?: string | null
+          nationality?: string | null
+          rg?: string | null
           specialty?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           active?: boolean | null
+          aso_valid_until?: string | null
+          birth_date?: string | null
+          blood_rh_factor?: string | null
+          blood_type?: string | null
           certifications?: string[] | null
           company_id?: string
+          cpf?: string | null
           created_at?: string
+          gender?: string | null
+          height?: number | null
           id?: string
+          medical_status?: string | null
+          nationality?: string | null
+          rg?: string | null
           specialty?: string | null
           updated_at?: string
           user_id?: string
