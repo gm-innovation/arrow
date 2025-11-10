@@ -11,15 +11,8 @@ serve(async (req) => {
   }
 
   try {
-    const { query } = await req.json();
+    const { query, mapbox_id } = await req.json();
     
-    if (!query || query.length < 3) {
-      return new Response(
-        JSON.stringify({ features: [] }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
     const MAPBOX_TOKEN = Deno.env.get('VITE_MAPBOX_ACCESS_TOKEN');
     
     if (!MAPBOX_TOKEN) {
@@ -27,23 +20,47 @@ serve(async (req) => {
       throw new Error('Mapbox token not configured');
     }
 
+    // If mapbox_id is provided, retrieve full details including coordinates
+    if (mapbox_id) {
+      const url = `https://api.mapbox.com/search/searchbox/v1/retrieve/${mapbox_id}?session_token=${crypto.randomUUID()}&access_token=${MAPBOX_TOKEN}`;
+      
+      console.log('Retrieving details for mapbox_id:', mapbox_id);
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      console.log('Retrieve response status:', response.status);
+      
+      return new Response(
+        JSON.stringify(data),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Otherwise, search for suggestions
+    if (!query || query.length < 3) {
+      return new Response(
+        JSON.stringify({ features: [] }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Using Search Box API for better autocomplete results
     const url = `https://api.mapbox.com/search/searchbox/v1/suggest?q=${encodeURIComponent(query)}&language=pt&country=BR&limit=5&session_token=${crypto.randomUUID()}&access_token=${MAPBOX_TOKEN}`;
     
-    console.log('Fetching from Mapbox Search Box API:', url.replace(MAPBOX_TOKEN, 'HIDDEN'));
+    console.log('Fetching from Mapbox Search Box API');
     
     const response = await fetch(url);
     const data = await response.json();
     
     console.log('Mapbox response status:', response.status);
-    console.log('Mapbox response data:', JSON.stringify(data).substring(0, 200));
     
     // Transform Search Box API response to match expected format
     const features = data.suggestions?.map((suggestion: any) => ({
       id: suggestion.mapbox_id,
       place_name: suggestion.full_address || suggestion.name,
       name: suggestion.name,
-      feature_type: suggestion.feature_type
+      mapbox_id: suggestion.mapbox_id,
     })) || [];
     
     const transformedData = {
