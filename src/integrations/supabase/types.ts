@@ -387,6 +387,9 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          photo_labels: string[] | null
+          steps: string[] | null
+          tools: string[] | null
           updated_at: string
         }
         Insert: {
@@ -396,6 +399,9 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          photo_labels?: string[] | null
+          steps?: string[] | null
+          tools?: string[] | null
           updated_at?: string
         }
         Update: {
@@ -405,6 +411,9 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          photo_labels?: string[] | null
+          steps?: string[] | null
+          tools?: string[] | null
           updated_at?: string
         }
         Relationships: [
