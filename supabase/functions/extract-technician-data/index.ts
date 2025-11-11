@@ -27,14 +27,28 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'Você é um especialista em extrair dados de documentos ASO (Atestado de Saúde Ocupacional) brasileiros. Extraia APENAS as informações que estão claramente visíveis no documento. Se um campo não estiver presente, não o inclua na resposta. IMPORTANTE: A data de emissão do ASO (aso_issue_date) é a data em que o exame médico foi realizado, geralmente aparece como "Data do Exame" ou próxima ao nome do médico examinador.'
+            content: `Você é um especialista em extrair dados de documentos ASO (Atestado de Saúde Ocupacional) brasileiros. 
+
+CRÍTICO - Data de Emissão do ASO:
+- A data de emissão do ASO (aso_issue_date) é a data do exame médico ocupacional
+- Esta data aparece próxima ao nome e assinatura do "Médico Examinador" ou "Examiner Doctor"
+- Frequentemente está no formato "27 de Setembro de 2023" ou similar
+- NÃO confunda com a data de nascimento do paciente
+- Procure por texto como "Data do Exame", ou a data logo após o endereço do médico
+- Esta é a data mais importante do documento - sempre a capture
+
+Extraia APENAS as informações que estão claramente visíveis no documento.`
           },
           {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: 'Extraia os dados deste ASO em formato estruturado. Localize a data do exame médico/data de emissão do ASO com atenção. Use a função extract_aso_data para retornar os dados.'
+                text: `Analise este ASO brasileiro e extraia os dados. 
+
+ATENÇÃO ESPECIAL: Localize a data do exame médico que aparece próxima ao nome do médico examinador. Esta é a aso_issue_date e é DIFERENTE da data de nascimento do paciente.
+
+Use a função extract_aso_data para retornar os dados.`
               },
               {
                 type: 'image_url',
@@ -64,7 +78,10 @@ serve(async (req) => {
                 blood_rh_factor: { type: 'string', enum: ['Positivo', 'Negativo'], description: 'Fator RH' },
                 function: { type: 'string', description: 'Função/Cargo' },
                 sector: { type: 'string', description: 'Setor' },
-                aso_issue_date: { type: 'string', description: 'Data de emissão do ASO (data do exame médico) no formato DD/MM/YYYY - procure por datas próximas ao médico examinador ou identificadas como "data do exame"' },
+                aso_issue_date: { 
+                  type: 'string', 
+                  description: 'CRÍTICO: Data de emissão do ASO (data do exame médico ocupacional) no formato DD/MM/YYYY. Esta é a data que aparece próxima ao médico examinador, NÃO a data de nascimento. Exemplo: "27 de Setembro de 2023" deve ser extraída como "27/09/2023"' 
+                },
                 aso_valid_until: { type: 'string', description: 'Data de validade do ASO no formato DD/MM/YYYY' },
                 medical_status: { type: 'string', enum: ['fit', 'unfit'], description: 'Status médico: fit para apto, unfit para inapto' }
               },
