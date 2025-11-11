@@ -27,14 +27,14 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'Você é um especialista em extrair dados de documentos ASO (Atestado de Saúde Ocupacional) brasileiros. Extraia APENAS as informações que estão claramente visíveis no documento. Se um campo não estiver presente, não o inclua na resposta.'
+            content: 'Você é um especialista em extrair dados de documentos ASO (Atestado de Saúde Ocupacional) brasileiros. Extraia APENAS as informações que estão claramente visíveis no documento. Se um campo não estiver presente, não o inclua na resposta. IMPORTANTE: A data de emissão do ASO (aso_issue_date) é a data em que o exame médico foi realizado, geralmente aparece como "Data do Exame" ou próxima ao nome do médico examinador.'
           },
           {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: 'Extraia os dados deste ASO em formato estruturado. Use a função extract_aso_data para retornar os dados.'
+                text: 'Extraia os dados deste ASO em formato estruturado. Localize a data do exame médico/data de emissão do ASO com atenção. Use a função extract_aso_data para retornar os dados.'
               },
               {
                 type: 'image_url',
@@ -64,7 +64,7 @@ serve(async (req) => {
                 blood_rh_factor: { type: 'string', enum: ['Positivo', 'Negativo'], description: 'Fator RH' },
                 function: { type: 'string', description: 'Função/Cargo' },
                 sector: { type: 'string', description: 'Setor' },
-                aso_issue_date: { type: 'string', description: 'Data de emissão do ASO no formato DD/MM/YYYY' },
+                aso_issue_date: { type: 'string', description: 'Data de emissão do ASO (data do exame médico) no formato DD/MM/YYYY - procure por datas próximas ao médico examinador ou identificadas como "data do exame"' },
                 aso_valid_until: { type: 'string', description: 'Data de validade do ASO no formato DD/MM/YYYY' },
                 medical_status: { type: 'string', enum: ['fit', 'unfit'], description: 'Status médico: fit para apto, unfit para inapto' }
               },
