@@ -64,6 +64,7 @@ serve(async (req) => {
                 blood_rh_factor: { type: 'string', enum: ['Positivo', 'Negativo'], description: 'Fator RH' },
                 function: { type: 'string', description: 'Função/Cargo' },
                 sector: { type: 'string', description: 'Setor' },
+                aso_issue_date: { type: 'string', description: 'Data de emissão do ASO no formato DD/MM/YYYY' },
                 aso_valid_until: { type: 'string', description: 'Data de validade do ASO no formato DD/MM/YYYY' },
                 medical_status: { type: 'string', enum: ['fit', 'unfit'], description: 'Status médico: fit para apto, unfit para inapto' }
               },
@@ -95,15 +96,19 @@ serve(async (req) => {
       const [day, month, year] = extractedData.birth_date.split('/');
       extractedData.birth_date = `${year}-${month}-${day}`;
     }
+    if (extractedData.aso_issue_date) {
+      const [day, month, year] = extractedData.aso_issue_date.split('/');
+      extractedData.aso_issue_date = `${year}-${month}-${day}`;
+    }
     if (extractedData.aso_valid_until) {
       const [day, month, year] = extractedData.aso_valid_until.split('/');
       extractedData.aso_valid_until = `${year}-${month}-${day}`;
     }
 
-    // Calculate ASO validity if not present (default 1 year from today)
-    if (!extractedData.aso_valid_until) {
-      const today = new Date();
-      const validUntil = new Date(today);
+    // Calculate ASO validity if not present (1 year from issue date)
+    if (!extractedData.aso_valid_until && extractedData.aso_issue_date) {
+      const issueDate = new Date(extractedData.aso_issue_date);
+      const validUntil = new Date(issueDate);
       validUntil.setFullYear(validUntil.getFullYear() + 1);
       
       const year = validUntil.getFullYear();
@@ -111,7 +116,7 @@ serve(async (req) => {
       const day = String(validUntil.getDate()).padStart(2, '0');
       extractedData.aso_valid_until = `${year}-${month}-${day}`;
       
-      console.log(`Calculated ASO validity: ${extractedData.aso_valid_until} (1 year from today)`);
+      console.log(`Calculated ASO validity: ${extractedData.aso_valid_until} (1 year from issue date: ${extractedData.aso_issue_date})`);
     }
 
     console.log('Extracted data:', extractedData);
