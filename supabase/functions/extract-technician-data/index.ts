@@ -100,6 +100,20 @@ serve(async (req) => {
       extractedData.aso_valid_until = `${year}-${month}-${day}`;
     }
 
+    // Calculate ASO validity if not present (default 1 year from today)
+    if (!extractedData.aso_valid_until) {
+      const today = new Date();
+      const validUntil = new Date(today);
+      validUntil.setFullYear(validUntil.getFullYear() + 1);
+      
+      const year = validUntil.getFullYear();
+      const month = String(validUntil.getMonth() + 1).padStart(2, '0');
+      const day = String(validUntil.getDate()).padStart(2, '0');
+      extractedData.aso_valid_until = `${year}-${month}-${day}`;
+      
+      console.log(`Calculated ASO validity: ${extractedData.aso_valid_until} (1 year from today)`);
+    }
+
     console.log('Extracted data:', extractedData);
 
     return new Response(

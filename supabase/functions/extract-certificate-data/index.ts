@@ -99,6 +99,37 @@ serve(async (req) => {
       extractedData.expiry_date = `${year}-${month}-${day}`;
     }
 
+    // Calculate expiry_date if not present based on certificate type and issue_date
+    if (!extractedData.expiry_date && extractedData.issue_date && extractedData.certificate_name) {
+      const issueDate = new Date(extractedData.issue_date);
+      let validityYears = 2; // Default validity
+
+      const certName = extractedData.certificate_name.toLowerCase();
+      
+      // Determine validity period based on certificate type
+      if (certName.includes('nr 10') || certName.includes('nr10')) {
+        validityYears = 2; // NR 10 - 2 years
+      } else if (certName.includes('nr 35') || certName.includes('nr35')) {
+        validityYears = 2; // NR 35 - 2 years
+      } else if (certName.includes('nr 33') || certName.includes('nr33')) {
+        validityYears = 2; // NR 33 - 2 years
+      } else if (certName.includes('nr 34') || certName.includes('nr34')) {
+        validityYears = 2; // NR 34 - 2 years
+      } else if (certName.includes('nr 18') || certName.includes('nr18')) {
+        validityYears = 2; // NR 18 - 2 years
+      }
+
+      const expiryDate = new Date(issueDate);
+      expiryDate.setFullYear(expiryDate.getFullYear() + validityYears);
+      
+      const year = expiryDate.getFullYear();
+      const month = String(expiryDate.getMonth() + 1).padStart(2, '0');
+      const day = String(expiryDate.getDate()).padStart(2, '0');
+      extractedData.expiry_date = `${year}-${month}-${day}`;
+      
+      console.log(`Calculated expiry_date: ${extractedData.expiry_date} (${validityYears} years from issue_date)`);
+    }
+
     console.log('Extracted certificate data:', extractedData);
 
     return new Response(
