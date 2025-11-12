@@ -177,29 +177,44 @@ export type Database = {
       service_history: {
         Row: {
           action: string
+          change_type: string
           created_at: string
           description: string | null
           id: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
           performed_by: string | null
           service_order_id: string
+          user_agent: string | null
           vessel_id: string | null
         }
         Insert: {
           action: string
+          change_type?: string
           created_at?: string
           description?: string | null
           id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
           performed_by?: string | null
           service_order_id: string
+          user_agent?: string | null
           vessel_id?: string | null
         }
         Update: {
           action?: string
+          change_type?: string
           created_at?: string
           description?: string | null
           id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
           performed_by?: string | null
           service_order_id?: string
+          user_agent?: string | null
           vessel_id?: string | null
         }
         Relationships: [
@@ -226,6 +241,7 @@ export type Database = {
           company_id: string
           completed_date: string | null
           created_at: string
+          created_by: string
           description: string | null
           id: string
           location: string | null
@@ -244,6 +260,7 @@ export type Database = {
           company_id: string
           completed_date?: string | null
           created_at?: string
+          created_by: string
           description?: string | null
           id?: string
           location?: string | null
@@ -262,6 +279,7 @@ export type Database = {
           company_id?: string
           completed_date?: string | null
           created_at?: string
+          created_by?: string
           description?: string | null
           id?: string
           location?: string | null
@@ -287,6 +305,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
