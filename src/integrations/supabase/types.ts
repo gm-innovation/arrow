@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      city_distances: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          distance_km: number
+          from_city: string
+          id: string
+          to_city: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          distance_km: number
+          from_city: string
+          id?: string
+          to_city: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          distance_km?: number
+          from_city?: string
+          id?: string
+          to_city?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "city_distances_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           address: string | null
@@ -100,6 +138,378 @@ export type Database = {
         }
         Relationships: []
       }
+      measurement_expenses: {
+        Row: {
+          admin_fee_amount: number
+          admin_fee_percentage: number | null
+          base_value: number
+          created_at: string | null
+          description: string | null
+          expense_type: Database["public"]["Enums"]["expense_type"]
+          id: string
+          measurement_id: string
+          total_value: number
+          updated_at: string | null
+        }
+        Insert: {
+          admin_fee_amount: number
+          admin_fee_percentage?: number | null
+          base_value: number
+          created_at?: string | null
+          description?: string | null
+          expense_type: Database["public"]["Enums"]["expense_type"]
+          id?: string
+          measurement_id: string
+          total_value: number
+          updated_at?: string | null
+        }
+        Update: {
+          admin_fee_amount?: number
+          admin_fee_percentage?: number | null
+          base_value?: number
+          created_at?: string | null
+          description?: string | null
+          expense_type?: Database["public"]["Enums"]["expense_type"]
+          id?: string
+          measurement_id?: string
+          total_value?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurement_expenses_measurement_id_fkey"
+            columns: ["measurement_id"]
+            isOneToOne: false
+            referencedRelation: "measurements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      measurement_man_hours: {
+        Row: {
+          created_at: string | null
+          end_time: string
+          entry_date: string
+          hour_type: Database["public"]["Enums"]["time_entry_type"]
+          hourly_rate: number
+          id: string
+          measurement_id: string
+          start_time: string
+          technician_id: string | null
+          technician_name: string
+          technician_role: Database["public"]["Enums"]["technician_role"]
+          total_hours: number
+          total_value: number
+          updated_at: string | null
+          work_type: Database["public"]["Enums"]["work_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          end_time: string
+          entry_date: string
+          hour_type: Database["public"]["Enums"]["time_entry_type"]
+          hourly_rate: number
+          id?: string
+          measurement_id: string
+          start_time: string
+          technician_id?: string | null
+          technician_name: string
+          technician_role: Database["public"]["Enums"]["technician_role"]
+          total_hours: number
+          total_value: number
+          updated_at?: string | null
+          work_type: Database["public"]["Enums"]["work_type"]
+        }
+        Update: {
+          created_at?: string | null
+          end_time?: string
+          entry_date?: string
+          hour_type?: Database["public"]["Enums"]["time_entry_type"]
+          hourly_rate?: number
+          id?: string
+          measurement_id?: string
+          start_time?: string
+          technician_id?: string | null
+          technician_name?: string
+          technician_role?: Database["public"]["Enums"]["technician_role"]
+          total_hours?: number
+          total_value?: number
+          updated_at?: string | null
+          work_type?: Database["public"]["Enums"]["work_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurement_man_hours_measurement_id_fkey"
+            columns: ["measurement_id"]
+            isOneToOne: false
+            referencedRelation: "measurements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "measurement_man_hours_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      measurement_materials: {
+        Row: {
+          created_at: string | null
+          id: string
+          markup_percentage: number | null
+          measurement_id: string
+          name: string
+          quantity: number
+          stock_item_id: string | null
+          total_value: number
+          unit_value: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          markup_percentage?: number | null
+          measurement_id: string
+          name: string
+          quantity: number
+          stock_item_id?: string | null
+          total_value: number
+          unit_value: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          markup_percentage?: number | null
+          measurement_id?: string
+          name?: string
+          quantity?: number
+          stock_item_id?: string | null
+          total_value?: number
+          unit_value?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurement_materials_measurement_id_fkey"
+            columns: ["measurement_id"]
+            isOneToOne: false
+            referencedRelation: "measurements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      measurement_services: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          measurement_id: string
+          name: string
+          updated_at: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          measurement_id: string
+          name: string
+          updated_at?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          measurement_id?: string
+          name?: string
+          updated_at?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurement_services_measurement_id_fkey"
+            columns: ["measurement_id"]
+            isOneToOne: false
+            referencedRelation: "measurements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      measurement_settings: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          default_material_markup: number | null
+          expense_admin_fee: number | null
+          id: string
+          km_rate: number | null
+          tax_cativo: number | null
+          tax_externo: number | null
+          tax_laboratorio: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          default_material_markup?: number | null
+          expense_admin_fee?: number | null
+          id?: string
+          km_rate?: number | null
+          tax_cativo?: number | null
+          tax_externo?: number | null
+          tax_laboratorio?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          default_material_markup?: number | null
+          expense_admin_fee?: number | null
+          id?: string
+          km_rate?: number | null
+          tax_cativo?: number | null
+          tax_externo?: number | null
+          tax_laboratorio?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurement_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      measurement_travels: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          distance_km: number | null
+          fixed_value: number | null
+          from_city: string
+          id: string
+          km_rate: number | null
+          measurement_id: string
+          to_city: string
+          total_value: number
+          travel_type: Database["public"]["Enums"]["travel_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          distance_km?: number | null
+          fixed_value?: number | null
+          from_city: string
+          id?: string
+          km_rate?: number | null
+          measurement_id: string
+          to_city: string
+          total_value: number
+          travel_type: Database["public"]["Enums"]["travel_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          distance_km?: number | null
+          fixed_value?: number | null
+          from_city?: string
+          id?: string
+          km_rate?: number | null
+          measurement_id?: string
+          to_city?: string
+          total_value?: number
+          travel_type?: Database["public"]["Enums"]["travel_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurement_travels_measurement_id_fkey"
+            columns: ["measurement_id"]
+            isOneToOne: false
+            referencedRelation: "measurements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      measurements: {
+        Row: {
+          category: Database["public"]["Enums"]["measurement_category"]
+          created_at: string | null
+          created_by: string | null
+          finalized_at: string | null
+          finalized_by: string | null
+          id: string
+          service_order_id: string
+          status: Database["public"]["Enums"]["measurement_status"]
+          subtotal: number | null
+          subtotal_expenses: number | null
+          subtotal_man_hours: number | null
+          subtotal_materials: number | null
+          subtotal_services: number | null
+          subtotal_travels: number | null
+          tax_amount: number | null
+          tax_percentage: number | null
+          total_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["measurement_category"]
+          created_at?: string | null
+          created_by?: string | null
+          finalized_at?: string | null
+          finalized_by?: string | null
+          id?: string
+          service_order_id: string
+          status?: Database["public"]["Enums"]["measurement_status"]
+          subtotal?: number | null
+          subtotal_expenses?: number | null
+          subtotal_man_hours?: number | null
+          subtotal_materials?: number | null
+          subtotal_services?: number | null
+          subtotal_travels?: number | null
+          tax_amount?: number | null
+          tax_percentage?: number | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["measurement_category"]
+          created_at?: string | null
+          created_by?: string | null
+          finalized_at?: string | null
+          finalized_by?: string | null
+          id?: string
+          service_order_id?: string
+          status?: Database["public"]["Enums"]["measurement_status"]
+          subtotal?: number | null
+          subtotal_expenses?: number | null
+          subtotal_man_hours?: number | null
+          subtotal_materials?: number | null
+          subtotal_services?: number | null
+          subtotal_travels?: number | null
+          tax_amount?: number | null
+          tax_percentage?: number | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurements_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: true
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -177,29 +587,44 @@ export type Database = {
       service_history: {
         Row: {
           action: string
+          change_type: string
           created_at: string
           description: string | null
           id: string
+          ip_address: string | null
+          new_values: Json | null
+          old_values: Json | null
           performed_by: string | null
           service_order_id: string
+          user_agent: string | null
           vessel_id: string | null
         }
         Insert: {
           action: string
+          change_type?: string
           created_at?: string
           description?: string | null
           id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
           performed_by?: string | null
           service_order_id: string
+          user_agent?: string | null
           vessel_id?: string | null
         }
         Update: {
           action?: string
+          change_type?: string
           created_at?: string
           description?: string | null
           id?: string
+          ip_address?: string | null
+          new_values?: Json | null
+          old_values?: Json | null
           performed_by?: string | null
           service_order_id?: string
+          user_agent?: string | null
           vessel_id?: string | null
         }
         Relationships: [
@@ -226,6 +651,7 @@ export type Database = {
           company_id: string
           completed_date: string | null
           created_at: string
+          created_by: string
           description: string | null
           id: string
           location: string | null
@@ -244,6 +670,7 @@ export type Database = {
           company_id: string
           completed_date?: string | null
           created_at?: string
+          created_by: string
           description?: string | null
           id?: string
           location?: string | null
@@ -262,6 +689,7 @@ export type Database = {
           company_id?: string
           completed_date?: string | null
           created_at?: string
+          created_by?: string
           description?: string | null
           id?: string
           location?: string | null
@@ -290,6 +718,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "service_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "service_orders_supervisor_id_fkey"
             columns: ["supervisor_id"]
             isOneToOne: false
@@ -301,6 +736,47 @@ export type Database = {
             columns: ["vessel_id"]
             isOneToOne: false
             referencedRelation: "vessels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_rates: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          hour_type: Database["public"]["Enums"]["time_entry_type"]
+          id: string
+          rate_value: number
+          role_type: Database["public"]["Enums"]["technician_role"]
+          updated_at: string | null
+          work_type: Database["public"]["Enums"]["work_type"]
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          hour_type: Database["public"]["Enums"]["time_entry_type"]
+          id?: string
+          rate_value: number
+          role_type: Database["public"]["Enums"]["technician_role"]
+          updated_at?: string | null
+          work_type: Database["public"]["Enums"]["work_type"]
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          hour_type?: Database["public"]["Enums"]["time_entry_type"]
+          id?: string
+          rate_value?: number
+          role_type?: Database["public"]["Enums"]["technician_role"]
+          updated_at?: string | null
+          work_type?: Database["public"]["Enums"]["work_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_rates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -900,6 +1376,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_man_hour_value: {
+        Args: {
+          _company_id: string
+          _hour_type: Database["public"]["Enums"]["time_entry_type"]
+          _role_type: Database["public"]["Enums"]["technician_role"]
+          _total_hours: number
+          _work_type: Database["public"]["Enums"]["work_type"]
+        }
+        Returns: number
+      }
+      get_city_distance: {
+        Args: { _company_id: string; _from_city: string; _to_city: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -911,6 +1401,9 @@ export type Database = {
     }
     Enums: {
       app_role: "super_admin" | "admin" | "technician"
+      expense_type: "hospedagem" | "alimentacao"
+      measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO"
+      measurement_status: "draft" | "finalized"
       notification_type:
         | "task_assignment"
         | "task_update"
@@ -925,8 +1418,11 @@ export type Database = {
         | "cancelled"
       subscription_plan: "basic" | "professional" | "enterprise"
       task_status: "pending" | "in_progress" | "completed" | "cancelled"
+      technician_role: "tecnico" | "auxiliar" | "engenheiro" | "supervisor"
       time_entry_type: "work_normal" | "work_extra" | "work_night" | "standby"
+      travel_type: "carro_proprio" | "carro_alugado" | "passagem_aerea"
       visit_type: "initial" | "continuation" | "return"
+      work_type: "trabalho" | "espera_deslocamento" | "laboratorio"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1055,6 +1551,9 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "technician"],
+      expense_type: ["hospedagem", "alimentacao"],
+      measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO"],
+      measurement_status: ["draft", "finalized"],
       notification_type: [
         "task_assignment",
         "task_update",
@@ -1071,8 +1570,11 @@ export const Constants = {
       ],
       subscription_plan: ["basic", "professional", "enterprise"],
       task_status: ["pending", "in_progress", "completed", "cancelled"],
+      technician_role: ["tecnico", "auxiliar", "engenheiro", "supervisor"],
       time_entry_type: ["work_normal", "work_extra", "work_night", "standby"],
+      travel_type: ["carro_proprio", "carro_alugado", "passagem_aerea"],
       visit_type: ["initial", "continuation", "return"],
+      work_type: ["trabalho", "espera_deslocamento", "laboratorio"],
     },
   },
 } as const
