@@ -256,6 +256,10 @@ export const ViewOrderDetailsDialog = ({ orderId }: ViewOrderDetailsDialogProps)
             <VisitHistoryList serviceOrderId={orderId} />
           </ScrollArea>
         </TabsContent>
+
+        <TabsContent value="audit">
+          <AuditTrailViewer serviceOrderId={orderId} />
+        </TabsContent>
       </Tabs>
     </DialogContent>
   );
