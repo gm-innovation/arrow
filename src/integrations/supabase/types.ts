@@ -305,6 +305,70 @@ export type Database = {
           },
         ]
       }
+      service_visits: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          return_reason: string | null
+          scheduled_by: string | null
+          service_order_id: string
+          status: Database["public"]["Enums"]["service_order_status"] | null
+          updated_at: string
+          visit_date: string
+          visit_number: number
+          visit_type: Database["public"]["Enums"]["visit_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          return_reason?: string | null
+          scheduled_by?: string | null
+          service_order_id: string
+          status?: Database["public"]["Enums"]["service_order_status"] | null
+          updated_at?: string
+          visit_date: string
+          visit_number: number
+          visit_type?: Database["public"]["Enums"]["visit_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          return_reason?: string | null
+          scheduled_by?: string | null
+          service_order_id?: string
+          status?: Database["public"]["Enums"]["service_order_status"] | null
+          updated_at?: string
+          visit_date?: string
+          visit_number?: number
+          visit_type?: Database["public"]["Enums"]["visit_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_visits_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_visits_scheduled_by_fkey"
+            columns: ["scheduled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_visits_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       system_settings: {
         Row: {
           created_at: string
@@ -374,6 +438,7 @@ export type Database = {
           task_id: string
           task_uuid: string | null
           updated_at: string
+          visit_id: string | null
         }
         Insert: {
           approved_at?: string | null
@@ -387,6 +452,7 @@ export type Database = {
           task_id: string
           task_uuid?: string | null
           updated_at?: string
+          visit_id?: string | null
         }
         Update: {
           approved_at?: string | null
@@ -400,6 +466,7 @@ export type Database = {
           task_id?: string
           task_uuid?: string | null
           updated_at?: string
+          visit_id?: string | null
         }
         Relationships: [
           {
@@ -407,6 +474,13 @@ export type Database = {
             columns: ["task_uuid"]
             isOneToOne: false
             referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_reports_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "service_visits"
             referencedColumns: ["id"]
           },
         ]
@@ -772,6 +846,55 @@ export type Database = {
           },
         ]
       }
+      visit_technicians: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          is_lead: boolean | null
+          technician_id: string
+          visit_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          is_lead?: boolean | null
+          technician_id: string
+          visit_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          is_lead?: boolean | null
+          technician_id?: string
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_technicians_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_technicians_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_technicians_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "service_visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -803,6 +926,7 @@ export type Database = {
       subscription_plan: "basic" | "professional" | "enterprise"
       task_status: "pending" | "in_progress" | "completed" | "cancelled"
       time_entry_type: "work_normal" | "work_extra" | "work_night" | "standby"
+      visit_type: "initial" | "continuation" | "return"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -948,6 +1072,7 @@ export const Constants = {
       subscription_plan: ["basic", "professional", "enterprise"],
       task_status: ["pending", "in_progress", "completed", "cancelled"],
       time_entry_type: ["work_normal", "work_extra", "work_night", "standby"],
+      visit_type: ["initial", "continuation", "return"],
     },
   },
 } as const
