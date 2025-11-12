@@ -447,6 +447,7 @@ export type Database = {
           finalized_at: string | null
           finalized_by: string | null
           id: string
+          pdf_path: string | null
           service_order_id: string
           status: Database["public"]["Enums"]["measurement_status"]
           subtotal: number | null
@@ -467,6 +468,7 @@ export type Database = {
           finalized_at?: string | null
           finalized_by?: string | null
           id?: string
+          pdf_path?: string | null
           service_order_id: string
           status?: Database["public"]["Enums"]["measurement_status"]
           subtotal?: number | null
@@ -487,6 +489,7 @@ export type Database = {
           finalized_at?: string | null
           finalized_by?: string | null
           id?: string
+          pdf_path?: string | null
           service_order_id?: string
           status?: Database["public"]["Enums"]["measurement_status"]
           subtotal?: number | null
