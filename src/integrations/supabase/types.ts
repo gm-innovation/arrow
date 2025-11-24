@@ -1403,7 +1403,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_assigned_to_visit: {
+        Args: { _user_id: string; _visit_id: string }
+        Returns: boolean
+      }
       user_company_id: { Args: { _user_id: string }; Returns: string }
+      visit_belongs_to_user_company: {
+        Args: { _user_id: string; _visit_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "technician"
