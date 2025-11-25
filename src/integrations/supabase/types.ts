@@ -1424,6 +1424,10 @@ export type Database = {
         | "report_submitted"
         | "service_order_created"
         | "service_order_updated"
+        | "schedule_change"
+        | "service_order"
+        | "payment_overdue"
+        | "new_company"
       payment_status: "paid" | "pending" | "overdue"
       service_order_status:
         | "pending"
@@ -1574,6 +1578,10 @@ export const Constants = {
         "report_submitted",
         "service_order_created",
         "service_order_updated",
+        "schedule_change",
+        "service_order",
+        "payment_overdue",
+        "new_company",
       ],
       payment_status: ["paid", "pending", "overdue"],
       service_order_status: [
