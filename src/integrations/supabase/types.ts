@@ -1392,6 +1392,10 @@ export type Database = {
         }
         Returns: number
       }
+      can_view_profile: {
+        Args: { _profile_id: string; _viewer_id: string }
+        Returns: boolean
+      }
       get_city_distance: {
         Args: { _company_id: string; _from_city: string; _to_city: string }
         Returns: number
