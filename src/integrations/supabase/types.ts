@@ -102,9 +102,12 @@ export type Database = {
       companies: {
         Row: {
           address: string | null
+          cep: string | null
+          cnpj: string | null
           created_at: string
           email: string | null
           id: string
+          logo_url: string | null
           name: string
           payment_status: Database["public"]["Enums"]["payment_status"] | null
           phone: string | null
@@ -115,9 +118,12 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          cep?: string | null
+          cnpj?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          logo_url?: string | null
           name: string
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
@@ -128,9 +134,12 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          cep?: string | null
+          cnpj?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
