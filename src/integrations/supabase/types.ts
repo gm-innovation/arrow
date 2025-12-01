@@ -963,7 +963,7 @@ export type Database = {
           {
             foreignKeyName: "task_reports_task_uuid_fkey"
             columns: ["task_uuid"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "tasks"
             referencedColumns: ["id"]
           },
