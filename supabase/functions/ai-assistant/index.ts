@@ -17,13 +17,36 @@ const reportIntentPatterns = [
   /relat[oó]rio\s*autom[aá]tico/i,
 ];
 
+// Patterns to detect operational questions - AVAILABILITY
+const availabilityPatterns = [
+  /t[eé]cnicos?\s*(dispon[ií]ve[il]s?|livres?)/i,
+  /quem\s*(est[aá]|pode|vai)?\s*(dispon[ií]vel|livre)/i,
+  /disponibilidade\s*(de\s*)?t[eé]cnicos?/i,
+  /quais?\s*t[eé]cnicos?/i,
+  /t[eé]cnicos?\s*para\s*(amanh[aã]|hoje|essa\s*semana)/i,
+];
+
+// Patterns for date detection
+const tomorrowPatterns = [/amanh[aã]/i];
+const todayPatterns = [/hoje/i];
+const nextWeekPatterns = [/pr[oó]xim[ao]s?\s*dias?/i, /essa\s*semana/i, /semana\s*que\s*vem/i];
+
+// Patterns for OS status questions
+const osStatusPatterns = [
+  /quantas?\s*os\s*(pendentes?|atrasadas?|urgentes?|abertas?)/i,
+  /status\s*(das?|de)\s*os/i,
+  /os\s*(pendentes?|em\s*andamento|atrasadas?)/i,
+  /ordens?\s*de\s*servi[çc]o/i,
+];
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { message, image, userRole, context } = await req.json();
+    // Include conversation history from frontend
+    const { message, image, userRole, context, messages: conversationHistory } = await req.json();
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -36,8 +59,13 @@ serve(async (req) => {
     let useTools = false;
     let tools: any[] = [];
     
-    // Check if user wants to generate a report
+    // Check intents
     const hasReportIntent = reportIntentPatterns.some(p => p.test(message));
+    const hasAvailabilityQuestion = availabilityPatterns.some(p => p.test(message));
+    const hasOsStatusQuestion = osStatusPatterns.some(p => p.test(message));
+    
+    // Detect target date for availability questions
+    const targetDateInfo = detectTargetDate(message);
     
     // Build context based on user role
     if (userRole === 'technician') {
@@ -116,7 +144,23 @@ serve(async (req) => {
     } else if (userRole === 'admin') {
       systemPrompt = buildCoordinatorSystemPrompt();
       
-      // Get productivity insights
+      // PROACTIVE: Fetch availability data when question is detected
+      if (hasAvailabilityQuestion && context?.companyId) {
+        const availabilityData = await fetchTechnicianAvailability(supabase, context.companyId, targetDateInfo.date);
+        contextData.availabilityReport = {
+          ...availabilityData,
+          dateStr: targetDateInfo.dateStr,
+          dateLabel: targetDateInfo.label
+        };
+      }
+      
+      // PROACTIVE: Fetch OS status data when question is detected
+      if (hasOsStatusQuestion && context?.companyId) {
+        const osStatusData = await fetchOsStatus(supabase, context.companyId);
+        contextData.osStatusReport = osStatusData;
+      }
+      
+      // Always fetch basic stats for coordinators
       if (context?.companyId) {
         const { data: recentOrders } = await supabase
           .from('service_orders')
@@ -127,10 +171,10 @@ serve(async (req) => {
           .limit(50);
         contextData.recentOrders = recentOrders;
         
-        // Get technician availability
+        // Get technician count
         const { data: technicians } = await supabase
           .from('technicians')
-          .select('id, active, profiles:user_id(full_name)')
+          .select('id, active, specialty, profiles:user_id(full_name)')
           .eq('company_id', context.companyId)
           .eq('active', true);
         contextData.availableTechnicians = technicians;
@@ -164,14 +208,32 @@ serve(async (req) => {
       messageContent = fullPrompt;
     }
     
+    // Build conversation messages array - include history for context
+    const conversationMessages = [
+      { role: "system", content: systemPrompt },
+    ];
+    
+    // Add conversation history (last 10 messages for context)
+    if (conversationHistory && Array.isArray(conversationHistory)) {
+      const recentHistory = conversationHistory.slice(-10);
+      recentHistory.forEach((msg: any) => {
+        if (msg.role && msg.content) {
+          conversationMessages.push({
+            role: msg.role,
+            content: msg.content
+          });
+        }
+      });
+    }
+    
+    // Add current message
+    conversationMessages.push({ role: "user", content: messageContent });
+    
     // Build request body
     const requestBody: any = {
       // Use Pro model for images (better multimodal), Flash for text-only
       model: image ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: messageContent }
-      ],
+      messages: conversationMessages,
       stream: !useTools, // Don't stream when using tools
     };
     
@@ -250,6 +312,197 @@ serve(async (req) => {
     });
   }
 });
+
+// Detect target date from message
+function detectTargetDate(message: string): { date: Date; dateStr: string; label: string } {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  if (tomorrowPatterns.some(p => p.test(message))) {
+    return {
+      date: tomorrow,
+      dateStr: tomorrow.toISOString().split('T')[0],
+      label: `Amanhã (${formatDateBR(tomorrow)})`
+    };
+  }
+  
+  if (nextWeekPatterns.some(p => p.test(message))) {
+    // Return next 7 days
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    return {
+      date: nextWeek,
+      dateStr: nextWeek.toISOString().split('T')[0],
+      label: `Próximos 7 dias`
+    };
+  }
+  
+  // Default to today
+  return {
+    date: today,
+    dateStr: today.toISOString().split('T')[0],
+    label: `Hoje (${formatDateBR(today)})`
+  };
+}
+
+function formatDateBR(date: Date): string {
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Fetch technician availability for a specific date
+async function fetchTechnicianAvailability(supabase: any, companyId: string, targetDate: Date) {
+  try {
+    const dateStr = targetDate.toISOString().split('T')[0];
+    
+    // Fetch all active technicians
+    const { data: allTechnicians, error: techError } = await supabase
+      .from('technicians')
+      .select('id, specialty, profiles:user_id(full_name, phone)')
+      .eq('company_id', companyId)
+      .eq('active', true);
+    
+    if (techError) {
+      console.error("Error fetching technicians:", techError);
+      return { freeTechnicians: [], scheduledTechnicians: [], scheduledVisits: [] };
+    }
+    
+    // Fetch visits scheduled for target date
+    const { data: scheduledVisits, error: visitError } = await supabase
+      .from('service_visits')
+      .select(`
+        id,
+        visit_date,
+        status,
+        service_order:service_order_id(
+          id,
+          order_number,
+          location,
+          company_id,
+          client:client_id(name),
+          vessel:vessel_id(name)
+        )
+      `)
+      .eq('visit_date', dateStr)
+      .in('status', ['pending', 'in_progress']);
+    
+    if (visitError) {
+      console.error("Error fetching visits:", visitError);
+      return { freeTechnicians: allTechnicians || [], scheduledTechnicians: [], scheduledVisits: [] };
+    }
+    
+    // Filter visits by company
+    const companyVisits = scheduledVisits?.filter(
+      (v: any) => v.service_order?.company_id === companyId
+    ) || [];
+    
+    // Get visit IDs for company visits
+    const visitIds = companyVisits.map((v: any) => v.id);
+    
+    // Fetch technicians assigned to these visits
+    let assignedTechIds: Set<string> = new Set();
+    let visitTechnicianMap: Map<string, any[]> = new Map();
+    
+    if (visitIds.length > 0) {
+      const { data: visitTechnicians } = await supabase
+        .from('visit_technicians')
+        .select('visit_id, technician_id')
+        .in('visit_id', visitIds);
+      
+      visitTechnicians?.forEach((vt: any) => {
+        assignedTechIds.add(vt.technician_id);
+        if (!visitTechnicianMap.has(vt.visit_id)) {
+          visitTechnicianMap.set(vt.visit_id, []);
+        }
+        visitTechnicianMap.get(vt.visit_id)!.push(vt.technician_id);
+      });
+    }
+    
+    // Separate free and scheduled technicians
+    const freeTechnicians = allTechnicians?.filter((t: any) => !assignedTechIds.has(t.id)) || [];
+    const scheduledTechnicians = allTechnicians?.filter((t: any) => assignedTechIds.has(t.id)) || [];
+    
+    // Build enriched visit data
+    const enrichedVisits = companyVisits.map((visit: any) => {
+      const techIds = visitTechnicianMap.get(visit.id) || [];
+      const techNames = techIds.map((tid: string) => {
+        const tech = allTechnicians?.find((t: any) => t.id === tid);
+        return tech?.profiles?.full_name || 'Desconhecido';
+      });
+      return {
+        ...visit,
+        technician_names: techNames
+      };
+    });
+    
+    return {
+      freeTechnicians,
+      scheduledTechnicians,
+      scheduledVisits: enrichedVisits,
+      totalTechnicians: allTechnicians?.length || 0
+    };
+  } catch (error) {
+    console.error("Error in fetchTechnicianAvailability:", error);
+    return { freeTechnicians: [], scheduledTechnicians: [], scheduledVisits: [] };
+  }
+}
+
+// Fetch OS status summary
+async function fetchOsStatus(supabase: any, companyId: string) {
+  try {
+    const { data: orders, error } = await supabase
+      .from('service_orders')
+      .select('id, status, scheduled_date, created_at, order_number, location, client:client_id(name)')
+      .eq('company_id', companyId)
+      .order('created_at', { ascending: false })
+      .limit(100);
+    
+    if (error) {
+      console.error("Error fetching OS status:", error);
+      return null;
+    }
+    
+    const today = new Date();
+    const statusCount = {
+      pending: 0,
+      in_progress: 0,
+      completed: 0,
+      cancelled: 0,
+      overdue: 0
+    };
+    
+    const overdueOrders: any[] = [];
+    const pendingOrders: any[] = [];
+    
+    orders?.forEach((order: any) => {
+      statusCount[order.status as keyof typeof statusCount] = 
+        (statusCount[order.status as keyof typeof statusCount] || 0) + 1;
+      
+      // Check if overdue (scheduled date passed but not completed)
+      if (order.scheduled_date && order.status !== 'completed' && order.status !== 'cancelled') {
+        const scheduledDate = new Date(order.scheduled_date);
+        if (scheduledDate < today) {
+          statusCount.overdue++;
+          overdueOrders.push(order);
+        }
+      }
+      
+      if (order.status === 'pending') {
+        pendingOrders.push(order);
+      }
+    });
+    
+    return {
+      statusCount,
+      overdueOrders: overdueOrders.slice(0, 5),
+      pendingOrders: pendingOrders.slice(0, 5),
+      totalOrders: orders?.length || 0
+    };
+  } catch (error) {
+    console.error("Error in fetchOsStatus:", error);
+    return null;
+  }
+}
 
 // Semantic search using embeddings
 async function searchSimilarReportsSemantic(supabase: any, searchText: string, companyId?: string) {
@@ -473,24 +726,53 @@ Diretrizes:
 }
 
 function buildCoordinatorSystemPrompt() {
+  const today = new Date();
+  const todayStr = formatDateBR(today);
+  
   return `Você é o NavalOS AI, um assistente inteligente para coordenadores de serviços técnicos navais.
 
+🚨 REGRAS CRÍTICAS DE COMPORTAMENTO:
+1. SEMPRE responda DIRETAMENTE com os dados disponíveis no contexto
+2. NUNCA pergunte "qual a data de amanhã" - hoje é ${todayStr}
+3. NUNCA peça informações que já estão no contexto fornecido
+4. Seja PROATIVO - forneça respostas completas e acionáveis imediatamente
+5. Se precisar de mais detalhes, faça NO MÁXIMO 1 pergunta específica
+
 Suas responsabilidades:
-1. Fornecer insights sobre produtividade e alocação de técnicos
+1. Informar disponibilidade de técnicos usando SEMPRE os dados do contexto
 2. Ajudar na tomada de decisões sobre atribuição de ordens de serviço
 3. Alertar sobre OS críticas ou atrasadas
-4. Analisar padrões de demanda de clientes
+4. Fornecer visão operacional clara e objetiva
+
+Formato para perguntas de disponibilidade:
+- Liste técnicos LIVRES primeiro (nome + especialidade + telefone se disponível)
+- Depois liste técnicos COM AGENDAMENTO (nome + qual OS + onde)
+- Sugira quem atribuir baseado em especialidade e localização
+
+Formato para perguntas de status de OS:
+- Mostre resumo quantitativo (pendentes, em andamento, concluídas, atrasadas)
+- Liste OS atrasadas ou críticas com detalhes
+- Sugira ações prioritárias
 
 Diretrizes:
-- Seja analítico e baseie-se em dados
+- Seja analítico e baseie-se nos dados do contexto
 - Sugira ações concretas e mensuráveis
 - Priorize eficiência operacional
 - Responda sempre em português brasileiro
-- Use formatação markdown e tabelas quando apropriado`;
+- Use formatação markdown, tabelas e emojis para organizar informações
+- Use ✅ para técnicos livres, 🔴 para ocupados, ⚠️ para alertas`;
 }
 
 function buildManagerSystemPrompt() {
+  const today = new Date();
+  const todayStr = formatDateBR(today);
+  
   return `Você é o NavalOS AI, um assistente inteligente para gerentes de operações navais.
+
+🚨 REGRAS CRÍTICAS:
+1. Responda DIRETAMENTE com os dados disponíveis - não faça perguntas desnecessárias
+2. Hoje é ${todayStr}
+3. Use os dados do contexto para fornecer análises imediatas
 
 Suas responsabilidades:
 1. Fornecer análises comparativas entre coordenadores
@@ -502,7 +784,8 @@ Diretrizes:
 - Foque em métricas e KPIs relevantes
 - Apresente dados de forma clara e visual
 - Sugira ações estratégicas fundamentadas
-- Responda sempre em português brasileiro`;
+- Responda sempre em português brasileiro
+- Use tabelas, gráficos em texto e emojis para organizar`;
 }
 
 function buildPromptWithContext(message: string, contextData: any, userRole: string) {
@@ -537,7 +820,53 @@ ${index + 1}. OS #${report.task?.service_order?.order_number || 'N/A'}${similari
   }
   
   if (userRole === 'admin') {
-    if (contextData.recentOrders) {
+    // AVAILABILITY REPORT - Detailed information
+    if (contextData.availabilityReport) {
+      const ar = contextData.availabilityReport;
+      contextParts.push(`\n📅 DISPONIBILIDADE DE TÉCNICOS - ${ar.dateLabel}:
+
+✅ TÉCNICOS LIVRES (${ar.freeTechnicians?.length || 0} de ${ar.totalTechnicians || 0}):
+${ar.freeTechnicians?.length > 0 
+  ? ar.freeTechnicians.map((t: any) => 
+    `- ${t.profiles?.full_name || 'Sem nome'} | ${t.specialty || 'Geral'} | Tel: ${t.profiles?.phone || 'N/A'}`
+  ).join('\n')
+  : '- Nenhum técnico livre nesta data'}
+
+🔴 TÉCNICOS COM AGENDAMENTO (${ar.scheduledTechnicians?.length || 0}):
+${ar.scheduledVisits?.length > 0 
+  ? ar.scheduledVisits.map((v: any) => 
+    `- ${v.technician_names?.join(', ') || 'N/A'}: OS #${v.service_order?.order_number || 'N/A'} em ${v.service_order?.location || 'Local não definido'} (${v.service_order?.client?.name || 'Cliente N/A'})`
+  ).join('\n')
+  : '- Nenhum técnico com agendamento'}
+
+⚠️ INSTRUÇÃO: Responda DIRETAMENTE com esses dados. Liste os técnicos livres e ocupados de forma clara.`);
+    }
+    
+    // OS STATUS REPORT
+    if (contextData.osStatusReport) {
+      const osr = contextData.osStatusReport;
+      contextParts.push(`\n📊 STATUS DAS ORDENS DE SERVIÇO:
+
+Resumo Geral (últimas ${osr.totalOrders} OS):
+- 🟡 Pendentes: ${osr.statusCount.pending}
+- 🔵 Em Andamento: ${osr.statusCount.in_progress}
+- 🟢 Concluídas: ${osr.statusCount.completed}
+- ⚠️ Atrasadas: ${osr.statusCount.overdue}
+- ❌ Canceladas: ${osr.statusCount.cancelled}
+
+${osr.overdueOrders?.length > 0 ? `⚠️ OS ATRASADAS (ação necessária):
+${osr.overdueOrders.map((o: any) => 
+  `- OS #${o.order_number}: ${o.client?.name || 'N/A'} - Agendada: ${o.scheduled_date}`
+).join('\n')}` : ''}
+
+${osr.pendingOrders?.length > 0 ? `🟡 PRÓXIMAS OS PENDENTES:
+${osr.pendingOrders.map((o: any) => 
+  `- OS #${o.order_number}: ${o.client?.name || 'N/A'} - ${o.location || 'Local N/A'}`
+).join('\n')}` : ''}`);
+    }
+    
+    // Basic stats (always included)
+    if (contextData.recentOrders && !contextData.availabilityReport && !contextData.osStatusReport) {
       const statusCount = contextData.recentOrders.reduce((acc: any, order: any) => {
         acc[order.status] = (acc[order.status] || 0) + 1;
         return acc;
@@ -549,8 +878,8 @@ ${index + 1}. OS #${report.task?.service_order?.order_number || 'N/A'}${similari
 - Concluídas: ${statusCount.completed || 0}`);
     }
     
-    if (contextData.availableTechnicians) {
-      contextParts.push(`\n👥 TÉCNICOS DISPONÍVEIS: ${contextData.availableTechnicians.length}`);
+    if (contextData.availableTechnicians && !contextData.availabilityReport) {
+      contextParts.push(`\n👥 TÉCNICOS ATIVOS: ${contextData.availableTechnicians.length}`);
     }
   }
   
