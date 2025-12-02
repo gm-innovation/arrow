@@ -95,6 +95,9 @@ serve(async (req) => {
       console.log('Technician entry created');
     }
 
+    // Note: manager and admin roles don't need additional table entries
+    console.log('User type:', role, '- no additional setup needed');
+
     console.log('User creation completed successfully');
 
     return new Response(
