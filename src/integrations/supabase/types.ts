@@ -1848,6 +1848,47 @@ export type Database = {
           },
         ]
       }
+      whatsapp_conversations: {
+        Row: {
+          ai_context: Json | null
+          created_at: string | null
+          direction: string
+          id: string
+          message: string
+          message_sid: string | null
+          phone_number: string
+          user_id: string | null
+        }
+        Insert: {
+          ai_context?: Json | null
+          created_at?: string | null
+          direction: string
+          id?: string
+          message: string
+          message_sid?: string | null
+          phone_number: string
+          user_id?: string | null
+        }
+        Update: {
+          ai_context?: Json | null
+          created_at?: string | null
+          direction?: string
+          id?: string
+          message?: string
+          message_sid?: string | null
+          phone_number?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
