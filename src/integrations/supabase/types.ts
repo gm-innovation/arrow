@@ -122,6 +122,50 @@ export type Database = {
           },
         ]
       }
+      ai_proactive_alerts: {
+        Row: {
+          alert_type: string
+          company_id: string | null
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          reference_data: Json | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          alert_type: string
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          reference_data?: Json | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          reference_data?: Json | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_proactive_alerts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       city_distances: {
         Row: {
           company_id: string
@@ -979,6 +1023,44 @@ export type Database = {
         }
         Relationships: []
       }
+      report_embeddings: {
+        Row: {
+          content_hash: string | null
+          content_text: string | null
+          created_at: string | null
+          embedding: string | null
+          id: string
+          task_report_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          content_hash?: string | null
+          content_text?: string | null
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          task_report_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          content_hash?: string | null
+          content_text?: string | null
+          created_at?: string | null
+          embedding?: string | null
+          id?: string
+          task_report_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_embeddings_task_report_id_fkey"
+            columns: ["task_report_id"]
+            isOneToOne: true
+            referencedRelation: "task_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_history: {
         Row: {
           action: string
@@ -1808,6 +1890,20 @@ export type Database = {
       mark_messages_as_read: {
         Args: { _conversation_id: string }
         Returns: undefined
+      }
+      search_similar_reports: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          p_company_id?: string
+          query_embedding: string
+        }
+        Returns: {
+          content_text: string
+          report_data: Json
+          similarity: number
+          task_report_id: string
+        }[]
       }
       update_forecast_actuals: { Args: never; Returns: undefined }
       user_company_id: { Args: { _user_id: string }; Returns: string }

@@ -7,13 +7,23 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Patterns to detect report generation intent
+const reportIntentPatterns = [
+  /gerar\s*relat[oó]rio/i,
+  /preencher\s*relat[oó]rio/i,
+  /criar\s*relat[oó]rio/i,
+  /montar\s*relat[oó]rio/i,
+  /fazer\s*relat[oó]rio/i,
+  /relat[oó]rio\s*autom[aá]tico/i,
+];
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { message, userRole, context } = await req.json();
+    const { message, image, userRole, context } = await req.json();
     
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -23,19 +33,32 @@ serve(async (req) => {
     
     let contextData: any = {};
     let systemPrompt = '';
+    let useTools = false;
+    let tools: any[] = [];
+    
+    // Check if user wants to generate a report
+    const hasReportIntent = reportIntentPatterns.some(p => p.test(message));
     
     // Build context based on user role
     if (userRole === 'technician') {
-      systemPrompt = buildTechnicianSystemPrompt();
+      systemPrompt = buildTechnicianSystemPrompt(!!image, hasReportIntent);
       
-      // Search for similar reports if the message seems like a technical question
+      // Try semantic search first, fallback to keyword search
       if (message.length > 10) {
-        const similarReports = await searchSimilarReports(supabase, message, context?.companyId);
-        contextData.similarReports = similarReports;
+        const similarReports = await searchSimilarReportsSemantic(supabase, message, context?.companyId);
+        if (similarReports.length > 0) {
+          contextData.similarReports = similarReports;
+          contextData.searchMethod = 'semantic';
+        } else {
+          // Fallback to keyword search
+          const keywordReports = await searchSimilarReportsKeyword(supabase, message, context?.companyId);
+          contextData.similarReports = keywordReports;
+          contextData.searchMethod = 'keyword';
+        }
         
         // Get technicians who solved similar problems
-        if (similarReports.length > 0) {
-          const technicianIds = [...new Set(similarReports.map((r: any) => r.technician_id).filter(Boolean))];
+        if (contextData.similarReports?.length > 0) {
+          const technicianIds = [...new Set(contextData.similarReports.map((r: any) => r.technician_id).filter(Boolean))];
           if (technicianIds.length > 0) {
             const { data: technicians } = await supabase
               .from('technicians')
@@ -54,6 +77,41 @@ serve(async (req) => {
           .eq('id', context.taskTypeId)
           .single();
         contextData.taskType = taskType;
+      }
+      
+      // Setup tool calling for report generation
+      if (hasReportIntent) {
+        useTools = true;
+        tools = [{
+          type: "function",
+          function: {
+            name: "generate_report_fields",
+            description: "Extrai campos estruturados de um relatório técnico a partir da descrição fornecida pelo técnico",
+            parameters: {
+              type: "object",
+              properties: {
+                reportedIssue: { 
+                  type: "string", 
+                  description: "Problema reportado pelo cliente ou identificado pelo técnico" 
+                },
+                executedWork: { 
+                  type: "string", 
+                  description: "Trabalho executado pelo técnico para resolver o problema" 
+                },
+                result: { 
+                  type: "string", 
+                  enum: ["Solucionado", "Parcialmente Solucionado", "Pendente", "Não Solucionado"],
+                  description: "Resultado do serviço realizado"
+                },
+                brandInfo: { type: "string", description: "Marca do equipamento trabalhado" },
+                modelInfo: { type: "string", description: "Modelo do equipamento trabalhado" },
+                serialNumber: { type: "string", description: "Número de série do equipamento" },
+                observations: { type: "string", description: "Observações adicionais relevantes" }
+              },
+              required: ["reportedIssue", "executedWork", "result"]
+            }
+          }
+        }];
       }
     } else if (userRole === 'admin') {
       systemPrompt = buildCoordinatorSystemPrompt();
@@ -94,6 +152,35 @@ serve(async (req) => {
     // Build the full prompt with context
     const fullPrompt = buildPromptWithContext(message, contextData, userRole);
     
+    // Build message content (text or multimodal)
+    let messageContent: any;
+    if (image) {
+      // Multimodal message with image
+      messageContent = [
+        { type: "text", text: fullPrompt },
+        { type: "image_url", image_url: { url: image.startsWith('data:') ? image : `data:image/jpeg;base64,${image}` } }
+      ];
+    } else {
+      messageContent = fullPrompt;
+    }
+    
+    // Build request body
+    const requestBody: any = {
+      // Use Pro model for images (better multimodal), Flash for text-only
+      model: image ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: messageContent }
+      ],
+      stream: !useTools, // Don't stream when using tools
+    };
+    
+    // Add tools if needed
+    if (useTools && tools.length > 0) {
+      requestBody.tools = tools;
+      requestBody.tool_choice = { type: "function", function: { name: "generate_report_fields" } };
+    }
+    
     // Call Lovable AI
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -101,14 +188,7 @@ serve(async (req) => {
         Authorization: `Bearer ${lovableApiKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: fullPrompt }
-        ],
-        stream: true,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -132,6 +212,32 @@ serve(async (req) => {
       });
     }
 
+    // Handle tool calling response (non-streaming)
+    if (useTools) {
+      const responseData = await response.json();
+      const toolCalls = responseData.choices?.[0]?.message?.tool_calls;
+      
+      if (toolCalls && toolCalls.length > 0) {
+        const functionCall = toolCalls[0];
+        const reportFields = JSON.parse(functionCall.function.arguments);
+        
+        return new Response(JSON.stringify({
+          type: 'report_generation',
+          fields: reportFields,
+          message: "Campos do relatório extraídos com sucesso! Revise e confirme os dados abaixo."
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      
+      // If no tool calls, return the regular response
+      const content = responseData.choices?.[0]?.message?.content || "Desculpe, não consegui processar sua solicitação.";
+      return new Response(JSON.stringify({ type: 'text', content }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Stream response
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
@@ -145,8 +251,99 @@ serve(async (req) => {
   }
 });
 
-async function searchSimilarReports(supabase: any, searchText: string, companyId?: string) {
-  // Extract keywords from the search text
+// Semantic search using embeddings
+async function searchSimilarReportsSemantic(supabase: any, searchText: string, companyId?: string) {
+  try {
+    // Generate pseudo-embedding for the query (same method as in generate-embeddings)
+    const queryEmbedding = generatePseudoEmbedding(searchText);
+    
+    // Call the search function
+    const { data, error } = await supabase.rpc('search_similar_reports', {
+      query_embedding: `[${queryEmbedding.join(',')}]`,
+      match_threshold: 0.3,
+      match_count: 5,
+      p_company_id: companyId || null
+    });
+    
+    if (error) {
+      console.error("Semantic search error:", error);
+      return [];
+    }
+    
+    if (!data || data.length === 0) {
+      return [];
+    }
+    
+    // Get technician info
+    const reportIds = data.map((r: any) => r.task_report_id);
+    const { data: reports } = await supabase
+      .from('task_reports')
+      .select(`
+        id,
+        task_id,
+        report_data,
+        task:task_uuid(
+          assigned_to,
+          service_order:service_order_id(
+            order_number,
+            vessel:vessel_id(name),
+            client:client_id(name)
+          )
+        )
+      `)
+      .in('id', reportIds);
+    
+    const reportMap = new Map(reports?.map((r: any) => [r.id, r]) || []);
+    
+    // Get technician names
+    const technicianIds = reports?.map((r: any) => r.task?.assigned_to).filter(Boolean) || [];
+    let technicianMap = new Map();
+    
+    if (technicianIds.length > 0) {
+      const { data: technicians } = await supabase
+        .from('technicians')
+        .select('id, profiles:user_id(full_name)')
+        .in('id', technicianIds);
+      technicianMap = new Map(technicians?.map((t: any) => [t.id, t.profiles?.full_name]) || []);
+    }
+    
+    return data.map((result: any) => {
+      const report = reportMap.get(result.task_report_id);
+      return {
+        ...report,
+        similarity: result.similarity,
+        technician_name: technicianMap.get(report?.task?.assigned_to) || 'Desconhecido',
+        technician_id: report?.task?.assigned_to
+      };
+    });
+  } catch (error) {
+    console.error("Semantic search failed:", error);
+    return [];
+  }
+}
+
+// Generate pseudo-embedding (must match the one in generate-embeddings)
+function generatePseudoEmbedding(text: string): number[] {
+  const embedding = new Array(768).fill(0);
+  const normalizedText = text.toLowerCase();
+  
+  for (let i = 0; i < normalizedText.length && i < 768; i++) {
+    const charCode = normalizedText.charCodeAt(i);
+    embedding[i % 768] += (charCode - 96) / 26;
+  }
+
+  const magnitude = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+  if (magnitude > 0) {
+    for (let i = 0; i < 768; i++) {
+      embedding[i] = embedding[i] / magnitude;
+    }
+  }
+
+  return embedding;
+}
+
+// Keyword-based search (fallback)
+async function searchSimilarReportsKeyword(supabase: any, searchText: string, companyId?: string) {
   const keywords = searchText
     .toLowerCase()
     .replace(/[^\w\sáéíóúãõâêîôûç]/g, '')
@@ -155,7 +352,6 @@ async function searchSimilarReports(supabase: any, searchText: string, companyId
   
   if (keywords.length === 0) return [];
   
-  // Build search query
   let query = supabase
     .from('task_reports')
     .select(`
@@ -183,7 +379,6 @@ async function searchSimilarReports(supabase: any, searchText: string, companyId
   
   if (error || !reports) return [];
   
-  // Filter and score reports based on keyword matching
   const scoredReports = reports
     .filter((report: any) => {
       if (companyId && report.task?.service_order?.company_id !== companyId) {
@@ -214,7 +409,6 @@ async function searchSimilarReports(supabase: any, searchText: string, companyId
     .sort((a: any, b: any) => b.score - a.score)
     .slice(0, 5);
   
-  // Get technician info for matched reports
   const technicianIds = scoredReports
     .map((r: any) => r.task?.assigned_to)
     .filter(Boolean);
@@ -237,14 +431,34 @@ async function searchSimilarReports(supabase: any, searchText: string, companyId
   return scoredReports;
 }
 
-function buildTechnicianSystemPrompt() {
-  return `Você é o NavalOS AI, um assistente inteligente especializado em ajudar técnicos de manutenção naval e marítima.
+function buildTechnicianSystemPrompt(hasImage: boolean, hasReportIntent: boolean) {
+  let basePrompt = `Você é o NavalOS AI, um assistente inteligente especializado em ajudar técnicos de manutenção naval e marítima.
 
 Suas responsabilidades:
 1. Ajudar técnicos a resolver problemas técnicos baseado em relatórios históricos
 2. Sugerir soluções e procedimentos baseados em experiências anteriores
 3. Identificar técnicos experientes que já resolveram problemas similares
-4. Fornecer orientações sobre ferramentas e passos necessários
+4. Fornecer orientações sobre ferramentas e passos necessários`;
+
+  if (hasImage) {
+    basePrompt += `
+
+ANÁLISE DE IMAGEM:
+Você recebeu uma imagem junto com a mensagem. Analise a imagem detalhadamente e:
+- Identifique equipamentos, componentes ou problemas visíveis
+- Descreva o estado do equipamento (desgaste, danos, corrosão, etc.)
+- Sugira possíveis diagnósticos ou próximos passos de inspeção
+- Compare com problemas similares de relatórios históricos se disponíveis`;
+  }
+
+  if (hasReportIntent) {
+    basePrompt += `
+
+GERAÇÃO DE RELATÓRIO:
+O técnico quer gerar um relatório. Use a função generate_report_fields para extrair os campos estruturados da descrição fornecida. Seja preciso e extraia todas as informações relevantes.`;
+  }
+
+  basePrompt += `
 
 Diretrizes:
 - Seja direto e prático nas respostas
@@ -253,7 +467,9 @@ Diretrizes:
 - Use linguagem técnica mas acessível
 - Responda sempre em português brasileiro
 - Formate suas respostas usando markdown para melhor legibilidade
-- Use emojis para destacar pontos importantes (🔧 para ferramentas, ✅ para soluções, 👤 para técnicos)`;
+- Use emojis para destacar pontos importantes (🔧 para ferramentas, ✅ para soluções, 👤 para técnicos, 📷 para análise de imagem)`;
+
+  return basePrompt;
 }
 
 function buildCoordinatorSystemPrompt() {
@@ -294,11 +510,13 @@ function buildPromptWithContext(message: string, contextData: any, userRole: str
   
   if (userRole === 'technician') {
     if (contextData.similarReports?.length > 0) {
-      contextParts.push('\n📋 RELATÓRIOS SIMILARES ENCONTRADOS:');
+      const searchMethod = contextData.searchMethod === 'semantic' ? '(busca semântica)' : '(busca por palavras-chave)';
+      contextParts.push(`\n📋 RELATÓRIOS SIMILARES ENCONTRADOS ${searchMethod}:`);
       contextData.similarReports.forEach((report: any, index: number) => {
         const data = report.report_data || {};
+        const similarity = report.similarity ? ` (${Math.round(report.similarity * 100)}% similar)` : '';
         contextParts.push(`
-${index + 1}. OS #${report.task?.service_order?.order_number || 'N/A'}
+${index + 1}. OS #${report.task?.service_order?.order_number || 'N/A'}${similarity}
    - Técnico: ${report.technician_name}
    - Cliente: ${report.task?.service_order?.client?.name || 'N/A'}
    - Embarcação: ${report.task?.service_order?.vessel?.name || 'N/A'}
