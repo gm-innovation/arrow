@@ -11,6 +11,7 @@ interface WhatsAppRequest {
   message: string;
   userId?: string;
   notificationType?: string;
+  dryRun?: boolean;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -20,6 +21,27 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const { to, message, userId, notificationType, dryRun }: WhatsAppRequest = await req.json();
+
+    // Dry run mode for testing connection
+    if (dryRun) {
+      const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
+      const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
+      const TWILIO_WHATSAPP_NUMBER = Deno.env.get("TWILIO_WHATSAPP_NUMBER");
+
+      if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_WHATSAPP_NUMBER) {
+        return new Response(
+          JSON.stringify({ error: "Twilio credentials not configured", configured: false }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, configured: true, message: "Twilio credentials are configured" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const TWILIO_ACCOUNT_SID = Deno.env.get("TWILIO_ACCOUNT_SID");
     const TWILIO_AUTH_TOKEN = Deno.env.get("TWILIO_AUTH_TOKEN");
     const TWILIO_WHATSAPP_NUMBER = Deno.env.get("TWILIO_WHATSAPP_NUMBER");
