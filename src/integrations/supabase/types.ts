@@ -150,6 +150,76 @@ export type Database = {
         }
         Relationships: []
       }
+      forecast_history: {
+        Row: {
+          actual_completed: number | null
+          actual_orders: number | null
+          client_id: string | null
+          company_id: string
+          confidence: string
+          coordinator_id: string | null
+          created_at: string
+          created_by: string
+          forecast_month: string
+          id: string
+          metadata: Json | null
+          predicted_completed: number
+          predicted_orders: number
+        }
+        Insert: {
+          actual_completed?: number | null
+          actual_orders?: number | null
+          client_id?: string | null
+          company_id: string
+          confidence: string
+          coordinator_id?: string | null
+          created_at?: string
+          created_by: string
+          forecast_month: string
+          id?: string
+          metadata?: Json | null
+          predicted_completed: number
+          predicted_orders: number
+        }
+        Update: {
+          actual_completed?: number | null
+          actual_orders?: number | null
+          client_id?: string | null
+          company_id?: string
+          confidence?: string
+          coordinator_id?: string | null
+          created_at?: string
+          created_by?: string
+          forecast_month?: string
+          id?: string
+          metadata?: Json | null
+          predicted_completed?: number
+          predicted_orders?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forecast_history_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forecast_history_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forecast_history_coordinator_id_fkey"
+            columns: ["coordinator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       measurement_expenses: {
         Row: {
           admin_fee_amount: number
@@ -1420,6 +1490,7 @@ export type Database = {
         Args: { _user_id: string; _visit_id: string }
         Returns: boolean
       }
+      update_forecast_actuals: { Args: never; Returns: undefined }
       user_company_id: { Args: { _user_id: string }; Returns: string }
       visit_belongs_to_user_company: {
         Args: { _user_id: string; _visit_id: string }
