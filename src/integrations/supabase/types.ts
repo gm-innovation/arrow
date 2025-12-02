@@ -150,6 +150,86 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_participants: {
+        Row: {
+          conversation_id: string
+          id: string
+          joined_at: string | null
+          last_read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          id?: string
+          joined_at?: string | null
+          last_read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          id?: string
+          joined_at?: string | null
+          last_read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          company_id: string
+          conversation_type: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          service_order_id: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          conversation_type?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          service_order_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          conversation_type?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          service_order_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forecast_history: {
         Row: {
           actual_completed: number | null
@@ -595,6 +675,47 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          attachment_url: string | null
+          content: string
+          conversation_id: string
+          created_at: string | null
+          edited_at: string | null
+          id: string
+          message_type: string | null
+          sender_id: string
+        }
+        Insert: {
+          attachment_url?: string | null
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          edited_at?: string | null
+          id?: string
+          message_type?: string | null
+          sender_id: string
+        }
+        Update: {
+          attachment_url?: string | null
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          edited_at?: string | null
+          id?: string
+          message_type?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -627,6 +748,60 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      productivity_snapshots: {
+        Row: {
+          average_task_duration: number | null
+          company_id: string
+          created_at: string | null
+          hours_worked: number | null
+          id: string
+          satisfaction_avg: number | null
+          snapshot_date: string
+          tasks_assigned: number | null
+          tasks_completed: number | null
+          technician_id: string
+        }
+        Insert: {
+          average_task_duration?: number | null
+          company_id: string
+          created_at?: string | null
+          hours_worked?: number | null
+          id?: string
+          satisfaction_avg?: number | null
+          snapshot_date: string
+          tasks_assigned?: number | null
+          tasks_completed?: number | null
+          technician_id: string
+        }
+        Update: {
+          average_task_duration?: number | null
+          company_id?: string
+          created_at?: string | null
+          hours_worked?: number | null
+          id?: string
+          satisfaction_avg?: number | null
+          snapshot_date?: string
+          tasks_assigned?: number | null
+          tasks_completed?: number | null
+          technician_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "productivity_snapshots_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "productivity_snapshots_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -668,6 +843,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string | null
+          endpoint: string
+          id: string
+          p256dh: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       service_history: {
         Row: {
@@ -1489,6 +1691,10 @@ export type Database = {
       is_assigned_to_visit: {
         Args: { _user_id: string; _visit_id: string }
         Returns: boolean
+      }
+      mark_messages_as_read: {
+        Args: { _conversation_id: string }
+        Returns: undefined
       }
       update_forecast_actuals: { Args: never; Returns: undefined }
       user_company_id: { Args: { _user_id: string }; Returns: string }
