@@ -1673,6 +1673,7 @@ export type Database = {
         }
         Returns: number
       }
+      can_admin_manage_report: { Args: { _task_id: string }; Returns: boolean }
       can_view_profile: {
         Args: { _profile_id: string; _viewer_id: string }
         Returns: boolean
