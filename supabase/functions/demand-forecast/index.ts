@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,7 +12,13 @@ serve(async (req) => {
   }
 
   try {
-    const { historicalData } = await req.json();
+    const { historicalData, coordinatorId, clientId } = await req.json();
+    
+    // Get authorization header to create authenticated supabase client
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      throw new Error("Missing authorization header");
+    }
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -113,6 +120,83 @@ Por favor, analise e retorne previsões usando a função forecast_demand.`;
     }
 
     const forecast = JSON.parse(toolCall.function.arguments);
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error("Missing Supabase configuration");
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    });
+
+    // Get user from auth header
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      throw new Error("Invalid authorization token");
+    }
+
+    // Get user's company
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("company_id")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.company_id) {
+      throw new Error("User company not found");
+    }
+
+    // Save forecast predictions to database
+    const forecastRecords = forecast.predictions.map((pred: any) => {
+      // Parse month name to date (e.g., "Janeiro" -> first day of next January)
+      const monthNames = [
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+        "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+      ];
+      const currentDate = new Date();
+      const monthIndex = monthNames.findIndex(m => 
+        pred.month.toLowerCase().includes(m)
+      );
+      
+      let forecastDate = new Date(currentDate.getFullYear(), monthIndex, 1);
+      if (forecastDate <= currentDate) {
+        forecastDate = new Date(currentDate.getFullYear() + 1, monthIndex, 1);
+      }
+
+      return {
+        company_id: profile.company_id,
+        created_by: user.id,
+        forecast_month: forecastDate.toISOString().split('T')[0],
+        predicted_orders: pred.predicted_orders,
+        predicted_completed: pred.predicted_completed,
+        confidence: pred.confidence,
+        coordinator_id: coordinatorId || null,
+        client_id: clientId || null,
+        metadata: {
+          trend_analysis: forecast.trend_analysis,
+          growth_rate: forecast.growth_rate,
+          recommendations: forecast.recommendations,
+        }
+      };
+    });
+
+    const { error: insertError } = await supabase
+      .from("forecast_history")
+      .insert(forecastRecords);
+
+    if (insertError) {
+      console.error("Error saving forecast:", insertError);
+      // Don't throw - still return the forecast to user even if save fails
+    }
 
     return new Response(JSON.stringify(forecast), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
