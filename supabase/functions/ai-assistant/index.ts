@@ -48,6 +48,13 @@ serve(async (req) => {
     // Include conversation history from frontend
     const { message, image, userRole, context, messages: conversationHistory } = await req.json();
     
+    console.log("AI Assistant Request:", { 
+      message: message?.substring(0, 100), 
+      userRole, 
+      companyId: context?.companyId,
+      hasHistory: !!conversationHistory?.length 
+    });
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
@@ -63,6 +70,8 @@ serve(async (req) => {
     const hasReportIntent = reportIntentPatterns.some(p => p.test(message));
     const hasAvailabilityQuestion = availabilityPatterns.some(p => p.test(message));
     const hasOsStatusQuestion = osStatusPatterns.some(p => p.test(message));
+    
+    console.log("Intent detection:", { hasReportIntent, hasAvailabilityQuestion, hasOsStatusQuestion });
     
     // Detect target date for availability questions
     const targetDateInfo = detectTargetDate(message);
@@ -144,9 +153,20 @@ serve(async (req) => {
     } else if (userRole === 'admin') {
       systemPrompt = buildCoordinatorSystemPrompt();
       
+      console.log("Admin context check:", { 
+        hasAvailabilityQuestion, 
+        companyId: context?.companyId,
+        targetDate: targetDateInfo.dateStr
+      });
+      
       // PROACTIVE: Fetch availability data when question is detected
       if (hasAvailabilityQuestion && context?.companyId) {
+        console.log("Fetching availability for:", context.companyId, targetDateInfo.date);
         const availabilityData = await fetchTechnicianAvailability(supabase, context.companyId, targetDateInfo.date);
+        console.log("Availability result:", { 
+          freeTechnicians: availabilityData.freeTechnicians?.length,
+          scheduledTechnicians: availabilityData.scheduledTechnicians?.length
+        });
         contextData.availabilityReport = {
           ...availabilityData,
           dateStr: targetDateInfo.dateStr,
