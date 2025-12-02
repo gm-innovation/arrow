@@ -40,18 +40,17 @@ serve(async (req) => {
         .eq('user_id', user_id);
 
       // Insert new role
-      const roleValue = role === 'tech' ? 'technician' : role;
       const { error: roleError } = await supabaseAdmin
         .from('user_roles')
         .insert({
           user_id,
-          role: roleValue,
+          role: role,
         });
 
       if (roleError) throw roleError;
 
       // Handle technician entry
-      if (role === 'tech') {
+      if (role === 'technician') {
         // Check if technician entry exists
         const { data: existingTech } = await supabaseAdmin
           .from('technicians')

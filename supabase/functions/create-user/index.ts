@@ -62,12 +62,11 @@ serve(async (req) => {
     console.log('Profile updated');
 
     // Create user role
-    const roleValue = role === 'tech' ? 'technician' : role;
     const { error: roleError } = await supabaseAdmin
       .from('user_roles')
       .insert({
         user_id: authData.user.id,
-        role: roleValue,
+        role: role,
       });
 
     if (roleError) {
@@ -75,10 +74,10 @@ serve(async (req) => {
       throw roleError;
     }
 
-    console.log('Role created:', roleValue);
+    console.log('Role created:', role);
 
-    // If role is tech, create technician entry
-    if (role === 'tech') {
+    // If role is technician, create technician entry
+    if (role === 'technician') {
       const { error: techError } = await supabaseAdmin
         .from('technicians')
         .insert({
