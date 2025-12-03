@@ -14,6 +14,7 @@ interface ReportData {
   modelInfo?: string;
   serialNumber?: string;
   observations?: string;
+  nextVisitWork?: string;
 }
 
 serve(async (req) => {
@@ -25,18 +26,59 @@ serve(async (req) => {
   try {
     const { task_report_id, batch } = await req.json();
     
+    console.log("=== generate-embeddings called ===");
+    console.log("task_report_id:", task_report_id);
+    console.log("batch:", batch);
+    
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const lovableApiKey = Deno.env.get("LOVABLE_API_KEY")!;
     
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    // Function to extract actual report data from nested structure
+    function extractReportData(rawData: unknown): ReportData | null {
+      if (!rawData || typeof rawData !== 'object') {
+        console.log("Report data is null or not an object");
+        return null;
+      }
+      
+      const data = rawData as Record<string, unknown>;
+      
+      // Check if data has the expected fields at top level
+      if (data.reportedIssue || data.executedWork || data.result) {
+        console.log("Report data is at top level");
+        return data as unknown as ReportData;
+      }
+      
+      // Otherwise, data might be nested under a task UUID key
+      // Structure: { "uuid-task": { reportedIssue, executedWork, ... } }
+      const keys = Object.keys(data).filter(key => key !== 'satisfaction');
+      console.log("Report data keys:", keys);
+      
+      for (const key of keys) {
+        const nested = data[key];
+        if (nested && typeof nested === 'object') {
+          const nestedObj = nested as Record<string, unknown>;
+          if (nestedObj.reportedIssue || nestedObj.executedWork || nestedObj.result) {
+            console.log(`Found report data nested under key: ${key}`);
+            return nestedObj as unknown as ReportData;
+          }
+        }
+      }
+      
+      console.log("Could not find report data in expected structure");
+      return null;
+    }
+
     // Function to generate embedding for a single report
     async function generateEmbeddingForReport(reportId: string) {
+      console.log(`\n--- Processing report: ${reportId} ---`);
+      
       // Fetch the report
       const { data: report, error: reportError } = await supabase
         .from("task_reports")
-        .select("id, report_data, status")
+        .select("id, report_data, status, task_id")
         .eq("id", reportId)
         .single();
 
@@ -45,26 +87,38 @@ serve(async (req) => {
         return { success: false, reportId, error: "Report not found" };
       }
 
+      console.log(`Report status: ${report.status}`);
+      console.log(`Report task_id: ${report.task_id}`);
+
       // Only process approved reports
       if (report.status !== "approved") {
         console.log(`Report ${reportId} is not approved, skipping`);
         return { success: false, reportId, error: "Report not approved" };
       }
 
-      const reportData = report.report_data as ReportData;
+      // Extract actual report data from potentially nested structure
+      const reportData = extractReportData(report.report_data);
+      
+      if (!reportData) {
+        console.log(`Report ${reportId} has no extractable data`);
+        return { success: false, reportId, error: "No extractable data" };
+      }
       
       // Build content text from report data
       const contentParts = [
-        reportData.reportedIssue && `Problema: ${reportData.reportedIssue}`,
+        reportData.reportedIssue && `Problema reportado: ${reportData.reportedIssue}`,
         reportData.executedWork && `Trabalho executado: ${reportData.executedWork}`,
         reportData.result && `Resultado: ${reportData.result}`,
         reportData.brandInfo && `Marca: ${reportData.brandInfo}`,
         reportData.modelInfo && `Modelo: ${reportData.modelInfo}`,
-        reportData.serialNumber && `Série: ${reportData.serialNumber}`,
+        reportData.serialNumber && `Número de série: ${reportData.serialNumber}`,
         reportData.observations && `Observações: ${reportData.observations}`,
+        reportData.nextVisitWork && `Próxima visita: ${reportData.nextVisitWork}`,
       ].filter(Boolean);
 
       const contentText = contentParts.join(". ");
+      console.log(`Content text length: ${contentText.length}`);
+      console.log(`Content preview: ${contentText.substring(0, 200)}...`);
 
       if (!contentText || contentText.length < 10) {
         console.log(`Report ${reportId} has insufficient content`);
@@ -90,74 +144,9 @@ serve(async (req) => {
         return { success: true, reportId, status: "already_exists" };
       }
 
-      // Generate embedding using Lovable AI
-      // Note: Using text-embedding model if available, otherwise use chat completion to generate a summary
-      // For now, we'll use a workaround by asking the model to create a searchable representation
-      const embeddingResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash-lite",
-          messages: [
-            {
-              role: "system",
-              content: "Você é um sistema de indexação. Crie uma representação vetorial do texto fornecido retornando APENAS um array JSON de 768 números decimais entre -1 e 1, representando o embedding semântico do conteúdo. Não inclua nenhum texto adicional."
-            },
-            {
-              role: "user",
-              content: contentText
-            }
-          ],
-          temperature: 0
-        }),
-      });
-
-      if (!embeddingResponse.ok) {
-        const errorText = await embeddingResponse.text();
-        console.error(`Error generating embedding for ${reportId}:`, errorText);
-        
-        // Fallback: Generate a simple hash-based pseudo-embedding
-        // This is a temporary solution until proper embedding API is available
-        const pseudoEmbedding = generatePseudoEmbedding(contentText);
-        
-        // Store the embedding
-        const { error: upsertError } = await supabase
-          .from("report_embeddings")
-          .upsert({
-            task_report_id: reportId,
-            embedding: `[${pseudoEmbedding.join(",")}]`,
-            content_text: contentText,
-            content_hash: contentHash,
-          }, {
-            onConflict: "task_report_id"
-          });
-
-        if (upsertError) {
-          console.error(`Error storing embedding for ${reportId}:`, upsertError);
-          return { success: false, reportId, error: "Failed to store embedding" };
-        }
-
-        return { success: true, reportId, status: "created_fallback" };
-      }
-
-      const responseData = await embeddingResponse.json();
-      const responseContent = responseData.choices?.[0]?.message?.content;
-      
-      let embedding: number[];
-      try {
-        // Try to parse the response as JSON array
-        embedding = JSON.parse(responseContent);
-        if (!Array.isArray(embedding) || embedding.length !== 768) {
-          throw new Error("Invalid embedding format");
-        }
-      } catch {
-        // Fallback to pseudo-embedding
-        console.log(`Could not parse embedding response for ${reportId}, using fallback`);
-        embedding = generatePseudoEmbedding(contentText);
-      }
+      // Generate pseudo-embedding (AI embedding generation is not reliable for this use case)
+      console.log(`Generating embedding for report ${reportId}`);
+      const embedding = generatePseudoEmbedding(contentText);
 
       // Store the embedding
       const { error: upsertError } = await supabase
@@ -165,7 +154,7 @@ serve(async (req) => {
         .upsert({
           task_report_id: reportId,
           embedding: `[${embedding.join(",")}]`,
-          content_text: contentText,
+          content_text: contentText.substring(0, 5000), // Limit content text size
           content_hash: contentHash,
         }, {
           onConflict: "task_report_id"
@@ -180,18 +169,27 @@ serve(async (req) => {
       return { success: true, reportId, status: "created" };
     }
 
-    // Generate pseudo-embedding based on text features (fallback)
+    // Generate pseudo-embedding based on text features
     function generatePseudoEmbedding(text: string): number[] {
       const embedding = new Array(768).fill(0);
       const normalizedText = text.toLowerCase();
       
-      // Simple feature extraction based on character and word frequencies
-      for (let i = 0; i < normalizedText.length && i < 768; i++) {
+      // Feature extraction based on character frequencies and n-grams
+      for (let i = 0; i < normalizedText.length; i++) {
         const charCode = normalizedText.charCodeAt(i);
-        embedding[i % 768] += (charCode - 96) / 26; // Normalize to [-1, 1] range
+        // Distribute character influence across embedding dimensions
+        const baseIdx = i % 768;
+        embedding[baseIdx] += (charCode - 96) / 26;
+        
+        // Add bigram features
+        if (i < normalizedText.length - 1) {
+          const nextCharCode = normalizedText.charCodeAt(i + 1);
+          const bigramIdx = (charCode + nextCharCode) % 768;
+          embedding[bigramIdx] += 0.5;
+        }
       }
 
-      // Normalize the embedding
+      // Normalize the embedding to unit length
       const magnitude = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
       if (magnitude > 0) {
         for (let i = 0; i < 768; i++) {
@@ -211,6 +209,8 @@ serve(async (req) => {
     }
 
     if (batch) {
+      console.log("Processing batch of approved reports...");
+      
       // Process multiple reports (for batch indexing)
       const { data: reports, error } = await supabase
         .from("task_reports")
@@ -219,8 +219,11 @@ serve(async (req) => {
         .limit(50);
 
       if (error) {
+        console.error("Error fetching reports for batch:", error);
         throw error;
       }
+
+      console.log(`Found ${reports?.length || 0} approved reports to process`);
 
       const results = [];
       for (const report of reports || []) {
@@ -230,7 +233,17 @@ serve(async (req) => {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
 
-      return new Response(JSON.stringify({ processed: results.length, results }), {
+      const successful = results.filter(r => r.success).length;
+      const failed = results.filter(r => !r.success).length;
+      
+      console.log(`Batch complete: ${successful} successful, ${failed} failed`);
+
+      return new Response(JSON.stringify({ 
+        processed: results.length, 
+        successful,
+        failed,
+        results 
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
