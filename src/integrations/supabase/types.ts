@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_points: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          id: string
+          instructions: string | null
+          is_mainland: boolean | null
+          latitude: number | null
+          location: string | null
+          longitude: number | null
+          name: string
+          point_type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          id?: string
+          instructions?: string | null
+          is_mainland?: boolean | null
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          name: string
+          point_type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          instructions?: string | null
+          is_mainland?: boolean | null
+          latitude?: number | null
+          location?: string | null
+          longitude?: number | null
+          name?: string
+          point_type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_points_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_conversations: {
         Row: {
           company_id: string | null
@@ -1445,15 +1495,20 @@ export type Database = {
       service_orders: {
         Row: {
           access: string | null
+          access_instructions: string | null
+          access_point_id: string | null
+          boarding_method: string | null
           client_id: string | null
           company_id: string
           completed_date: string | null
           created_at: string
           created_by: string
           description: string | null
+          expected_context: string | null
           id: string
           location: string | null
           order_number: string
+          planned_location: string | null
           scheduled_date: string | null
           service_date_time: string | null
           single_report: boolean | null
@@ -1464,15 +1519,20 @@ export type Database = {
         }
         Insert: {
           access?: string | null
+          access_instructions?: string | null
+          access_point_id?: string | null
+          boarding_method?: string | null
           client_id?: string | null
           company_id: string
           completed_date?: string | null
           created_at?: string
           created_by: string
           description?: string | null
+          expected_context?: string | null
           id?: string
           location?: string | null
           order_number: string
+          planned_location?: string | null
           scheduled_date?: string | null
           service_date_time?: string | null
           single_report?: boolean | null
@@ -1483,15 +1543,20 @@ export type Database = {
         }
         Update: {
           access?: string | null
+          access_instructions?: string | null
+          access_point_id?: string | null
+          boarding_method?: string | null
           client_id?: string | null
           company_id?: string
           completed_date?: string | null
           created_at?: string
           created_by?: string
           description?: string | null
+          expected_context?: string | null
           id?: string
           location?: string | null
           order_number?: string
+          planned_location?: string | null
           scheduled_date?: string | null
           service_date_time?: string | null
           single_report?: boolean | null
@@ -1501,6 +1566,13 @@ export type Database = {
           vessel_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "service_orders_access_point_id_fkey"
+            columns: ["access_point_id"]
+            isOneToOne: false
+            referencedRelation: "access_points"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "service_orders_client_id_fkey"
             columns: ["client_id"]
@@ -1995,35 +2067,53 @@ export type Database = {
         Row: {
           accuracy: number | null
           address: string | null
+          check_in_forced: boolean | null
+          force_reason: string | null
           id: string
           latitude: number
+          location_matches_planned: boolean | null
           location_type: string
           longitude: number
           recorded_at: string
           task_id: string | null
           technician_id: string
+          vessel_distance_meters: number | null
+          vessel_position_snapshot: Json | null
+          visit_id: string | null
         }
         Insert: {
           accuracy?: number | null
           address?: string | null
+          check_in_forced?: boolean | null
+          force_reason?: string | null
           id?: string
           latitude: number
+          location_matches_planned?: boolean | null
           location_type?: string
           longitude: number
           recorded_at?: string
           task_id?: string | null
           technician_id: string
+          vessel_distance_meters?: number | null
+          vessel_position_snapshot?: Json | null
+          visit_id?: string | null
         }
         Update: {
           accuracy?: number | null
           address?: string | null
+          check_in_forced?: boolean | null
+          force_reason?: string | null
           id?: string
           latitude?: number
+          location_matches_planned?: boolean | null
           location_type?: string
           longitude?: number
           recorded_at?: string
           task_id?: string | null
           technician_id?: string
+          vessel_distance_meters?: number | null
+          vessel_position_snapshot?: Json | null
+          visit_id?: string | null
         }
         Relationships: [
           {
@@ -2045,6 +2135,13 @@ export type Database = {
             columns: ["technician_id"]
             isOneToOne: false
             referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_locations_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "service_visits"
             referencedColumns: ["id"]
           },
         ]
@@ -2206,36 +2303,113 @@ export type Database = {
         }
         Relationships: []
       }
+      vessel_positions: {
+        Row: {
+          course_over_ground: number | null
+          created_at: string | null
+          destination: string | null
+          eta: string | null
+          heading: number | null
+          id: string
+          latitude: number
+          location_context: string | null
+          longitude: number
+          navigation_status: number | null
+          recorded_at: string | null
+          speed_over_ground: number | null
+          vessel_id: string
+        }
+        Insert: {
+          course_over_ground?: number | null
+          created_at?: string | null
+          destination?: string | null
+          eta?: string | null
+          heading?: number | null
+          id?: string
+          latitude: number
+          location_context?: string | null
+          longitude: number
+          navigation_status?: number | null
+          recorded_at?: string | null
+          speed_over_ground?: number | null
+          vessel_id: string
+        }
+        Update: {
+          course_over_ground?: number | null
+          created_at?: string | null
+          destination?: string | null
+          eta?: string | null
+          heading?: number | null
+          id?: string
+          latitude?: number
+          location_context?: string | null
+          longitude?: number
+          navigation_status?: number | null
+          recorded_at?: string | null
+          speed_over_ground?: number | null
+          vessel_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vessel_positions_vessel_id_fkey"
+            columns: ["vessel_id"]
+            isOneToOne: false
+            referencedRelation: "vessels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vessels: {
         Row: {
+          ais_source: string | null
+          beam: number | null
+          call_sign: string | null
           client_id: string
           created_at: string
           flag: string | null
+          gross_tonnage: number | null
           id: string
           imo_number: string | null
+          length_overall: number | null
+          mmsi: string | null
           name: string
+          ship_type: number | null
           updated_at: string
           vessel_type: string | null
           year_built: number | null
         }
         Insert: {
+          ais_source?: string | null
+          beam?: number | null
+          call_sign?: string | null
           client_id: string
           created_at?: string
           flag?: string | null
+          gross_tonnage?: number | null
           id?: string
           imo_number?: string | null
+          length_overall?: number | null
+          mmsi?: string | null
           name: string
+          ship_type?: number | null
           updated_at?: string
           vessel_type?: string | null
           year_built?: number | null
         }
         Update: {
+          ais_source?: string | null
+          beam?: number | null
+          call_sign?: string | null
           client_id?: string
           created_at?: string
           flag?: string | null
+          gross_tonnage?: number | null
           id?: string
           imo_number?: string | null
+          length_overall?: number | null
+          mmsi?: string | null
           name?: string
+          ship_type?: number | null
           updated_at?: string
           vessel_type?: string | null
           year_built?: number | null
@@ -2395,6 +2569,7 @@ export type Database = {
         Args: { _profile_id: string; _viewer_id: string }
         Returns: boolean
       }
+      cleanup_old_vessel_positions: { Args: never; Returns: undefined }
       get_city_distance: {
         Args: { _company_id: string; _from_city: string; _to_city: string }
         Returns: number
