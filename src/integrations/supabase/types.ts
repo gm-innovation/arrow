@@ -363,6 +363,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "checklist_responses_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "checklist_responses_template_id_fkey"
             columns: ["template_id"]
             isOneToOne: false
@@ -866,6 +873,13 @@ export type Database = {
             referencedRelation: "technicians"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "measurement_man_hours_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       measurement_materials: {
@@ -1251,6 +1265,13 @@ export type Database = {
             columns: ["technician_id"]
             isOneToOne: false
             referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "productivity_snapshots_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1888,6 +1909,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tasks_service_order_id_fkey"
             columns: ["service_order_id"]
             isOneToOne: false
@@ -1954,6 +1982,13 @@ export type Database = {
             referencedRelation: "technicians"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "technician_documents_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       technician_locations: {
@@ -2003,6 +2038,13 @@ export type Database = {
             columns: ["technician_id"]
             isOneToOne: false
             referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_locations_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2134,6 +2176,13 @@ export type Database = {
             referencedRelation: "technicians"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "time_entries_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -2242,6 +2291,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "visit_technicians_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "visit_technicians_visit_id_fkey"
             columns: ["visit_id"]
             isOneToOne: false
@@ -2293,7 +2349,35 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      technicians_public: {
+        Row: {
+          active: boolean | null
+          avatar_url: string | null
+          certifications: string[] | null
+          company_id: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string | null
+          specialty: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technicians_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technicians_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       calculate_man_hour_value: {

@@ -12,17 +12,133 @@ serve(async (req) => {
   }
 
   try {
+    // Get the authorization header from the request
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('No authorization header provided');
+      return new Response(
+        JSON.stringify({ error: 'Não autorizado - token não fornecido' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Create a client with the user's JWT to verify their identity and permissions
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    // Verify the calling user's identity
+    const { data: { user: callerUser }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !callerUser) {
+      console.error('Auth verification failed:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Não autorizado - token inválido' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    console.log('Caller authenticated:', callerUser.id);
+
+    // Create admin client for privileged operations
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    // Get the caller's role and company
+    const { data: callerRoleData, error: callerRoleError } = await supabaseAdmin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', callerUser.id)
+      .single();
+
+    if (callerRoleError || !callerRoleData) {
+      console.error('Could not fetch caller role:', callerRoleError);
+      return new Response(
+        JSON.stringify({ error: 'Não foi possível verificar permissões do usuário' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
+    const callerRole = callerRoleData.role;
+    console.log('Caller role:', callerRole);
+
+    // Only admin and super_admin can create users
+    if (callerRole !== 'admin' && callerRole !== 'super_admin') {
+      console.error('Unauthorized role attempted to create user:', callerRole);
+      return new Response(
+        JSON.stringify({ error: 'Permissão negada - apenas administradores podem criar usuários' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
+    // Get caller's company (needed for admin role validation)
+    const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
+      .from('profiles')
+      .select('company_id')
+      .eq('id', callerUser.id)
+      .single();
+
+    if (callerProfileError || !callerProfile) {
+      console.error('Could not fetch caller profile:', callerProfileError);
+      return new Response(
+        JSON.stringify({ error: 'Não foi possível verificar empresa do usuário' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
     const { email, password, full_name, phone, company_id, role } = await req.json();
 
-    console.log('Creating user with email:', email);
+    // Validate required fields
+    if (!email || !password || !full_name || !company_id || !role) {
+      return new Response(
+        JSON.stringify({ error: 'Campos obrigatórios não fornecidos' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Role-based authorization checks
+    const allowedRoles = ['technician', 'admin', 'manager'];
+    
+    // Admin can only create users in their own company
+    if (callerRole === 'admin') {
+      if (company_id !== callerProfile.company_id) {
+        console.error('Admin tried to create user in different company');
+        return new Response(
+          JSON.stringify({ error: 'Permissão negada - você só pode criar usuários na sua empresa' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+        );
+      }
+      
+      // Admin cannot create super_admin
+      if (role === 'super_admin') {
+        console.error('Admin tried to create super_admin');
+        return new Response(
+          JSON.stringify({ error: 'Permissão negada - você não pode criar super administradores' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+        );
+      }
+    }
+
+    // Super admin can create users in any company but validate role
+    if (callerRole === 'super_admin') {
+      allowedRoles.push('super_admin');
+    }
+
+    if (!allowedRoles.includes(role)) {
+      console.error('Invalid role requested:', role);
+      return new Response(
+        JSON.stringify({ error: `Função inválida: ${role}` }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    console.log('Creating user with email:', email, 'in company:', company_id, 'with role:', role);
 
     // Create auth user
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+    const { data: authData, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -31,9 +147,9 @@ serve(async (req) => {
       },
     });
 
-    if (authError) {
-      console.error('Auth error:', authError);
-      throw authError;
+    if (createAuthError) {
+      console.error('Auth error:', createAuthError);
+      throw createAuthError;
     }
     if (!authData.user) {
       console.error('No user data returned');
