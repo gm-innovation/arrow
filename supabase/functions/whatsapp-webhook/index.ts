@@ -104,19 +104,35 @@ async function sendWhatsAppResponse(to: string, message: string) {
   const authToken = Deno.env.get('TWILIO_AUTH_TOKEN');
   const fromNumber = Deno.env.get('TWILIO_WHATSAPP_NUMBER');
   
-  if (!accountSid || !authToken || !fromNumber) {
+  // Debug: verificar credenciais sem expor valores completos
+  console.log("Twilio credentials debug:", {
+    hasSid: !!accountSid,
+    sidLength: accountSid?.length,
+    sidPrefix: accountSid?.substring(0, 5),
+    sidHasWhitespace: accountSid !== accountSid?.trim(),
+    hasToken: !!authToken,
+    tokenLength: authToken?.length,
+    tokenHasWhitespace: authToken !== authToken?.trim(),
+    fromNumber: fromNumber
+  });
+  
+  // Usar valores limpos (sem espaços extras)
+  const cleanSid = accountSid?.trim();
+  const cleanToken = authToken?.trim();
+  
+  if (!cleanSid || !cleanToken || !fromNumber) {
     throw new Error("Twilio credentials not configured");
   }
   
   const formattedTo = to.startsWith('whatsapp:') ? to : `whatsapp:${to}`;
   const formattedFrom = fromNumber.startsWith('whatsapp:') ? fromNumber : `whatsapp:${fromNumber}`;
   
-  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${cleanSid}/Messages.json`;
   
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Authorization': 'Basic ' + btoa(`${accountSid}:${authToken}`),
+      'Authorization': 'Basic ' + btoa(`${cleanSid}:${cleanToken}`),
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
@@ -129,9 +145,15 @@ async function sendWhatsAppResponse(to: string, message: string) {
   if (!response.ok) {
     const errorText = await response.text();
     console.error("Twilio error:", errorText);
+    console.error("Request details:", { 
+      url, 
+      sidUsed: cleanSid?.substring(0, 5) + "...", 
+      tokenUsed: cleanToken?.substring(0, 5) + "..." 
+    });
     throw new Error(`Failed to send WhatsApp: ${response.status}`);
   }
   
+  console.log("Twilio message sent successfully");
   return await response.json();
 }
 
