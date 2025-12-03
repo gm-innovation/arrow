@@ -153,8 +153,14 @@ async function sendWhatsAppResponse(to: string, message: string) {
     throw new Error(`Failed to send WhatsApp: ${response.status}`);
   }
   
-  console.log("Twilio message sent successfully");
-  return await response.json();
+  const result = await response.json();
+  console.log("Twilio message sent successfully:", {
+    sid: result.sid,
+    status: result.status,
+    to: result.to,
+    from: result.from
+  });
+  return result;
 }
 
 // Call AI Assistant
