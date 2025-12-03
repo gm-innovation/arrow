@@ -6,9 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Escape XML special characters for TwiML
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 // Normalize phone number to consistent format
 function normalizePhone(phone: string): string {
-  // Remove "whatsapp:", "+", spaces, dashes, parentheses
   return phone.replace(/whatsapp:|[+\s\-()]/g, '');
 }
 
@@ -16,12 +25,11 @@ function normalizePhone(phone: string): string {
 async function getUserByPhone(supabase: any, phoneNumber: string) {
   const normalizedPhone = normalizePhone(phoneNumber);
   
-  // Try different phone formats
   const phoneVariants = [
     normalizedPhone,
     `+${normalizedPhone}`,
-    normalizedPhone.replace(/^55/, ''), // Without country code
-    `55${normalizedPhone}`, // With Brazil country code
+    normalizedPhone.replace(/^55/, ''),
+    `55${normalizedPhone}`,
   ];
   
   console.log("Searching for phone variants:", phoneVariants);
@@ -30,7 +38,7 @@ async function getUserByPhone(supabase: any, phoneNumber: string) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('id, full_name, company_id, phone, email')
-      .or(`phone.ilike.%${variant.slice(-9)}%`) // Last 9 digits
+      .or(`phone.ilike.%${variant.slice(-9)}%`)
       .limit(1)
       .single();
     
@@ -67,7 +75,6 @@ async function getConversationHistory(supabase: any, phoneNumber: string, limit 
   
   if (!messages) return [];
   
-  // Convert to AI message format (reversed to chronological order)
   return messages.reverse().map((m: any) => ({
     role: m.direction === 'inbound' ? 'user' : 'assistant',
     content: m.message
@@ -98,25 +105,12 @@ async function saveMessage(
   }
 }
 
-// Send WhatsApp response via Twilio
-async function sendWhatsAppResponse(to: string, message: string) {
+// Send WhatsApp message via Twilio API (for proactive notifications only)
+export async function sendWhatsAppResponse(to: string, message: string) {
   const accountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
   const authToken = Deno.env.get('TWILIO_AUTH_TOKEN');
   const fromNumber = Deno.env.get('TWILIO_WHATSAPP_NUMBER');
   
-  // Debug: verificar credenciais sem expor valores completos
-  console.log("Twilio credentials debug:", {
-    hasSid: !!accountSid,
-    sidLength: accountSid?.length,
-    sidPrefix: accountSid?.substring(0, 5),
-    sidHasWhitespace: accountSid !== accountSid?.trim(),
-    hasToken: !!authToken,
-    tokenLength: authToken?.length,
-    tokenHasWhitespace: authToken !== authToken?.trim(),
-    fromNumber: fromNumber
-  });
-  
-  // Usar valores limpos (sem espaços extras)
   const cleanSid = accountSid?.trim();
   const cleanToken = authToken?.trim();
   
@@ -144,22 +138,12 @@ async function sendWhatsAppResponse(to: string, message: string) {
   
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Twilio error:", errorText);
-    console.error("Request details:", { 
-      url, 
-      sidUsed: cleanSid?.substring(0, 5) + "...", 
-      tokenUsed: cleanToken?.substring(0, 5) + "..." 
-    });
+    console.error("Twilio API error:", errorText);
     throw new Error(`Failed to send WhatsApp: ${response.status}`);
   }
   
   const result = await response.json();
-  console.log("Twilio message sent successfully:", {
-    sid: result.sid,
-    status: result.status,
-    to: result.to,
-    from: result.from
-  });
+  console.log("Twilio API message sent:", { sid: result.sid, status: result.status });
   return result;
 }
 
@@ -191,10 +175,8 @@ async function callAIAssistant(
     throw new Error("Failed to get AI response");
   }
   
-  // Handle streaming response
   const text = await response.text();
   
-  // If it's SSE format, parse it
   if (text.includes('data:')) {
     let fullContent = '';
     const lines = text.split('\n');
@@ -215,7 +197,6 @@ async function callAIAssistant(
     return fullContent || "Desculpe, não consegui processar sua solicitação.";
   }
   
-  // Try to parse as JSON
   try {
     const json = JSON.parse(text);
     return json.choices?.[0]?.message?.content || text;
@@ -252,8 +233,18 @@ Digite sua pergunta normalmente!`
   return { isCommand: false };
 }
 
+// Create TwiML response with message
+function createTwiMLResponse(message: string): string {
+  const escapedMessage = escapeXml(message);
+  return `<?xml version="1.0" encoding="UTF-8"?><Response><Message>${escapedMessage}</Message></Response>`;
+}
+
+// Create empty TwiML response
+function createEmptyTwiMLResponse(): string {
+  return '<?xml version="1.0" encoding="UTF-8"?><Response></Response>';
+}
+
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -264,7 +255,6 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
-    // Parse Twilio webhook payload (form-urlencoded)
     const formData = await req.formData();
     const from = formData.get('From') as string;
     const body = formData.get('Body') as string;
@@ -283,11 +273,11 @@ serve(async (req) => {
     const commandResult = processCommand(body);
     if (commandResult.isCommand && commandResult.response) {
       await saveMessage(supabase, from, body, 'inbound', undefined, messageSid);
-      await sendWhatsAppResponse(from, commandResult.response);
       await saveMessage(supabase, from, commandResult.response, 'outbound');
       
+      console.log("Returning TwiML with command response");
       return new Response(
-        '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+        createTwiMLResponse(commandResult.response),
         { headers: { ...corsHeaders, 'Content-Type': 'text/xml' } }
       );
     }
@@ -296,7 +286,6 @@ serve(async (req) => {
     const user = await getUserByPhone(supabase, from);
     
     if (!user) {
-      // Unknown user
       const unknownResponse = `Olá! 👋
 
 Não encontrei seu cadastro no sistema NavalOS.
@@ -306,11 +295,11 @@ Para usar o assistente via WhatsApp, peça ao administrador para cadastrar seu n
 Se você já está cadastrado, verifique se o número está correto no sistema.`;
       
       await saveMessage(supabase, from, body, 'inbound', undefined, messageSid);
-      await sendWhatsAppResponse(from, unknownResponse);
       await saveMessage(supabase, from, unknownResponse, 'outbound');
       
+      console.log("Returning TwiML for unknown user");
       return new Response(
-        '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+        createTwiMLResponse(unknownResponse),
         { headers: { ...corsHeaders, 'Content-Type': 'text/xml' } }
       );
     }
@@ -343,25 +332,25 @@ Se você já está cadastrado, verifique se o número está correto no sistema.`
       aiResponse = aiResponse.substring(0, 1500) + "\n\n_(Resposta truncada devido ao tamanho)_";
     }
     
-    // Send response
-    await sendWhatsAppResponse(from, aiResponse);
-    
     // Save outbound message
     await saveMessage(supabase, from, aiResponse, 'outbound', user.id);
     
-    console.log("Response sent successfully to:", user.full_name);
+    console.log("Returning TwiML response for:", user.full_name, "- Length:", aiResponse.length);
     
-    // Return empty TwiML (we already sent the message via API)
+    // Return TwiML with the message directly (more reliable for Sandbox)
     return new Response(
-      '<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+      createTwiMLResponse(aiResponse),
       { headers: { ...corsHeaders, 'Content-Type': 'text/xml' } }
     );
     
   } catch (error) {
     console.error("WhatsApp webhook error:", error);
+    
+    // Even on error, return valid TwiML with error message
+    const errorMessage = "Desculpe, ocorreu um erro inesperado. Por favor, tente novamente.";
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      createTwiMLResponse(errorMessage),
+      { headers: { ...corsHeaders, 'Content-Type': 'text/xml' } }
     );
   }
 });
