@@ -52,6 +52,73 @@ export type Database = {
           },
         ]
       }
+      ai_failure_patterns: {
+        Row: {
+          client_id: string | null
+          company_id: string
+          confidence_score: number | null
+          created_at: string
+          description: string
+          id: string
+          last_occurrence: string | null
+          occurrences: number | null
+          pattern_type: string
+          suggested_action: string | null
+          updated_at: string
+          vessel_id: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          company_id: string
+          confidence_score?: number | null
+          created_at?: string
+          description: string
+          id?: string
+          last_occurrence?: string | null
+          occurrences?: number | null
+          pattern_type: string
+          suggested_action?: string | null
+          updated_at?: string
+          vessel_id?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          company_id?: string
+          confidence_score?: number | null
+          created_at?: string
+          description?: string
+          id?: string
+          last_occurrence?: string | null
+          occurrences?: number | null
+          pattern_type?: string
+          suggested_action?: string | null
+          updated_at?: string
+          vessel_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_failure_patterns_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_failure_patterns_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_failure_patterns_vessel_id_fkey"
+            columns: ["vessel_id"]
+            isOneToOne: false
+            referencedRelation: "vessels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_feedback: {
         Row: {
           comment: string | null
@@ -162,6 +229,192 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_item_responses: {
+        Row: {
+          answered_at: string | null
+          id: string
+          item_id: string
+          response_id: string
+          value_boolean: boolean | null
+          value_number: number | null
+          value_photo_path: string | null
+          value_text: string | null
+        }
+        Insert: {
+          answered_at?: string | null
+          id?: string
+          item_id: string
+          response_id: string
+          value_boolean?: boolean | null
+          value_number?: number | null
+          value_photo_path?: string | null
+          value_text?: string | null
+        }
+        Update: {
+          answered_at?: string | null
+          id?: string
+          item_id?: string
+          response_id?: string
+          value_boolean?: boolean | null
+          value_number?: number | null
+          value_photo_path?: string | null
+          value_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_item_responses_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_item_responses_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_responses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_items: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          is_required: boolean | null
+          item_order: number
+          item_type: string
+          template_id: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          is_required?: boolean | null
+          item_order?: number
+          item_type?: string
+          template_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          is_required?: boolean | null
+          item_order?: number
+          item_type?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_responses: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          task_id: string
+          technician_id: string
+          template_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          task_id: string
+          technician_id: string
+          template_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          task_id?: string
+          technician_id?: string
+          template_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_responses_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_responses_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_responses_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      checklist_templates: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_mandatory: boolean | null
+          name: string
+          task_type_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          name: string
+          task_type_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          name?: string
+          task_type_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "checklist_templates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "checklist_templates_task_type_id_fkey"
+            columns: ["task_type_id"]
+            isOneToOne: false
+            referencedRelation: "task_types"
             referencedColumns: ["id"]
           },
         ]
@@ -1485,6 +1738,57 @@ export type Database = {
           },
         ]
       }
+      task_time_estimates: {
+        Row: {
+          average_duration_minutes: number | null
+          company_id: string
+          id: string
+          last_updated: string
+          max_duration_minutes: number | null
+          min_duration_minutes: number | null
+          sample_count: number | null
+          task_type_id: string | null
+          vessel_type: string | null
+        }
+        Insert: {
+          average_duration_minutes?: number | null
+          company_id: string
+          id?: string
+          last_updated?: string
+          max_duration_minutes?: number | null
+          min_duration_minutes?: number | null
+          sample_count?: number | null
+          task_type_id?: string | null
+          vessel_type?: string | null
+        }
+        Update: {
+          average_duration_minutes?: number | null
+          company_id?: string
+          id?: string
+          last_updated?: string
+          max_duration_minutes?: number | null
+          min_duration_minutes?: number | null
+          sample_count?: number | null
+          task_type_id?: string | null
+          vessel_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_time_estimates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_time_estimates_task_type_id_fkey"
+            columns: ["task_type_id"]
+            isOneToOne: false
+            referencedRelation: "task_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_types: {
         Row: {
           category: string | null
@@ -1645,6 +1949,57 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "technician_documents_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technician_locations: {
+        Row: {
+          accuracy: number | null
+          address: string | null
+          id: string
+          latitude: number
+          location_type: string
+          longitude: number
+          recorded_at: string
+          task_id: string | null
+          technician_id: string
+        }
+        Insert: {
+          accuracy?: number | null
+          address?: string | null
+          id?: string
+          latitude: number
+          location_type?: string
+          longitude: number
+          recorded_at?: string
+          task_id?: string | null
+          technician_id: string
+        }
+        Update: {
+          accuracy?: number | null
+          address?: string | null
+          id?: string
+          latitude?: number
+          location_type?: string
+          longitude?: number
+          recorded_at?: string
+          task_id?: string | null
+          technician_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technician_locations_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_locations_technician_id_fkey"
             columns: ["technician_id"]
             isOneToOne: false
             referencedRelation: "technicians"
