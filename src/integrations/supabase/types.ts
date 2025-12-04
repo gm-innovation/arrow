@@ -2597,6 +2597,10 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      is_tech_assigned_to_order: {
+        Args: { _service_order_id: string; _user_id: string }
+        Returns: boolean
+      }
       mark_messages_as_read: {
         Args: { _conversation_id: string }
         Returns: undefined
@@ -2614,6 +2618,10 @@ export type Database = {
           similarity: number
           task_report_id: string
         }[]
+      }
+      task_in_user_company: {
+        Args: { _task_id: string; _user_id: string }
+        Returns: boolean
       }
       update_forecast_actuals: { Args: never; Returns: undefined }
       user_company_id: { Args: { _user_id: string }; Returns: string }
