@@ -39,6 +39,18 @@ const osStatusPatterns = [
   /ordens?\s*de\s*servi[çc]o/i,
 ];
 
+// Patterns for technician productivity questions
+const productivityPatterns = [
+  /t[eé]cnicos?\s*(com\s*)?(mais|menos|maior|menor)\s*(atendimentos?|servi[çc]os?|os|tarefas?|conclu[ií]d[oa]s?)/i,
+  /quem\s*(tem|fez|realizou)\s*mais\s*(atendimentos?|servi[çc]os?|os)/i,
+  /ranking\s*(de\s*)?t[eé]cnicos?/i,
+  /produtividade\s*(dos?\s*)?t[eé]cnicos?/i,
+  /performance\s*(dos?\s*)?t[eé]cnicos?/i,
+  /desempenho\s*(dos?\s*)?t[eé]cnicos?/i,
+  /melhores?\s*t[eé]cnicos?/i,
+  /top\s*t[eé]cnicos?/i,
+];
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -70,8 +82,9 @@ serve(async (req) => {
     const hasReportIntent = reportIntentPatterns.some(p => p.test(message));
     const hasAvailabilityQuestion = availabilityPatterns.some(p => p.test(message));
     const hasOsStatusQuestion = osStatusPatterns.some(p => p.test(message));
+    const hasProductivityQuestion = productivityPatterns.some(p => p.test(message));
     
-    console.log("Intent detection:", { hasReportIntent, hasAvailabilityQuestion, hasOsStatusQuestion });
+    console.log("Intent detection:", { hasReportIntent, hasAvailabilityQuestion, hasOsStatusQuestion, hasProductivityQuestion });
     
     // Detect target date for availability questions
     const targetDateInfo = detectTargetDate(message);
@@ -178,6 +191,14 @@ serve(async (req) => {
       if (hasOsStatusQuestion && context?.companyId) {
         const osStatusData = await fetchOsStatus(supabase, context.companyId);
         contextData.osStatusReport = osStatusData;
+      }
+      
+      // PROACTIVE: Fetch technician productivity data
+      if (hasProductivityQuestion && context?.companyId) {
+        console.log("Fetching technician productivity for:", context.companyId);
+        const productivityData = await fetchTechnicianProductivity(supabase, context.companyId);
+        console.log("Productivity result:", { techniciansCount: productivityData?.length });
+        contextData.productivityReport = productivityData;
       }
       
       // Always fetch basic stats for coordinators
@@ -521,6 +542,89 @@ async function fetchOsStatus(supabase: any, companyId: string) {
   } catch (error) {
     console.error("Error in fetchOsStatus:", error);
     return null;
+  }
+}
+
+// Fetch technician productivity data
+async function fetchTechnicianProductivity(supabase: any, companyId: string) {
+  try {
+    // Get all active technicians with their basic info
+    const { data: technicians, error: techError } = await supabase
+      .from('technicians')
+      .select('id, specialty, profiles:user_id(full_name)')
+      .eq('company_id', companyId)
+      .eq('active', true);
+    
+    if (techError || !technicians) {
+      console.error("Error fetching technicians for productivity:", techError);
+      return [];
+    }
+    
+    // Get all completed tasks for this company in the last 90 days
+    const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+    
+    const { data: tasks, error: taskError } = await supabase
+      .from('tasks')
+      .select(`
+        id,
+        assigned_to,
+        status,
+        completed_at,
+        service_order:service_order_id(company_id)
+      `)
+      .eq('status', 'completed')
+      .gte('completed_at', ninetyDaysAgo);
+    
+    if (taskError) {
+      console.error("Error fetching tasks for productivity:", taskError);
+    }
+    
+    // Filter tasks by company and count by technician
+    const companyTasks = tasks?.filter((t: any) => t.service_order?.company_id === companyId) || [];
+    const taskCountByTech: Map<string, number> = new Map();
+    
+    companyTasks.forEach((task: any) => {
+      if (task.assigned_to) {
+        taskCountByTech.set(task.assigned_to, (taskCountByTech.get(task.assigned_to) || 0) + 1);
+      }
+    });
+    
+    // Also get approved reports count per technician
+    const { data: reports, error: reportError } = await supabase
+      .from('task_reports')
+      .select(`
+        id,
+        task:task_uuid(
+          assigned_to,
+          service_order:service_order_id(company_id)
+        )
+      `)
+      .eq('status', 'approved')
+      .gte('created_at', ninetyDaysAgo);
+    
+    const reportCountByTech: Map<string, number> = new Map();
+    reports?.forEach((report: any) => {
+      if (report.task?.service_order?.company_id === companyId && report.task?.assigned_to) {
+        reportCountByTech.set(report.task.assigned_to, (reportCountByTech.get(report.task.assigned_to) || 0) + 1);
+      }
+    });
+    
+    // Build productivity report for each technician
+    const productivityData = technicians.map((tech: any) => ({
+      id: tech.id,
+      name: tech.profiles?.full_name || 'Sem nome',
+      specialty: tech.specialty || 'Geral',
+      completedTasks: taskCountByTech.get(tech.id) || 0,
+      approvedReports: reportCountByTech.get(tech.id) || 0,
+    }));
+    
+    // Sort by completed tasks (descending)
+    productivityData.sort((a: any, b: any) => b.completedTasks - a.completedTasks);
+    
+    return productivityData;
+  } catch (error) {
+    console.error("Error in fetchTechnicianProductivity:", error);
+    return [];
   }
 }
 
@@ -883,6 +987,26 @@ ${osr.pendingOrders?.length > 0 ? `🟡 PRÓXIMAS OS PENDENTES:
 ${osr.pendingOrders.map((o: any) => 
   `- OS #${o.order_number}: ${o.client?.name || 'N/A'} - ${o.location || 'Local N/A'}`
 ).join('\n')}` : ''}`);
+    }
+    
+    // PRODUCTIVITY REPORT
+    if (contextData.productivityReport && contextData.productivityReport.length > 0) {
+      const pr = contextData.productivityReport;
+      const totalTasks = pr.reduce((sum: number, t: any) => sum + t.completedTasks, 0);
+      
+      contextParts.push(`\n🏆 PRODUTIVIDADE DOS TÉCNICOS (últimos 90 dias):
+
+📈 RANKING POR TAREFAS CONCLUÍDAS:
+${pr.map((t: any, index: number) => 
+  `${index + 1}. ${t.name} | ${t.specialty} | ✅ ${t.completedTasks} tarefas | 📝 ${t.approvedReports} relatórios`
+).join('\n')}
+
+📊 RESUMO:
+- Total de tarefas concluídas: ${totalTasks}
+- Técnicos com atividade: ${pr.filter((t: any) => t.completedTasks > 0).length} de ${pr.length}
+- Média por técnico: ${pr.length > 0 ? (totalTasks / pr.length).toFixed(1) : 0} tarefas
+
+⚠️ INSTRUÇÃO: Use esses dados para responder diretamente sobre produtividade e performance dos técnicos.`);
     }
     
     // Basic stats (always included)
