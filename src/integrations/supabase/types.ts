@@ -2565,6 +2565,14 @@ export type Database = {
         Returns: number
       }
       can_admin_manage_report: { Args: { _task_id: string }; Returns: boolean }
+      can_manager_view_role: {
+        Args: { _manager_id: string; _target_user_id: string }
+        Returns: boolean
+      }
+      can_tech_view_supervisor: {
+        Args: { _supervisor_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_view_profile: {
         Args: { _profile_id: string; _viewer_id: string }
         Returns: boolean
