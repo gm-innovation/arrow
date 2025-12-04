@@ -935,11 +935,14 @@ export type Database = {
       measurement_materials: {
         Row: {
           created_at: string | null
+          external_product_code: string | null
+          external_product_id: number | null
           id: string
           markup_percentage: number | null
           measurement_id: string
           name: string
           quantity: number
+          source: string | null
           stock_item_id: string | null
           total_value: number
           unit_value: number
@@ -947,11 +950,14 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          external_product_code?: string | null
+          external_product_id?: number | null
           id?: string
           markup_percentage?: number | null
           measurement_id: string
           name: string
           quantity: number
+          source?: string | null
           stock_item_id?: string | null
           total_value: number
           unit_value: number
@@ -959,11 +965,14 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          external_product_code?: string | null
+          external_product_id?: number | null
           id?: string
           markup_percentage?: number | null
           measurement_id?: string
           name?: string
           quantity?: number
+          source?: string | null
           stock_item_id?: string | null
           total_value?: number
           unit_value?: number
@@ -1264,6 +1273,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      os_materials: {
+        Row: {
+          created_at: string | null
+          external_product_code: string | null
+          external_product_id: number | null
+          id: string
+          name: string
+          quantity: number | null
+          service_order_id: string
+          source: string | null
+          synced_at: string | null
+          unit_value: number
+          updated_at: string | null
+          used: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          external_product_code?: string | null
+          external_product_id?: number | null
+          id?: string
+          name: string
+          quantity?: number | null
+          service_order_id: string
+          source?: string | null
+          synced_at?: string | null
+          unit_value: number
+          updated_at?: string | null
+          used?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          external_product_code?: string | null
+          external_product_id?: number | null
+          id?: string
+          name?: string
+          quantity?: number | null
+          service_order_id?: string
+          source?: string | null
+          synced_at?: string | null
+          unit_value?: number
+          updated_at?: string | null
+          used?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_materials_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       productivity_snapshots: {
         Row: {
