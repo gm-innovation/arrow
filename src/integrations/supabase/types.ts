@@ -2684,6 +2684,10 @@ export type Database = {
           task_report_id: string
         }[]
       }
+      service_order_in_user_company: {
+        Args: { p_service_order_id: string; p_user_id: string }
+        Returns: boolean
+      }
       task_in_user_company: {
         Args: { _task_id: string; _user_id: string }
         Returns: boolean
