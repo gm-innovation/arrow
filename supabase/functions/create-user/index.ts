@@ -74,21 +74,6 @@ serve(async (req) => {
       );
     }
 
-    // Get caller's company (needed for admin role validation)
-    const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
-      .from('profiles')
-      .select('company_id')
-      .eq('id', callerUser.id)
-      .single();
-
-    if (callerProfileError || !callerProfile) {
-      console.error('Could not fetch caller profile:', callerProfileError);
-      return new Response(
-        JSON.stringify({ error: 'Não foi possível verificar empresa do usuário' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
-      );
-    }
-
     const { email, password, full_name, phone, company_id, role } = await req.json();
 
     // Validate required fields
@@ -104,6 +89,21 @@ serve(async (req) => {
     
     // Admin can only create users in their own company
     if (callerRole === 'admin') {
+      // Get caller's company (only needed for admin role validation)
+      const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
+        .from('profiles')
+        .select('company_id')
+        .eq('id', callerUser.id)
+        .single();
+
+      if (callerProfileError || !callerProfile) {
+        console.error('Could not fetch caller profile:', callerProfileError);
+        return new Response(
+          JSON.stringify({ error: 'Não foi possível verificar empresa do usuário' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+        );
+      }
+
       if (company_id !== callerProfile.company_id) {
         console.error('Admin tried to create user in different company');
         return new Response(
