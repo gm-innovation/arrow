@@ -2002,6 +2002,7 @@ export type Database = {
           priority: number | null
           service_order_id: string
           status: Database["public"]["Enums"]["task_status"] | null
+          task_order_number: string | null
           task_type_id: string | null
           title: string
           updated_at: string
@@ -2016,6 +2017,7 @@ export type Database = {
           priority?: number | null
           service_order_id: string
           status?: Database["public"]["Enums"]["task_status"] | null
+          task_order_number?: string | null
           task_type_id?: string | null
           title: string
           updated_at?: string
@@ -2030,6 +2032,7 @@ export type Database = {
           priority?: number | null
           service_order_id?: string
           status?: Database["public"]["Enums"]["task_status"] | null
+          task_order_number?: string | null
           task_type_id?: string | null
           title?: string
           updated_at?: string
