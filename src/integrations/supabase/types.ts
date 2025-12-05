@@ -659,6 +659,54 @@ export type Database = {
         }
         Relationships: []
       }
+      company_holidays: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          holiday_date: string
+          id: string
+          is_recurring: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          holiday_date: string
+          id?: string
+          is_recurring?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          holiday_date?: string
+          id?: string
+          is_recurring?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_holidays_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_holidays_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_participants: {
         Row: {
           conversation_id: string
@@ -805,6 +853,77 @@ export type Database = {
             columns: ["coordinator_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_time_adjustments: {
+        Row: {
+          adjusted_by: string | null
+          adjusted_check_in: string | null
+          adjusted_check_out: string | null
+          adjustment_date: string
+          adjustment_reason: string
+          company_id: string
+          created_at: string | null
+          id: string
+          original_check_in: string | null
+          original_check_out: string | null
+          technician_id: string
+        }
+        Insert: {
+          adjusted_by?: string | null
+          adjusted_check_in?: string | null
+          adjusted_check_out?: string | null
+          adjustment_date: string
+          adjustment_reason: string
+          company_id: string
+          created_at?: string | null
+          id?: string
+          original_check_in?: string | null
+          original_check_out?: string | null
+          technician_id: string
+        }
+        Update: {
+          adjusted_by?: string | null
+          adjusted_check_in?: string | null
+          adjusted_check_out?: string | null
+          adjustment_date?: string
+          adjustment_reason?: string
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          original_check_in?: string | null
+          original_check_out?: string | null
+          technician_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_time_adjustments_adjusted_by_fkey"
+            columns: ["adjusted_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_time_adjustments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_time_adjustments_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_time_adjustments_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2068,6 +2187,99 @@ export type Database = {
           },
         ]
       }
+      technician_absences: {
+        Row: {
+          absence_type: Database["public"]["Enums"]["absence_type"]
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          end_date: string
+          end_time: string | null
+          id: string
+          notes: string | null
+          reason: string | null
+          start_date: string
+          start_time: string | null
+          status: Database["public"]["Enums"]["absence_status"] | null
+          technician_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          absence_type: Database["public"]["Enums"]["absence_type"]
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          end_date: string
+          end_time?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          start_date: string
+          start_time?: string | null
+          status?: Database["public"]["Enums"]["absence_status"] | null
+          technician_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          absence_type?: Database["public"]["Enums"]["absence_type"]
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          end_date?: string
+          end_time?: string | null
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          start_date?: string
+          start_time?: string | null
+          status?: Database["public"]["Enums"]["absence_status"] | null
+          technician_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technician_absences_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_absences_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_absences_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_absences_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_absences_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technician_documents: {
         Row: {
           certificate_name: string | null
@@ -2207,6 +2419,80 @@ export type Database = {
             columns: ["visit_id"]
             isOneToOne: false
             referencedRelation: "service_visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technician_on_call: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          end_time: string | null
+          id: string
+          is_holiday: boolean | null
+          is_weekend: boolean | null
+          notes: string | null
+          on_call_date: string
+          start_time: string | null
+          technician_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          end_time?: string | null
+          id?: string
+          is_holiday?: boolean | null
+          is_weekend?: boolean | null
+          notes?: string | null
+          on_call_date: string
+          start_time?: string | null
+          technician_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          end_time?: string | null
+          id?: string
+          is_holiday?: boolean | null
+          is_weekend?: boolean | null
+          notes?: string | null
+          on_call_date?: string
+          start_time?: string | null
+          technician_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technician_on_call_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_on_call_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_on_call_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_on_call_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
             referencedColumns: ["id"]
           },
         ]
@@ -2647,6 +2933,14 @@ export type Database = {
         Args: { _company_id: string; _from_city: string; _to_city: string }
         Returns: number
       }
+      get_technician_availability: {
+        Args: { _check_date: string; _technician_id: string }
+        Returns: {
+          is_available: boolean
+          status_description: string
+          status_type: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2664,6 +2958,10 @@ export type Database = {
       }
       is_tech_assigned_to_order: {
         Args: { _service_order_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_technician_available: {
+        Args: { _check_date: string; _technician_id: string }
         Returns: boolean
       }
       mark_messages_as_read: {
@@ -2700,7 +2998,15 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "super_admin" | "admin" | "technician" | "manager"
+      absence_status: "scheduled" | "in_progress" | "completed" | "cancelled"
+      absence_type:
+        | "vacation"
+        | "day_off"
+        | "medical_exam"
+        | "training"
+        | "sick_leave"
+        | "other"
+      app_role: "super_admin" | "admin" | "technician" | "manager" | "hr"
       expense_type: "hospedagem" | "alimentacao"
       measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO"
       measurement_status: "draft" | "finalized"
@@ -2854,7 +3160,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["super_admin", "admin", "technician", "manager"],
+      absence_status: ["scheduled", "in_progress", "completed", "cancelled"],
+      absence_type: [
+        "vacation",
+        "day_off",
+        "medical_exam",
+        "training",
+        "sick_leave",
+        "other",
+      ],
+      app_role: ["super_admin", "admin", "technician", "manager", "hr"],
       expense_type: ["hospedagem", "alimentacao"],
       measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO"],
       measurement_status: ["draft", "finalized"],
