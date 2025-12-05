@@ -100,7 +100,7 @@ serve(async (req) => {
     }
 
     // Role-based authorization checks
-    const allowedRoles = ['technician', 'admin', 'manager'];
+    const allowedRoles = ['technician', 'admin', 'manager', 'hr'];
     
     // Admin can only create users in their own company
     if (callerRole === 'admin') {
