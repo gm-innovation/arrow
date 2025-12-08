@@ -2948,6 +2948,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      import_historical_time_entries: { Args: never; Returns: number }
       is_assigned_to_visit: {
         Args: { _user_id: string; _visit_id: string }
         Returns: boolean
