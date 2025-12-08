@@ -2588,6 +2588,8 @@ export type Database = {
           hours_normal: number | null
           hours_standby: number | null
           id: string
+          is_overnight: boolean | null
+          is_travel: boolean | null
           notes: string | null
           service_order_id: string | null
           start_time: string
@@ -2607,6 +2609,8 @@ export type Database = {
           hours_normal?: number | null
           hours_standby?: number | null
           id?: string
+          is_overnight?: boolean | null
+          is_travel?: boolean | null
           notes?: string | null
           service_order_id?: string | null
           start_time: string
@@ -2626,6 +2630,8 @@ export type Database = {
           hours_normal?: number | null
           hours_standby?: number | null
           id?: string
+          is_overnight?: boolean | null
+          is_travel?: boolean | null
           notes?: string | null
           service_order_id?: string | null
           start_time?: string
