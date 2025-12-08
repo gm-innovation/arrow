@@ -2577,39 +2577,70 @@ export type Database = {
       }
       time_entries: {
         Row: {
+          check_in_at: string | null
+          check_out_at: string | null
           created_at: string
           end_time: string
           entry_date: string
           entry_type: Database["public"]["Enums"]["time_entry_type"]
+          hours_extra: number | null
+          hours_night: number | null
+          hours_normal: number | null
+          hours_standby: number | null
           id: string
+          notes: string | null
+          service_order_id: string | null
           start_time: string
-          task_id: string
+          task_id: string | null
           technician_id: string
           updated_at: string
         }
         Insert: {
+          check_in_at?: string | null
+          check_out_at?: string | null
           created_at?: string
           end_time: string
           entry_date: string
           entry_type: Database["public"]["Enums"]["time_entry_type"]
+          hours_extra?: number | null
+          hours_night?: number | null
+          hours_normal?: number | null
+          hours_standby?: number | null
           id?: string
+          notes?: string | null
+          service_order_id?: string | null
           start_time: string
-          task_id: string
+          task_id?: string | null
           technician_id: string
           updated_at?: string
         }
         Update: {
+          check_in_at?: string | null
+          check_out_at?: string | null
           created_at?: string
           end_time?: string
           entry_date?: string
           entry_type?: Database["public"]["Enums"]["time_entry_type"]
+          hours_extra?: number | null
+          hours_night?: number | null
+          hours_normal?: number | null
+          hours_standby?: number | null
           id?: string
+          notes?: string | null
+          service_order_id?: string | null
           start_time?: string
-          task_id?: string
+          task_id?: string | null
           technician_id?: string
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "time_entries_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "time_entries_task_id_fkey"
             columns: ["task_id"]
