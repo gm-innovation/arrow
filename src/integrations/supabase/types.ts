@@ -2929,6 +2929,10 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_vessel_positions: { Args: never; Returns: undefined }
+      generate_time_entries_for_completed_orders: {
+        Args: never
+        Returns: number
+      }
       get_city_distance: {
         Args: { _company_id: string; _from_city: string; _to_city: string }
         Returns: number
