@@ -65,11 +65,11 @@ serve(async (req) => {
     const callerRole = callerRoleData.role;
     console.log('Caller role:', callerRole);
 
-    // Only admin and super_admin can create users
-    if (callerRole !== 'admin' && callerRole !== 'super_admin') {
+    // Only admin, super_admin and hr can create users
+    if (callerRole !== 'admin' && callerRole !== 'super_admin' && callerRole !== 'hr') {
       console.error('Unauthorized role attempted to create user:', callerRole);
       return new Response(
-        JSON.stringify({ error: 'Permissão negada - apenas administradores podem criar usuários' }),
+        JSON.stringify({ error: 'Permissão negada - apenas administradores e RH podem criar usuários' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
       );
     }
@@ -87,9 +87,9 @@ serve(async (req) => {
     // Role-based authorization checks
     const allowedRoles = ['technician', 'admin', 'manager', 'hr'];
     
-    // Admin can only create users in their own company
-    if (callerRole === 'admin') {
-      // Get caller's company (only needed for admin role validation)
+    // Admin and HR can only create users in their own company
+    if (callerRole === 'admin' || callerRole === 'hr') {
+      // Get caller's company
       const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
         .from('profiles')
         .select('company_id')
@@ -105,7 +105,7 @@ serve(async (req) => {
       }
 
       if (company_id !== callerProfile.company_id) {
-        console.error('Admin tried to create user in different company');
+        console.error(`${callerRole} tried to create user in different company`);
         return new Response(
           JSON.stringify({ error: 'Permissão negada - você só pode criar usuários na sua empresa' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
@@ -113,10 +113,19 @@ serve(async (req) => {
       }
       
       // Admin cannot create super_admin
-      if (role === 'super_admin') {
+      if (callerRole === 'admin' && role === 'super_admin') {
         console.error('Admin tried to create super_admin');
         return new Response(
           JSON.stringify({ error: 'Permissão negada - você não pode criar super administradores' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+        );
+      }
+      
+      // HR can only create technicians
+      if (callerRole === 'hr' && role !== 'technician') {
+        console.error('HR tried to create non-technician user:', role);
+        return new Response(
+          JSON.stringify({ error: 'Permissão negada - RH só pode criar técnicos' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
         );
       }
