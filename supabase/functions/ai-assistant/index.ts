@@ -354,22 +354,124 @@ serve(async (req) => {
   }
 });
 
-// Detect target date from message
+// Detect target date from message - IMPROVED VERSION
 function detectTargetDate(message: string): { date: Date; dateStr: string; label: string } {
   const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
   
-  if (tomorrowPatterns.some(p => p.test(message))) {
-    return {
-      date: tomorrow,
-      dateStr: tomorrow.toISOString().split('T')[0],
-      label: `Amanhã (${formatDateBR(tomorrow)})`
-    };
+  // Pattern for "dia X" or "dia X/Y" or "dia X de mês"
+  const dayPattern = /dia\s*(\d{1,2})(?:\s*(?:de\s*|\/)\s*(\d{1,2}|janeiro|fevereiro|março|marco|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro))?(?:\s*(?:de\s*|\/)\s*(\d{2,4}))?/i;
+  
+  // Pattern for "DD/MM" or "DD/MM/YYYY"
+  const dateSlashPattern = /(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/;
+  
+  // Pattern for "DD-MM" or "DD-MM-YYYY"
+  const dateDashPattern = /(\d{1,2})-(\d{1,2})(?:-(\d{2,4}))?/;
+  
+  // Weekday patterns
+  const weekdayPatterns: { pattern: RegExp; dayOfWeek: number }[] = [
+    { pattern: /(?:pr[oó]xim[ao]?\s*)?segunda(?:-feira)?/i, dayOfWeek: 1 },
+    { pattern: /(?:pr[oó]xim[ao]?\s*)?ter[çc]a(?:-feira)?/i, dayOfWeek: 2 },
+    { pattern: /(?:pr[oó]xim[ao]?\s*)?quarta(?:-feira)?/i, dayOfWeek: 3 },
+    { pattern: /(?:pr[oó]xim[ao]?\s*)?quinta(?:-feira)?/i, dayOfWeek: 4 },
+    { pattern: /(?:pr[oó]xim[ao]?\s*)?sexta(?:-feira)?/i, dayOfWeek: 5 },
+    { pattern: /(?:pr[oó]xim[ao]?\s*)?s[aá]bado/i, dayOfWeek: 6 },
+    { pattern: /(?:pr[oó]xim[ao]?\s*)?domingo/i, dayOfWeek: 0 },
+  ];
+  
+  const monthNames: { [key: string]: number } = {
+    'janeiro': 0, 'fevereiro': 1, 'março': 2, 'marco': 2, 'abril': 3,
+    'maio': 4, 'junho': 5, 'julho': 6, 'agosto': 7,
+    'setembro': 8, 'outubro': 9, 'novembro': 10, 'dezembro': 11
+  };
+  
+  // Helper to build date and return result
+  const buildResult = (date: Date) => ({
+    date,
+    dateStr: date.toISOString().split('T')[0],
+    label: formatDateBR(date)
+  });
+  
+  // Check for "dia X" pattern first
+  const dayMatch = message.match(dayPattern);
+  if (dayMatch) {
+    const day = parseInt(dayMatch[1], 10);
+    let month = currentMonth;
+    let year = currentYear;
+    
+    if (dayMatch[2]) {
+      const monthPart = dayMatch[2].toLowerCase();
+      if (monthNames[monthPart] !== undefined) {
+        month = monthNames[monthPart];
+      } else {
+        month = parseInt(monthPart, 10) - 1;
+      }
+    }
+    
+    if (dayMatch[3]) {
+      year = parseInt(dayMatch[3], 10);
+      if (year < 100) year += 2000;
+    }
+    
+    // If the date is in the past for current month, assume next month
+    const targetDate = new Date(year, month, day);
+    if (targetDate < today && !dayMatch[2] && !dayMatch[3]) {
+      // Only day was specified and it's in the past, assume next month
+      targetDate.setMonth(targetDate.getMonth() + 1);
+    }
+    
+    return buildResult(targetDate);
   }
   
+  // Check for DD/MM or DD/MM/YYYY pattern
+  const slashMatch = message.match(dateSlashPattern);
+  if (slashMatch) {
+    const day = parseInt(slashMatch[1], 10);
+    const month = parseInt(slashMatch[2], 10) - 1;
+    let year = slashMatch[3] ? parseInt(slashMatch[3], 10) : currentYear;
+    if (year < 100) year += 2000;
+    
+    return buildResult(new Date(year, month, day));
+  }
+  
+  // Check for DD-MM or DD-MM-YYYY pattern
+  const dashMatch = message.match(dateDashPattern);
+  if (dashMatch) {
+    const day = parseInt(dashMatch[1], 10);
+    const month = parseInt(dashMatch[2], 10) - 1;
+    let year = dashMatch[3] ? parseInt(dashMatch[3], 10) : currentYear;
+    if (year < 100) year += 2000;
+    
+    return buildResult(new Date(year, month, day));
+  }
+  
+  // Check for weekday patterns
+  for (const { pattern, dayOfWeek } of weekdayPatterns) {
+    if (pattern.test(message)) {
+      const targetDate = new Date(today);
+      const currentDayOfWeek = today.getDay();
+      let daysToAdd = dayOfWeek - currentDayOfWeek;
+      
+      // If the target day is today or already passed this week, go to next week
+      if (daysToAdd <= 0) {
+        daysToAdd += 7;
+      }
+      
+      targetDate.setDate(today.getDate() + daysToAdd);
+      return buildResult(targetDate);
+    }
+  }
+  
+  // Check for tomorrow
+  if (tomorrowPatterns.some(p => p.test(message))) {
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return buildResult(tomorrow);
+  }
+  
+  // Check for next week
   if (nextWeekPatterns.some(p => p.test(message))) {
-    // Return next 7 days
     const nextWeek = new Date(today);
     nextWeek.setDate(nextWeek.getDate() + 7);
     return {
@@ -379,24 +481,27 @@ function detectTargetDate(message: string): { date: Date; dateStr: string; label
     };
   }
   
+  // Check for today explicitly
+  if (todayPatterns.some(p => p.test(message))) {
+    return buildResult(today);
+  }
+  
   // Default to today
-  return {
-    date: today,
-    dateStr: today.toISOString().split('T')[0],
-    label: `Hoje (${formatDateBR(today)})`
-  };
+  return buildResult(today);
 }
 
 function formatDateBR(date: Date): string {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-// Fetch technician availability for a specific date
+// Fetch technician availability for a specific date - USES RPC FOR COMPLETE AVAILABILITY CHECK
 async function fetchTechnicianAvailability(supabase: any, companyId: string, targetDate: Date) {
   try {
     const dateStr = targetDate.toISOString().split('T')[0];
     
-    // Fetch all active technicians
+    console.log("Fetching availability for date:", dateStr, "company:", companyId);
+    
+    // Fetch all active technicians with full info
     const { data: allTechnicians, error: techError } = await supabase
       .from('technicians')
       .select('id, specialty, profiles:user_id(full_name, phone)')
@@ -405,10 +510,35 @@ async function fetchTechnicianAvailability(supabase: any, companyId: string, tar
     
     if (techError) {
       console.error("Error fetching technicians:", techError);
-      return { freeTechnicians: [], scheduledTechnicians: [], scheduledVisits: [] };
+      return { freeTechnicians: [], unavailableTechnicians: [], scheduledVisits: [], totalTechnicians: 0 };
     }
     
-    // Fetch visits scheduled for target date
+    console.log("Found technicians:", allTechnicians?.length);
+    
+    // Use the RPC to check availability for each technician (checks absences, on-call, holidays)
+    const availabilityResults = await Promise.all(
+      (allTechnicians || []).map(async (tech: any) => {
+        try {
+          const { data, error } = await supabase.rpc('get_technician_availability', {
+            _technician_id: tech.id,
+            _check_date: dateStr,
+          });
+          
+          if (error) {
+            console.error("Error checking availability for", tech.profiles?.full_name, error);
+            return { ...tech, availability: { is_available: true, status_type: 'available', status_description: 'Disponível' } };
+          }
+          
+          const availability = data?.[0] || { is_available: true, status_type: 'available', status_description: 'Disponível' };
+          return { ...tech, availability };
+        } catch (err) {
+          console.error("RPC error for technician:", tech.id, err);
+          return { ...tech, availability: { is_available: true, status_type: 'available', status_description: 'Disponível' } };
+        }
+      })
+    );
+    
+    // Fetch visits scheduled for target date to check for scheduling conflicts
     const { data: scheduledVisits, error: visitError } = await supabase
       .from('service_visits')
       .select(`
@@ -427,22 +557,16 @@ async function fetchTechnicianAvailability(supabase: any, companyId: string, tar
       .eq('visit_date', dateStr)
       .in('status', ['pending', 'in_progress']);
     
-    if (visitError) {
-      console.error("Error fetching visits:", visitError);
-      return { freeTechnicians: allTechnicians || [], scheduledTechnicians: [], scheduledVisits: [] };
-    }
-    
     // Filter visits by company
     const companyVisits = scheduledVisits?.filter(
       (v: any) => v.service_order?.company_id === companyId
     ) || [];
     
-    // Get visit IDs for company visits
+    // Get visit IDs and fetch assigned technicians
     const visitIds = companyVisits.map((v: any) => v.id);
-    
-    // Fetch technicians assigned to these visits
     let assignedTechIds: Set<string> = new Set();
     let visitTechnicianMap: Map<string, any[]> = new Map();
+    let techVisitMap: Map<string, any> = new Map(); // Map tech ID to their assigned visit
     
     if (visitIds.length > 0) {
       const { data: visitTechnicians } = await supabase
@@ -456,12 +580,44 @@ async function fetchTechnicianAvailability(supabase: any, companyId: string, tar
           visitTechnicianMap.set(vt.visit_id, []);
         }
         visitTechnicianMap.get(vt.visit_id)!.push(vt.technician_id);
+        
+        // Find the visit for this technician
+        const visit = companyVisits.find((v: any) => v.id === vt.visit_id);
+        if (visit) {
+          techVisitMap.set(vt.technician_id, visit);
+        }
       });
     }
     
-    // Separate free and scheduled technicians
-    const freeTechnicians = allTechnicians?.filter((t: any) => !assignedTechIds.has(t.id)) || [];
-    const scheduledTechnicians = allTechnicians?.filter((t: any) => assignedTechIds.has(t.id)) || [];
+    // Classify technicians into categories
+    const freeTechnicians: any[] = [];
+    const unavailableTechnicians: any[] = [];
+    
+    availabilityResults.forEach((tech: any) => {
+      const isAbsent = !tech.availability?.is_available;
+      const isScheduled = assignedTechIds.has(tech.id);
+      const assignedVisit = techVisitMap.get(tech.id);
+      
+      if (isAbsent) {
+        // Technician has absence (vacation, sick leave, day off, etc.)
+        unavailableTechnicians.push({
+          ...tech,
+          unavailableReason: tech.availability?.status_description || 'Ausência',
+          reasonType: tech.availability?.status_type || 'absence'
+        });
+      } else if (isScheduled) {
+        // Technician is scheduled for a visit
+        unavailableTechnicians.push({
+          ...tech,
+          unavailableReason: `Agendado para OS #${assignedVisit?.service_order?.order_number || '?'} - ${assignedVisit?.service_order?.vessel?.name || assignedVisit?.service_order?.client?.name || 'Cliente'}`,
+          reasonType: 'scheduled',
+          assignedVisit
+        });
+      } else {
+        // Technician is available
+        freeTechnicians.push(tech);
+      }
+    });
     
     // Build enriched visit data
     const enrichedVisits = companyVisits.map((visit: any) => {
@@ -476,15 +632,22 @@ async function fetchTechnicianAvailability(supabase: any, companyId: string, tar
       };
     });
     
+    console.log("Availability result:", { 
+      free: freeTechnicians.length, 
+      unavailable: unavailableTechnicians.length,
+      visits: enrichedVisits.length
+    });
+    
     return {
       freeTechnicians,
-      scheduledTechnicians,
+      unavailableTechnicians,
       scheduledVisits: enrichedVisits,
-      totalTechnicians: allTechnicians?.length || 0
+      totalTechnicians: allTechnicians?.length || 0,
+      dateChecked: dateStr
     };
   } catch (error) {
     console.error("Error in fetchTechnicianAvailability:", error);
-    return { freeTechnicians: [], scheduledTechnicians: [], scheduledVisits: [] };
+    return { freeTechnicians: [], unavailableTechnicians: [], scheduledVisits: [], totalTechnicians: 0 };
   }
 }
 
@@ -944,26 +1107,39 @@ ${index + 1}. OS #${report.task?.service_order?.order_number || 'N/A'}${similari
   }
   
   if (userRole === 'admin') {
-    // AVAILABILITY REPORT - Detailed information
+    // AVAILABILITY REPORT - Detailed information with absence reasons
     if (contextData.availabilityReport) {
       const ar = contextData.availabilityReport;
-      contextParts.push(`\n📅 DISPONIBILIDADE DE TÉCNICOS - ${ar.dateLabel}:
+      const dateLabel = ar.dateChecked ? formatDateBR(new Date(ar.dateChecked)) : ar.dateLabel;
+      
+      contextParts.push(`\n📅 DISPONIBILIDADE DE TÉCNICOS - ${dateLabel}:
 
-✅ TÉCNICOS LIVRES (${ar.freeTechnicians?.length || 0} de ${ar.totalTechnicians || 0}):
+✅ TÉCNICOS DISPONÍVEIS (${ar.freeTechnicians?.length || 0} de ${ar.totalTechnicians || 0}):
 ${ar.freeTechnicians?.length > 0 
   ? ar.freeTechnicians.map((t: any) => 
     `- ${t.profiles?.full_name || 'Sem nome'} | ${t.specialty || 'Geral'} | Tel: ${t.profiles?.phone || 'N/A'}`
   ).join('\n')
-  : '- Nenhum técnico livre nesta data'}
+  : '- Nenhum técnico disponível nesta data'}
 
-🔴 TÉCNICOS COM AGENDAMENTO (${ar.scheduledTechnicians?.length || 0}):
-${ar.scheduledVisits?.length > 0 
-  ? ar.scheduledVisits.map((v: any) => 
-    `- ${v.technician_names?.join(', ') || 'N/A'}: OS #${v.service_order?.order_number || 'N/A'} em ${v.service_order?.location || 'Local não definido'} (${v.service_order?.client?.name || 'Cliente N/A'})`
-  ).join('\n')
-  : '- Nenhum técnico com agendamento'}
+🔴 TÉCNICOS INDISPONÍVEIS (${ar.unavailableTechnicians?.length || 0}):
+${ar.unavailableTechnicians?.length > 0 
+  ? ar.unavailableTechnicians.map((t: any) => {
+    const emoji = t.reasonType === 'scheduled' ? '📋' : 
+                  t.reasonType === 'vacation' ? '🏖️' :
+                  t.reasonType === 'day_off' ? '🛌' :
+                  t.reasonType === 'sick_leave' ? '🏥' :
+                  t.reasonType === 'training' ? '📚' :
+                  t.reasonType === 'on_call' ? '📱' : '❌';
+    return `- ${t.profiles?.full_name || 'Sem nome'} | ${t.specialty || 'Geral'} | ${emoji} ${t.unavailableReason || 'Indisponível'}`;
+  }).join('\n')
+  : '- Todos os técnicos estão disponíveis'}
 
-⚠️ INSTRUÇÃO: Responda DIRETAMENTE com esses dados. Liste os técnicos livres e ocupados de forma clara.`);
+${ar.scheduledVisits?.length > 0 ? `📋 VISITAS AGENDADAS NESTA DATA:
+${ar.scheduledVisits.map((v: any) => 
+  `- OS #${v.service_order?.order_number || 'N/A'}: ${v.service_order?.vessel?.name || v.service_order?.client?.name || 'Cliente N/A'} em ${v.service_order?.location || 'Local não definido'} | Equipe: ${v.technician_names?.join(', ') || 'N/A'}`
+).join('\n')}` : ''}
+
+⚠️ INSTRUÇÃO: Responda DIRETAMENTE com esses dados. Liste os técnicos disponíveis e indisponíveis de forma clara, incluindo o motivo da indisponibilidade.`);
     }
     
     // OS STATUS REPORT
