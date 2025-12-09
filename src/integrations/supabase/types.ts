@@ -2579,6 +2579,7 @@ export type Database = {
         Row: {
           check_in_at: string | null
           check_out_at: string | null
+          coordinator_name: string | null
           created_at: string
           end_time: string
           entry_date: string
@@ -2588,7 +2589,9 @@ export type Database = {
           hours_normal: number | null
           hours_standby: number | null
           id: string
+          is_onboard: boolean | null
           is_overnight: boolean | null
+          is_standby: boolean | null
           is_travel: boolean | null
           notes: string | null
           service_order_id: string | null
@@ -2596,10 +2599,12 @@ export type Database = {
           task_id: string | null
           technician_id: string
           updated_at: string
+          vessel_name: string | null
         }
         Insert: {
           check_in_at?: string | null
           check_out_at?: string | null
+          coordinator_name?: string | null
           created_at?: string
           end_time: string
           entry_date: string
@@ -2609,7 +2614,9 @@ export type Database = {
           hours_normal?: number | null
           hours_standby?: number | null
           id?: string
+          is_onboard?: boolean | null
           is_overnight?: boolean | null
+          is_standby?: boolean | null
           is_travel?: boolean | null
           notes?: string | null
           service_order_id?: string | null
@@ -2617,10 +2624,12 @@ export type Database = {
           task_id?: string | null
           technician_id: string
           updated_at?: string
+          vessel_name?: string | null
         }
         Update: {
           check_in_at?: string | null
           check_out_at?: string | null
+          coordinator_name?: string | null
           created_at?: string
           end_time?: string
           entry_date?: string
@@ -2630,7 +2639,9 @@ export type Database = {
           hours_normal?: number | null
           hours_standby?: number | null
           id?: string
+          is_onboard?: boolean | null
           is_overnight?: boolean | null
+          is_standby?: boolean | null
           is_travel?: boolean | null
           notes?: string | null
           service_order_id?: string | null
@@ -2638,6 +2649,7 @@ export type Database = {
           task_id?: string | null
           technician_id?: string
           updated_at?: string
+          vessel_name?: string | null
         }
         Relationships: [
           {
