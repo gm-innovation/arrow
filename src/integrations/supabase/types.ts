@@ -3022,6 +3022,10 @@ export type Database = {
         Args: { _conversation_id: string }
         Returns: undefined
       }
+      recalculate_measurement: {
+        Args: { p_measurement_id: string }
+        Returns: undefined
+      }
       search_similar_reports: {
         Args: {
           match_count?: number
