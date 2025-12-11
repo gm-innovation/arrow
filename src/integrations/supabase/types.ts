@@ -1155,6 +1155,7 @@ export type Database = {
           km_rate: number | null
           tax_cativo: number | null
           tax_externo: number | null
+          tax_isento: number | null
           tax_laboratorio: number | null
           updated_at: string | null
         }
@@ -1167,6 +1168,7 @@ export type Database = {
           km_rate?: number | null
           tax_cativo?: number | null
           tax_externo?: number | null
+          tax_isento?: number | null
           tax_laboratorio?: number | null
           updated_at?: string | null
         }
@@ -1179,6 +1181,7 @@ export type Database = {
           km_rate?: number | null
           tax_cativo?: number | null
           tax_externo?: number | null
+          tax_isento?: number | null
           tax_laboratorio?: number | null
           updated_at?: string | null
         }
@@ -3066,7 +3069,7 @@ export type Database = {
         | "other"
       app_role: "super_admin" | "admin" | "technician" | "manager" | "hr"
       expense_type: "hospedagem" | "alimentacao"
-      measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO"
+      measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO" | "ISENTO"
       measurement_status: "draft" | "finalized"
       notification_type:
         | "task_assignment"
@@ -3229,7 +3232,7 @@ export const Constants = {
       ],
       app_role: ["super_admin", "admin", "technician", "manager", "hr"],
       expense_type: ["hospedagem", "alimentacao"],
-      measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO"],
+      measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO", "ISENTO"],
       measurement_status: ["draft", "finalized"],
       notification_type: [
         "task_assignment",
