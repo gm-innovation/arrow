@@ -1955,6 +1955,44 @@ export type Database = {
           },
         ]
       }
+      task_report_history: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string
+          edited_by: string
+          id: string
+          previous_data: Json | null
+          report_id: string
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string
+          edited_by: string
+          id?: string
+          previous_data?: Json | null
+          report_id: string
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string
+          edited_by?: string
+          id?: string
+          previous_data?: Json | null
+          report_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_report_history_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "task_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task_reports: {
         Row: {
           approved_at: string | null
@@ -3014,6 +3052,10 @@ export type Database = {
         Returns: boolean
       }
       is_tech_assigned_to_order: {
+        Args: { _service_order_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_technician_assigned_to_service_order: {
         Args: { _service_order_id: string; _user_id: string }
         Returns: boolean
       }
