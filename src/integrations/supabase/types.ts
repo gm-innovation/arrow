@@ -2002,6 +2002,7 @@ export type Database = {
           pdf_path: string | null
           rejection_reason: string | null
           report_data: Json
+          signed_pdf_path: string | null
           status: string
           task_id: string
           task_uuid: string | null
@@ -2016,6 +2017,7 @@ export type Database = {
           pdf_path?: string | null
           rejection_reason?: string | null
           report_data: Json
+          signed_pdf_path?: string | null
           status: string
           task_id: string
           task_uuid?: string | null
@@ -2030,6 +2032,7 @@ export type Database = {
           pdf_path?: string | null
           rejection_reason?: string | null
           report_data?: Json
+          signed_pdf_path?: string | null
           status?: string
           task_id?: string
           task_uuid?: string | null
