@@ -51,9 +51,9 @@ serve(async (req) => {
 
     const callerRole = callerRoleData.role;
 
-    // Only admin and super_admin can delete users
-    if (callerRole !== 'admin' && callerRole !== 'super_admin') {
-      throw new Error('Forbidden: Only admins can delete users');
+    // Allow admin, super_admin, and hr to delete users
+    if (callerRole !== 'admin' && callerRole !== 'super_admin' && callerRole !== 'hr') {
+      throw new Error('Forbidden: Only admins and HR can delete users');
     }
 
     const { user_id } = await req.json();
@@ -81,8 +81,8 @@ serve(async (req) => {
       throw new Error('Forbidden: Admins cannot delete super_admins');
     }
 
-    // If caller is admin (not super_admin), verify target is in the same company
-    if (callerRole === 'admin') {
+    // If caller is admin or hr (not super_admin), verify target is in the same company
+    if (callerRole === 'admin' || callerRole === 'hr') {
       const { data: callerProfile } = await supabaseAdmin
         .from('profiles')
         .select('company_id')
