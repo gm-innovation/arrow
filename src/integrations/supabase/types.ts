@@ -375,7 +375,7 @@ export type Database = {
           created_at: string
           id: string
           task_id: string
-          technician_id: string
+          technician_id: string | null
           template_id: string
           updated_at: string
         }
@@ -384,7 +384,7 @@ export type Database = {
           created_at?: string
           id?: string
           task_id: string
-          technician_id: string
+          technician_id?: string | null
           template_id: string
           updated_at?: string
         }
@@ -393,7 +393,7 @@ export type Database = {
           created_at?: string
           id?: string
           task_id?: string
-          technician_id?: string
+          technician_id?: string | null
           template_id?: string
           updated_at?: string
         }
@@ -869,7 +869,7 @@ export type Database = {
           id: string
           original_check_in: string | null
           original_check_out: string | null
-          technician_id: string
+          technician_id: string | null
         }
         Insert: {
           adjusted_by?: string | null
@@ -882,7 +882,7 @@ export type Database = {
           id?: string
           original_check_in?: string | null
           original_check_out?: string | null
-          technician_id: string
+          technician_id?: string | null
         }
         Update: {
           adjusted_by?: string | null
@@ -895,7 +895,7 @@ export type Database = {
           id?: string
           original_check_in?: string | null
           original_check_out?: string | null
-          technician_id?: string
+          technician_id?: string | null
         }
         Relationships: [
           {
@@ -1460,7 +1460,7 @@ export type Database = {
           snapshot_date: string
           tasks_assigned: number | null
           tasks_completed: number | null
-          technician_id: string
+          technician_id: string | null
         }
         Insert: {
           average_task_duration?: number | null
@@ -1472,7 +1472,7 @@ export type Database = {
           snapshot_date: string
           tasks_assigned?: number | null
           tasks_completed?: number | null
-          technician_id: string
+          technician_id?: string | null
         }
         Update: {
           average_task_duration?: number | null
@@ -1484,7 +1484,7 @@ export type Database = {
           snapshot_date?: string
           tasks_assigned?: number | null
           tasks_completed?: number | null
-          technician_id?: string
+          technician_id?: string | null
         }
         Relationships: [
           {
@@ -2247,7 +2247,7 @@ export type Database = {
           start_date: string
           start_time: string | null
           status: Database["public"]["Enums"]["absence_status"] | null
-          technician_id: string
+          technician_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -2265,7 +2265,7 @@ export type Database = {
           start_date: string
           start_time?: string | null
           status?: Database["public"]["Enums"]["absence_status"] | null
-          technician_id: string
+          technician_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -2283,7 +2283,7 @@ export type Database = {
           start_date?: string
           start_time?: string | null
           status?: Database["public"]["Enums"]["absence_status"] | null
-          technician_id?: string
+          technician_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -2479,7 +2479,7 @@ export type Database = {
           notes: string | null
           on_call_date: string
           start_time: string | null
-          technician_id: string
+          technician_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -2493,7 +2493,7 @@ export type Database = {
           notes?: string | null
           on_call_date: string
           start_time?: string | null
-          technician_id: string
+          technician_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -2507,7 +2507,7 @@ export type Database = {
           notes?: string | null
           on_call_date?: string
           start_time?: string | null
-          technician_id?: string
+          technician_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -2641,7 +2641,7 @@ export type Database = {
           service_order_id: string | null
           start_time: string
           task_id: string | null
-          technician_id: string
+          technician_id: string | null
           updated_at: string
           vessel_name: string | null
         }
@@ -2666,7 +2666,7 @@ export type Database = {
           service_order_id?: string | null
           start_time: string
           task_id?: string | null
-          technician_id: string
+          technician_id?: string | null
           updated_at?: string
           vessel_name?: string | null
         }
@@ -2691,7 +2691,7 @@ export type Database = {
           service_order_id?: string | null
           start_time?: string
           task_id?: string | null
-          technician_id?: string
+          technician_id?: string | null
           updated_at?: string
           vessel_name?: string | null
         }
@@ -2874,7 +2874,7 @@ export type Database = {
           assigned_by: string | null
           id: string
           is_lead: boolean | null
-          technician_id: string
+          technician_id: string | null
           visit_id: string
         }
         Insert: {
@@ -2882,7 +2882,7 @@ export type Database = {
           assigned_by?: string | null
           id?: string
           is_lead?: boolean | null
-          technician_id: string
+          technician_id?: string | null
           visit_id: string
         }
         Update: {
@@ -2890,7 +2890,7 @@ export type Database = {
           assigned_by?: string | null
           id?: string
           is_lead?: boolean | null
-          technician_id?: string
+          technician_id?: string | null
           visit_id?: string
         }
         Relationships: [
