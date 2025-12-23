@@ -1693,6 +1693,7 @@ export type Database = {
           location: string | null
           order_number: string
           planned_location: string | null
+          requester_contact_id: string | null
           scheduled_date: string | null
           service_date_time: string | null
           single_report: boolean | null
@@ -1717,6 +1718,7 @@ export type Database = {
           location?: string | null
           order_number: string
           planned_location?: string | null
+          requester_contact_id?: string | null
           scheduled_date?: string | null
           service_date_time?: string | null
           single_report?: boolean | null
@@ -1741,6 +1743,7 @@ export type Database = {
           location?: string | null
           order_number?: string
           planned_location?: string | null
+          requester_contact_id?: string | null
           scheduled_date?: string | null
           service_date_time?: string | null
           single_report?: boolean | null
@@ -1776,6 +1779,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_requester_contact_id_fkey"
+            columns: ["requester_contact_id"]
+            isOneToOne: false
+            referencedRelation: "client_contacts"
             referencedColumns: ["id"]
           },
           {
