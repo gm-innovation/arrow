@@ -1685,6 +1685,7 @@ export type Database = {
           client_id: string | null
           company_id: string
           completed_date: string | null
+          coordinator_id: string | null
           created_at: string
           created_by: string
           description: string | null
@@ -1710,6 +1711,7 @@ export type Database = {
           client_id?: string | null
           company_id: string
           completed_date?: string | null
+          coordinator_id?: string | null
           created_at?: string
           created_by: string
           description?: string | null
@@ -1735,6 +1737,7 @@ export type Database = {
           client_id?: string | null
           company_id?: string
           completed_date?: string | null
+          coordinator_id?: string | null
           created_at?: string
           created_by?: string
           description?: string | null
@@ -1772,6 +1775,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_coordinator_id_fkey"
+            columns: ["coordinator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
