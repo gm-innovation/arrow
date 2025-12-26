@@ -2561,6 +2561,119 @@ export type Database = {
           },
         ]
       }
+      technician_reservations: {
+        Row: {
+          client_id: string | null
+          company_id: string
+          created_at: string | null
+          end_date: string
+          end_time: string | null
+          id: string
+          includes_overnight: boolean | null
+          includes_travel: boolean | null
+          notes: string | null
+          reason: string | null
+          reserved_by: string
+          service_order_id: string | null
+          start_date: string
+          start_time: string | null
+          status: string
+          technician_id: string
+          updated_at: string | null
+          vessel_id: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          company_id: string
+          created_at?: string | null
+          end_date: string
+          end_time?: string | null
+          id?: string
+          includes_overnight?: boolean | null
+          includes_travel?: boolean | null
+          notes?: string | null
+          reason?: string | null
+          reserved_by: string
+          service_order_id?: string | null
+          start_date: string
+          start_time?: string | null
+          status?: string
+          technician_id: string
+          updated_at?: string | null
+          vessel_id?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          company_id?: string
+          created_at?: string | null
+          end_date?: string
+          end_time?: string | null
+          id?: string
+          includes_overnight?: boolean | null
+          includes_travel?: boolean | null
+          notes?: string | null
+          reason?: string | null
+          reserved_by?: string
+          service_order_id?: string | null
+          start_date?: string
+          start_time?: string | null
+          status?: string
+          technician_id?: string
+          updated_at?: string | null
+          vessel_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technician_reservations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_reservations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_reservations_reserved_by_fkey"
+            columns: ["reserved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_reservations_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_reservations_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_reservations_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_reservations_vessel_id_fkey"
+            columns: ["vessel_id"]
+            isOneToOne: false
+            referencedRelation: "vessels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       technicians: {
         Row: {
           active: boolean | null
@@ -3054,6 +3167,16 @@ export type Database = {
         Args: { _check_date: string; _technician_id: string }
         Returns: {
           is_available: boolean
+          status_description: string
+          status_type: string
+        }[]
+      }
+      get_technician_availability_v2: {
+        Args: { _check_date: string; _technician_id: string }
+        Returns: {
+          blocked_by: string
+          is_available: boolean
+          reservation_id: string
           status_description: string
           status_type: string
         }[]
