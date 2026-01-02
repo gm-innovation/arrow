@@ -779,6 +779,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conversations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "conversations_service_order_id_fkey"
             columns: ["service_order_id"]
             isOneToOne: false
@@ -851,6 +858,13 @@ export type Database = {
           {
             foreignKeyName: "forecast_history_coordinator_id_fkey"
             columns: ["coordinator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forecast_history_created_by_fkey"
+            columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -1314,6 +1328,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "measurements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "measurements_finalized_by_fkey"
+            columns: ["finalized_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "measurements_service_order_id_fkey"
             columns: ["service_order_id"]
             isOneToOne: true
@@ -1661,6 +1689,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "service_history_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "service_history_service_order_id_fkey"
             columns: ["service_order_id"]
             isOneToOne: false
@@ -1687,7 +1722,7 @@ export type Database = {
           completed_date: string | null
           coordinator_id: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           description: string | null
           expected_context: string | null
           id: string
@@ -1713,7 +1748,7 @@ export type Database = {
           completed_date?: string | null
           coordinator_id?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           description?: string | null
           expected_context?: string | null
           id?: string
@@ -1739,7 +1774,7 @@ export type Database = {
           completed_date?: string | null
           coordinator_id?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           description?: string | null
           expected_context?: string | null
           id?: string
@@ -2060,6 +2095,13 @@ export type Database = {
           visit_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "task_reports_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "task_reports_task_uuid_fkey"
             columns: ["task_uuid"]
@@ -2573,7 +2615,7 @@ export type Database = {
           includes_travel: boolean | null
           notes: string | null
           reason: string | null
-          reserved_by: string
+          reserved_by: string | null
           service_order_id: string | null
           start_date: string
           start_time: string | null
@@ -2593,7 +2635,7 @@ export type Database = {
           includes_travel?: boolean | null
           notes?: string | null
           reason?: string | null
-          reserved_by: string
+          reserved_by?: string | null
           service_order_id?: string | null
           start_date: string
           start_time?: string | null
@@ -2613,7 +2655,7 @@ export type Database = {
           includes_travel?: boolean | null
           notes?: string | null
           reason?: string | null
-          reserved_by?: string
+          reserved_by?: string | null
           service_order_id?: string | null
           start_date?: string
           start_time?: string | null
