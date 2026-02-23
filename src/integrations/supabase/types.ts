@@ -879,6 +879,7 @@ export type Database = {
         Row: {
           company_id: string
           created_at: string
+          department_id: string | null
           document_type: string
           file_name: string
           file_url: string
@@ -892,6 +893,7 @@ export type Database = {
         Insert: {
           company_id: string
           created_at?: string
+          department_id?: string | null
           document_type: string
           file_name: string
           file_url: string
@@ -905,6 +907,7 @@ export type Database = {
         Update: {
           company_id?: string
           created_at?: string
+          department_id?: string | null
           document_type?: string
           file_name?: string
           file_url?: string
@@ -921,6 +924,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_documents_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
             referencedColumns: ["id"]
           },
           {
