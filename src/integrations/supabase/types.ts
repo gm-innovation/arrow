@@ -2781,6 +2781,136 @@ export type Database = {
           },
         ]
       }
+      purchase_request_items: {
+        Row: {
+          created_at: string
+          description: string
+          estimated_unit_price: number | null
+          id: string
+          notes: string | null
+          quantity: number
+          request_id: string
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          estimated_unit_price?: number | null
+          id?: string
+          notes?: string | null
+          quantity?: number
+          request_id: string
+          unit?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          estimated_unit_price?: number | null
+          id?: string
+          notes?: string | null
+          quantity?: number
+          request_id?: string
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_request_items_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      purchase_requests: {
+        Row: {
+          category: string
+          company_id: string
+          created_at: string
+          description: string | null
+          director_approved_at: string | null
+          director_approver_id: string | null
+          estimated_total: number | null
+          id: string
+          justification: string | null
+          manager_approved_at: string | null
+          manager_approver_id: string | null
+          priority: string
+          rejection_reason: string | null
+          requester_id: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          company_id: string
+          created_at?: string
+          description?: string | null
+          director_approved_at?: string | null
+          director_approver_id?: string | null
+          estimated_total?: number | null
+          id?: string
+          justification?: string | null
+          manager_approved_at?: string | null
+          manager_approver_id?: string | null
+          priority?: string
+          rejection_reason?: string | null
+          requester_id: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          director_approved_at?: string | null
+          director_approver_id?: string | null
+          estimated_total?: number | null
+          id?: string
+          justification?: string | null
+          manager_approved_at?: string | null
+          manager_approver_id?: string | null
+          priority?: string
+          rejection_reason?: string | null
+          requester_id?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchase_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_requests_director_approver_id_fkey"
+            columns: ["director_approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_requests_manager_approver_id_fkey"
+            columns: ["manager_approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_subscriptions: {
         Row: {
           auth: string
