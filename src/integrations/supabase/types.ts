@@ -2938,6 +2938,523 @@ export type Database = {
         }
         Relationships: []
       }
+      quality_action_items: {
+        Row: {
+          action_plan_id: string
+          completed_at: string | null
+          created_at: string
+          how: string | null
+          how_much: number | null
+          id: string
+          item_order: number | null
+          notes: string | null
+          status: string
+          updated_at: string
+          what: string
+          when_date: string | null
+          where_location: string | null
+          who: string | null
+          why: string | null
+        }
+        Insert: {
+          action_plan_id: string
+          completed_at?: string | null
+          created_at?: string
+          how?: string | null
+          how_much?: number | null
+          id?: string
+          item_order?: number | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          what: string
+          when_date?: string | null
+          where_location?: string | null
+          who?: string | null
+          why?: string | null
+        }
+        Update: {
+          action_plan_id?: string
+          completed_at?: string | null
+          created_at?: string
+          how?: string | null
+          how_much?: number | null
+          id?: string
+          item_order?: number | null
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          what?: string
+          when_date?: string | null
+          where_location?: string | null
+          who?: string | null
+          why?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_action_items_action_plan_id_fkey"
+            columns: ["action_plan_id"]
+            isOneToOne: false
+            referencedRelation: "quality_action_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_items_who_fkey"
+            columns: ["who"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_action_plans: {
+        Row: {
+          company_id: string
+          completed_date: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          effectiveness_notes: string | null
+          effectiveness_verified: boolean | null
+          id: string
+          ncr_id: string | null
+          plan_type: string
+          responsible_id: string | null
+          start_date: string | null
+          status: string
+          target_date: string | null
+          title: string
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          company_id: string
+          completed_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          effectiveness_notes?: string | null
+          effectiveness_verified?: boolean | null
+          id?: string
+          ncr_id?: string | null
+          plan_type?: string
+          responsible_id?: string | null
+          start_date?: string | null
+          status?: string
+          target_date?: string | null
+          title: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          company_id?: string
+          completed_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          effectiveness_notes?: string | null
+          effectiveness_verified?: boolean | null
+          id?: string
+          ncr_id?: string | null
+          plan_type?: string
+          responsible_id?: string | null
+          start_date?: string | null
+          status?: string
+          target_date?: string | null
+          title?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_action_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_plans_ncr_id_fkey"
+            columns: ["ncr_id"]
+            isOneToOne: false
+            referencedRelation: "quality_ncrs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_plans_responsible_id_fkey"
+            columns: ["responsible_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_plans_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_audit_checklist_items: {
+        Row: {
+          audit_id: string
+          clause_reference: string | null
+          created_at: string
+          id: string
+          item_order: number | null
+          notes: string | null
+          requirement: string
+          result: string | null
+        }
+        Insert: {
+          audit_id: string
+          clause_reference?: string | null
+          created_at?: string
+          id?: string
+          item_order?: number | null
+          notes?: string | null
+          requirement: string
+          result?: string | null
+        }
+        Update: {
+          audit_id?: string
+          clause_reference?: string | null
+          created_at?: string
+          id?: string
+          item_order?: number | null
+          notes?: string | null
+          requirement?: string
+          result?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_audit_checklist_items_audit_id_fkey"
+            columns: ["audit_id"]
+            isOneToOne: false
+            referencedRelation: "quality_audits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_audit_findings: {
+        Row: {
+          action_plan_id: string | null
+          audit_id: string
+          clause_reference: string | null
+          corrective_action_required: boolean | null
+          created_at: string
+          deadline: string | null
+          description: string
+          evidence: string | null
+          finding_type: string
+          id: string
+          responsible_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          action_plan_id?: string | null
+          audit_id: string
+          clause_reference?: string | null
+          corrective_action_required?: boolean | null
+          created_at?: string
+          deadline?: string | null
+          description: string
+          evidence?: string | null
+          finding_type?: string
+          id?: string
+          responsible_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          action_plan_id?: string | null
+          audit_id?: string
+          clause_reference?: string | null
+          corrective_action_required?: boolean | null
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          evidence?: string | null
+          finding_type?: string
+          id?: string
+          responsible_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_audit_findings_action_plan_id_fkey"
+            columns: ["action_plan_id"]
+            isOneToOne: false
+            referencedRelation: "quality_action_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_audit_findings_audit_id_fkey"
+            columns: ["audit_id"]
+            isOneToOne: false
+            referencedRelation: "quality_audits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_audit_findings_responsible_id_fkey"
+            columns: ["responsible_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_audits: {
+        Row: {
+          actual_date: string | null
+          audit_number: number
+          audit_type: string
+          company_id: string
+          conclusion: string | null
+          created_at: string
+          created_by: string | null
+          department: string | null
+          id: string
+          lead_auditor_id: string | null
+          planned_date: string
+          scope: string | null
+          standard_reference: string | null
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          actual_date?: string | null
+          audit_number?: number
+          audit_type?: string
+          company_id: string
+          conclusion?: string | null
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          id?: string
+          lead_auditor_id?: string | null
+          planned_date: string
+          scope?: string | null
+          standard_reference?: string | null
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          actual_date?: string | null
+          audit_number?: number
+          audit_type?: string
+          company_id?: string
+          conclusion?: string | null
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          id?: string
+          lead_auditor_id?: string | null
+          planned_date?: string
+          scope?: string | null
+          standard_reference?: string | null
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_audits_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_audits_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_audits_lead_auditor_id_fkey"
+            columns: ["lead_auditor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_ncr_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          ncr_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          ncr_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          ncr_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_ncr_attachments_ncr_id_fkey"
+            columns: ["ncr_id"]
+            isOneToOne: false
+            referencedRelation: "quality_ncrs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_ncr_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_ncrs: {
+        Row: {
+          affected_area: string | null
+          closed_at: string | null
+          closed_by: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          deadline: string | null
+          description: string | null
+          detected_at: string | null
+          detected_by: string | null
+          id: string
+          immediate_action: string | null
+          ncr_number: number
+          ncr_type: string
+          responsible_id: string | null
+          root_cause: string | null
+          severity: string
+          source: string | null
+          status: string
+          title: string
+          updated_at: string
+          verification_notes: string | null
+        }
+        Insert: {
+          affected_area?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          detected_at?: string | null
+          detected_by?: string | null
+          id?: string
+          immediate_action?: string | null
+          ncr_number?: number
+          ncr_type?: string
+          responsible_id?: string | null
+          root_cause?: string | null
+          severity?: string
+          source?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          verification_notes?: string | null
+        }
+        Update: {
+          affected_area?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          detected_at?: string | null
+          detected_by?: string | null
+          id?: string
+          immediate_action?: string | null
+          ncr_number?: number
+          ncr_type?: string
+          responsible_id?: string | null
+          root_cause?: string | null
+          severity?: string
+          source?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          verification_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_ncrs_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_ncrs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_ncrs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_ncrs_detected_by_fkey"
+            columns: ["detected_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_ncrs_responsible_id_fkey"
+            columns: ["responsible_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       report_embeddings: {
         Row: {
           content_hash: string | null
