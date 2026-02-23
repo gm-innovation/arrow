@@ -1996,6 +1996,430 @@ export type Database = {
           },
         ]
       }
+      finance_categories: {
+        Row: {
+          category_type: string
+          company_id: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          category_type: string
+          company_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          category_type?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_categories_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_payables: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          category_id: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string
+          id: string
+          invoice_number: string | null
+          notes: string | null
+          paid_amount: number | null
+          payment_date: string | null
+          purchase_request_id: string | null
+          status: string
+          supplier_name: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          category_id?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date: string
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          paid_amount?: number | null
+          payment_date?: string | null
+          purchase_request_id?: string | null
+          status?: string
+          supplier_name: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          category_id?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          paid_amount?: number | null
+          payment_date?: string | null
+          purchase_request_id?: string | null
+          status?: string
+          supplier_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_payables_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_payables_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_payables_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_payables_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_payables_purchase_request_id_fkey"
+            columns: ["purchase_request_id"]
+            isOneToOne: false
+            referencedRelation: "purchase_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_receivables: {
+        Row: {
+          amount: number
+          category_id: string | null
+          client_id: string | null
+          client_name: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string
+          id: string
+          invoice_number: string | null
+          measurement_id: string | null
+          notes: string | null
+          received_amount: number | null
+          received_date: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          client_id?: string | null
+          client_name: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date: string
+          id?: string
+          invoice_number?: string | null
+          measurement_id?: string | null
+          notes?: string | null
+          received_amount?: number | null
+          received_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          client_id?: string | null
+          client_name?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string
+          id?: string
+          invoice_number?: string | null
+          measurement_id?: string | null
+          notes?: string | null
+          received_amount?: number | null
+          received_date?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_receivables_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_receivables_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_receivables_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_receivables_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_reimbursement_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          reimbursement_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          reimbursement_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          reimbursement_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_reimbursement_attachments_reimbursement_id_fkey"
+            columns: ["reimbursement_id"]
+            isOneToOne: false
+            referencedRelation: "finance_reimbursements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_reimbursement_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_reimbursements: {
+        Row: {
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          category_id: string | null
+          company_id: string
+          created_at: string
+          description: string
+          expense_date: string
+          id: string
+          notes: string | null
+          paid_at: string | null
+          rejection_reason: string | null
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          category_id?: string | null
+          company_id: string
+          created_at?: string
+          description: string
+          expense_date: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          rejection_reason?: string | null
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          category_id?: string | null
+          company_id?: string
+          created_at?: string
+          description?: string
+          expense_date?: string
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          rejection_reason?: string | null
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_reimbursements_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_reimbursements_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_reimbursements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_reimbursements_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      finance_transactions: {
+        Row: {
+          amount: number
+          category_id: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          notes: string | null
+          reference_id: string | null
+          reference_type: string | null
+          transaction_date: string
+          transaction_type: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_date: string
+          transaction_type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          notes?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          transaction_date?: string
+          transaction_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "finance_transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "finance_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_transactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_transactions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forecast_history: {
         Row: {
           actual_completed: number | null
