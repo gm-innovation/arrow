@@ -869,6 +869,214 @@ export type Database = {
           },
         ]
       }
+      crm_client_recurrences: {
+        Row: {
+          assigned_to: string | null
+          client_id: string
+          company_id: string
+          created_at: string
+          estimated_value: number | null
+          id: string
+          last_executed_date: string | null
+          next_date: string
+          notes: string | null
+          periodicity: string
+          product_id: string | null
+          recurrence_type: string | null
+          status: string
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_id: string
+          company_id: string
+          created_at?: string
+          estimated_value?: number | null
+          id?: string
+          last_executed_date?: string | null
+          next_date: string
+          notes?: string | null
+          periodicity?: string
+          product_id?: string | null
+          recurrence_type?: string | null
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          client_id?: string
+          company_id?: string
+          created_at?: string
+          estimated_value?: number | null
+          id?: string
+          last_executed_date?: string | null
+          next_date?: string
+          notes?: string | null
+          periodicity?: string
+          product_id?: string | null
+          recurrence_type?: string | null
+          status?: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_client_recurrences_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_client_recurrences_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_client_recurrences_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_client_recurrences_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "crm_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_client_recurrences_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "crm_recurrence_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_integration_logs: {
+        Row: {
+          action: string
+          company_id: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          error_message: string | null
+          id: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          company_id: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_message?: string | null
+          id?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          company_id?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          error_message?: string | null
+          id?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_integration_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_integration_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_knowledge_base: {
+        Row: {
+          author_id: string | null
+          category: string | null
+          company_id: string
+          content: string
+          created_at: string
+          id: string
+          product_id: string | null
+          published: boolean | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          category?: string | null
+          company_id: string
+          content: string
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          published?: boolean | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          category?: string | null
+          company_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          product_id?: string | null
+          published?: boolean | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_knowledge_base_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_knowledge_base_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_knowledge_base_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "crm_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_opportunities: {
         Row: {
           assigned_to: string | null
@@ -1012,6 +1220,212 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_opportunity_products: {
+        Row: {
+          created_at: string
+          id: string
+          opportunity_id: string
+          product_id: string
+          quantity: number
+          total_value: number | null
+          unit_value: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opportunity_id: string
+          product_id: string
+          quantity?: number
+          total_value?: number | null
+          unit_value?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opportunity_id?: string
+          product_id?: string
+          quantity?: number
+          total_value?: number | null
+          unit_value?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_opportunity_products_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "crm_opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunity_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "crm_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_products: {
+        Row: {
+          active: boolean | null
+          category: string | null
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_recurring: boolean | null
+          name: string
+          reference_value: number | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          category?: string | null
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          name: string
+          reference_value?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          name?: string
+          reference_value?: number | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_recurrence_templates: {
+        Row: {
+          active: boolean | null
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          notification_days_before: number | null
+          period_type: string
+          period_value: number
+          product_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          notification_days_before?: number | null
+          period_type?: string
+          period_value?: number
+          product_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          notification_days_before?: number | null
+          period_type?: string
+          period_value?: number
+          product_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_recurrence_templates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_recurrence_templates_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "crm_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_reference_documents: {
+        Row: {
+          category: string | null
+          company_id: string
+          created_at: string
+          file_name: string
+          file_type: string | null
+          file_url: string
+          id: string
+          knowledge_base_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          company_id: string
+          created_at?: string
+          file_name: string
+          file_type?: string | null
+          file_url: string
+          id?: string
+          knowledge_base_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          file_name?: string
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          knowledge_base_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_reference_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_reference_documents_knowledge_base_id_fkey"
+            columns: ["knowledge_base_id"]
+            isOneToOne: false
+            referencedRelation: "crm_knowledge_base"
             referencedColumns: ["id"]
           },
         ]
