@@ -564,38 +564,56 @@ export type Database = {
       clients: {
         Row: {
           address: string | null
+          annual_revenue: number | null
           cnpj: string | null
+          commercial_status: string | null
           company_id: string
           contact_person: string | null
           created_at: string
           email: string | null
           id: string
+          last_contact_date: string | null
           name: string
+          notes: string | null
           phone: string | null
+          segment: string | null
+          source: string | null
           updated_at: string
         }
         Insert: {
           address?: string | null
+          annual_revenue?: number | null
           cnpj?: string | null
+          commercial_status?: string | null
           company_id: string
           contact_person?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          last_contact_date?: string | null
           name: string
+          notes?: string | null
           phone?: string | null
+          segment?: string | null
+          source?: string | null
           updated_at?: string
         }
         Update: {
           address?: string | null
+          annual_revenue?: number | null
           cnpj?: string | null
+          commercial_status?: string | null
           company_id?: string
           contact_person?: string | null
           created_at?: string
           email?: string | null
           id?: string
+          last_contact_date?: string | null
           name?: string
+          notes?: string | null
           phone?: string | null
+          segment?: string | null
+          source?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -790,6 +808,210 @@ export type Database = {
             columns: ["service_order_id"]
             isOneToOne: false
             referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_buyers: {
+        Row: {
+          client_id: string
+          company_id: string
+          created_at: string
+          email: string | null
+          id: string
+          influence_level: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          role: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          company_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          influence_level?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          company_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          influence_level?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_buyers_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_buyers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_opportunities: {
+        Row: {
+          assigned_to: string | null
+          buyer_id: string | null
+          client_id: string
+          closed_at: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          estimated_value: number | null
+          expected_close_date: string | null
+          id: string
+          loss_reason: string | null
+          notes: string | null
+          opportunity_type: string | null
+          priority: string | null
+          probability: number | null
+          stage: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          buyer_id?: string | null
+          client_id: string
+          closed_at?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          expected_close_date?: string | null
+          id?: string
+          loss_reason?: string | null
+          notes?: string | null
+          opportunity_type?: string | null
+          priority?: string | null
+          probability?: number | null
+          stage?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          buyer_id?: string | null
+          client_id?: string
+          closed_at?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          expected_close_date?: string | null
+          id?: string
+          loss_reason?: string | null
+          notes?: string | null
+          opportunity_type?: string | null
+          priority?: string | null
+          probability?: number | null
+          stage?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_opportunities_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunities_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "crm_buyers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunities_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_opportunity_activities: {
+        Row: {
+          activity_date: string
+          activity_type: string
+          created_at: string
+          description: string | null
+          id: string
+          opportunity_id: string
+          user_id: string | null
+        }
+        Insert: {
+          activity_date?: string
+          activity_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          opportunity_id: string
+          user_id?: string | null
+        }
+        Update: {
+          activity_date?: string
+          activity_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          opportunity_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_opportunity_activities_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "crm_opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunity_activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3297,7 +3519,13 @@ export type Database = {
         | "training"
         | "sick_leave"
         | "other"
-      app_role: "super_admin" | "admin" | "technician" | "manager" | "hr"
+      app_role:
+        | "super_admin"
+        | "admin"
+        | "technician"
+        | "manager"
+        | "hr"
+        | "commercial"
       expense_type: "hospedagem" | "alimentacao"
       measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO" | "ISENTO"
       measurement_status: "draft" | "finalized"
@@ -3460,7 +3688,14 @@ export const Constants = {
         "sick_leave",
         "other",
       ],
-      app_role: ["super_admin", "admin", "technician", "manager", "hr"],
+      app_role: [
+        "super_admin",
+        "admin",
+        "technician",
+        "manager",
+        "hr",
+        "commercial",
+      ],
       expense_type: ["hospedagem", "alimentacao"],
       measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO", "ISENTO"],
       measurement_status: ["draft", "finalized"],
