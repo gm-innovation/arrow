@@ -1305,6 +1305,7 @@ export type Database = {
           description: string | null
           id: string
           is_recurring: boolean | null
+          lead_time_days: number | null
           name: string
           reference_value: number | null
           type: string
@@ -1318,6 +1319,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_recurring?: boolean | null
+          lead_time_days?: number | null
           name: string
           reference_value?: number | null
           type?: string
@@ -1331,6 +1333,7 @@ export type Database = {
           description?: string | null
           id?: string
           is_recurring?: boolean | null
+          lead_time_days?: number | null
           name?: string
           reference_value?: number | null
           type?: string

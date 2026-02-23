@@ -1,0 +1,1 @@
+ALTER TABLE public.crm_products ADD COLUMN IF NOT EXISTS lead_time_days integer DEFAULT 30;
