@@ -1,0 +1,1 @@
+ALTER TABLE corp_documents ADD COLUMN department_id uuid REFERENCES departments(id);
