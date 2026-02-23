@@ -1,0 +1,1 @@
+ALTER TABLE public.corp_requests ADD COLUMN target_user_id uuid REFERENCES public.profiles(id);
