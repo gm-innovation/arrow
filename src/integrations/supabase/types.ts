@@ -1045,11 +1045,15 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          notes: string | null
+          priority: string | null
           product_id: string | null
           published: boolean | null
           tags: string[] | null
+          target_segment: string | null
           title: string
           updated_at: string
+          version: string | null
         }
         Insert: {
           author_id?: string | null
@@ -1058,11 +1062,15 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          notes?: string | null
+          priority?: string | null
           product_id?: string | null
           published?: boolean | null
           tags?: string[] | null
+          target_segment?: string | null
           title: string
           updated_at?: string
+          version?: string | null
         }
         Update: {
           author_id?: string | null
@@ -1071,11 +1079,15 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          notes?: string | null
+          priority?: string | null
           product_id?: string | null
           published?: boolean | null
           tags?: string[] | null
+          target_segment?: string | null
           title?: string
           updated_at?: string
+          version?: string | null
         }
         Relationships: [
           {
