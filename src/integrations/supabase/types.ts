@@ -565,6 +565,8 @@ export type Database = {
         Row: {
           address: string | null
           annual_revenue: number | null
+          cep: string | null
+          city: string | null
           cnpj: string | null
           commercial_status: string | null
           company_id: string
@@ -578,11 +580,16 @@ export type Database = {
           phone: string | null
           segment: string | null
           source: string | null
+          state: string | null
+          street: string | null
+          street_number: string | null
           updated_at: string
         }
         Insert: {
           address?: string | null
           annual_revenue?: number | null
+          cep?: string | null
+          city?: string | null
           cnpj?: string | null
           commercial_status?: string | null
           company_id: string
@@ -596,11 +603,16 @@ export type Database = {
           phone?: string | null
           segment?: string | null
           source?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           updated_at?: string
         }
         Update: {
           address?: string | null
           annual_revenue?: number | null
+          cep?: string | null
+          city?: string | null
           cnpj?: string | null
           commercial_status?: string | null
           company_id?: string
@@ -614,6 +626,9 @@ export type Database = {
           phone?: string | null
           segment?: string | null
           source?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -820,6 +835,8 @@ export type Database = {
           email: string | null
           id: string
           influence_level: string | null
+          is_active: boolean | null
+          is_primary: boolean | null
           name: string
           notes: string | null
           phone: string | null
@@ -833,6 +850,8 @@ export type Database = {
           email?: string | null
           id?: string
           influence_level?: string | null
+          is_active?: boolean | null
+          is_primary?: boolean | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -846,6 +865,8 @@ export type Database = {
           email?: string | null
           id?: string
           influence_level?: string | null
+          is_active?: boolean | null
+          is_primary?: boolean | null
           name?: string
           notes?: string | null
           phone?: string | null
@@ -871,6 +892,7 @@ export type Database = {
       }
       crm_client_recurrences: {
         Row: {
+          advance_notice_days: number | null
           assigned_to: string | null
           client_id: string
           company_id: string
@@ -888,6 +910,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          advance_notice_days?: number | null
           assigned_to?: string | null
           client_id: string
           company_id: string
@@ -905,6 +928,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          advance_notice_days?: number | null
           assigned_to?: string | null
           client_id?: string
           company_id?: string
