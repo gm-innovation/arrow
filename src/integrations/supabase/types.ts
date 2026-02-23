@@ -827,6 +827,384 @@ export type Database = {
           },
         ]
       }
+      corp_audit_log: {
+        Row: {
+          action: string
+          company_id: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          company_id: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          company_id?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_audit_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_documents: {
+        Row: {
+          company_id: string
+          created_at: string
+          document_type: string
+          file_name: string
+          file_url: string
+          id: string
+          owner_user_id: string
+          related_request_id: string | null
+          title: string
+          uploaded_by: string
+          visibility_level: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          document_type: string
+          file_name: string
+          file_url: string
+          id?: string
+          owner_user_id: string
+          related_request_id?: string | null
+          title: string
+          uploaded_by: string
+          visibility_level?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          document_type?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          owner_user_id?: string
+          related_request_id?: string | null
+          title?: string
+          uploaded_by?: string
+          visibility_level?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_documents_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_documents_related_request_id_fkey"
+            columns: ["related_request_id"]
+            isOneToOne: false
+            referencedRelation: "corp_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_feed_posts: {
+        Row: {
+          author_id: string
+          company_id: string
+          content: string
+          created_at: string
+          id: string
+          pinned: boolean
+          post_type: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          company_id: string
+          content: string
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          post_type?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          company_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          post_type?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_feed_posts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_request_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          request_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          request_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          request_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_request_attachments_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "corp_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_request_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_request_types: {
+        Row: {
+          active: boolean
+          company_id: string
+          created_at: string
+          department_id: string | null
+          director_threshold_value: number | null
+          dynamic_fields: Json | null
+          id: string
+          name: string
+          requires_approval: boolean
+          requires_director_approval: boolean
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          company_id: string
+          created_at?: string
+          department_id?: string | null
+          director_threshold_value?: number | null
+          dynamic_fields?: Json | null
+          id?: string
+          name: string
+          requires_approval?: boolean
+          requires_director_approval?: boolean
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          company_id?: string
+          created_at?: string
+          department_id?: string | null
+          director_threshold_value?: number | null
+          dynamic_fields?: Json | null
+          id?: string
+          name?: string
+          requires_approval?: boolean
+          requires_director_approval?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_request_types_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_request_types_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_requests: {
+        Row: {
+          amount: number | null
+          company_id: string
+          created_at: string
+          department_id: string | null
+          description: string | null
+          director_approved_at: string | null
+          director_approver_id: string | null
+          dynamic_data: Json | null
+          id: string
+          manager_approved_at: string | null
+          manager_approver_id: string | null
+          priority: string
+          rejection_reason: string | null
+          requester_id: string
+          status: string
+          title: string
+          type_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          company_id: string
+          created_at?: string
+          department_id?: string | null
+          description?: string | null
+          director_approved_at?: string | null
+          director_approver_id?: string | null
+          dynamic_data?: Json | null
+          id?: string
+          manager_approved_at?: string | null
+          manager_approver_id?: string | null
+          priority?: string
+          rejection_reason?: string | null
+          requester_id: string
+          status?: string
+          title: string
+          type_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          company_id?: string
+          created_at?: string
+          department_id?: string | null
+          description?: string | null
+          director_approved_at?: string | null
+          director_approver_id?: string | null
+          dynamic_data?: Json | null
+          id?: string
+          manager_approved_at?: string | null
+          manager_approver_id?: string | null
+          priority?: string
+          rejection_reason?: string | null
+          requester_id?: string
+          status?: string
+          title?: string
+          type_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_requests_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_requests_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_requests_director_approver_id_fkey"
+            columns: ["director_approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_requests_manager_approver_id_fkey"
+            columns: ["manager_approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_requests_type_id_fkey"
+            columns: ["type_id"]
+            isOneToOne: false
+            referencedRelation: "corp_request_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_buyers: {
         Row: {
           client_id: string
@@ -1549,6 +1927,51 @@ export type Database = {
             columns: ["opportunity_id"]
             isOneToOne: false
             referencedRelation: "crm_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      departments: {
+        Row: {
+          active: boolean
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          manager_id: string | null
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          manager_id?: string | null
+          name: string
+        }
+        Update: {
+          active?: boolean
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          manager_id?: string | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "departments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "departments_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3998,6 +4421,10 @@ export type Database = {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
       }
+      is_department_manager: {
+        Args: { _department_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_tech_assigned_to_order: {
         Args: { _service_order_id: string; _user_id: string }
         Returns: boolean
@@ -4042,6 +4469,13 @@ export type Database = {
       }
       update_forecast_actuals: { Args: never; Returns: undefined }
       user_company_id: { Args: { _user_id: string }; Returns: string }
+      user_has_corp_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       visit_belongs_to_user_company: {
         Args: { _user_id: string; _visit_id: string }
         Returns: boolean
@@ -4063,6 +4497,7 @@ export type Database = {
         | "manager"
         | "hr"
         | "commercial"
+        | "director"
       expense_type: "hospedagem" | "alimentacao"
       measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO" | "ISENTO"
       measurement_status: "draft" | "finalized"
@@ -4076,6 +4511,11 @@ export type Database = {
         | "service_order"
         | "payment_overdue"
         | "new_company"
+        | "request_created"
+        | "request_approved"
+        | "request_rejected"
+        | "document_received"
+        | "approval_pending"
       payment_status: "paid" | "pending" | "overdue"
       service_order_status:
         | "pending"
@@ -4232,6 +4672,7 @@ export const Constants = {
         "manager",
         "hr",
         "commercial",
+        "director",
       ],
       expense_type: ["hospedagem", "alimentacao"],
       measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO", "ISENTO"],
@@ -4246,6 +4687,11 @@ export const Constants = {
         "service_order",
         "payment_overdue",
         "new_company",
+        "request_created",
+        "request_approved",
+        "request_rejected",
+        "document_received",
+        "approval_pending",
       ],
       payment_status: ["paid", "pending", "overdue"],
       service_order_status: [
