@@ -1039,23 +1039,113 @@ export type Database = {
           },
         ]
       }
+      corp_feed_discussion_replies: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          discussion_id: string
+          id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          discussion_id: string
+          id?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          discussion_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_discussion_replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_feed_discussion_replies_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "corp_feed_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_feed_discussions: {
+        Row: {
+          author_id: string
+          company_id: string
+          content: string | null
+          created_at: string
+          id: string
+          pinned: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          company_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          company_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_discussions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_feed_discussions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corp_feed_likes: {
         Row: {
           created_at: string
           id: string
           post_id: string
+          reaction_type: string
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           post_id: string
+          reaction_type?: string
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           post_id?: string
+          reaction_type?: string
           user_id?: string
         }
         Relationships: [
@@ -1103,6 +1193,106 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "corp_feed_mentions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "corp_feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_feed_poll_options: {
+        Row: {
+          id: string
+          option_text: string
+          poll_id: string
+          position: number
+        }
+        Insert: {
+          id?: string
+          option_text: string
+          poll_id: string
+          position?: number
+        }
+        Update: {
+          id?: string
+          option_text?: string
+          poll_id?: string
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_poll_options_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "corp_feed_polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_feed_poll_votes: {
+        Row: {
+          created_at: string
+          id: string
+          option_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          option_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          option_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_poll_votes_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "corp_feed_poll_options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_feed_poll_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_feed_polls: {
+        Row: {
+          allow_multiple: boolean
+          created_at: string
+          ends_at: string | null
+          id: string
+          post_id: string
+          question: string
+        }
+        Insert: {
+          allow_multiple?: boolean
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          post_id: string
+          question: string
+        }
+        Update: {
+          allow_multiple?: boolean
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          post_id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_polls_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
             referencedRelation: "corp_feed_posts"
@@ -1367,6 +1557,58 @@ export type Database = {
           {
             foreignKeyName: "corp_groups_created_by_fkey"
             columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_kudos: {
+        Row: {
+          category: string
+          company_id: string
+          created_at: string
+          from_user_id: string
+          id: string
+          message: string | null
+          to_user_id: string
+        }
+        Insert: {
+          category?: string
+          company_id: string
+          created_at?: string
+          from_user_id: string
+          id?: string
+          message?: string | null
+          to_user_id: string
+        }
+        Update: {
+          category?: string
+          company_id?: string
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          message?: string | null
+          to_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_kudos_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_kudos_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_kudos_to_user_id_fkey"
+            columns: ["to_user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
