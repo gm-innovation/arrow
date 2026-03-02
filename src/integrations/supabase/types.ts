@@ -875,6 +875,64 @@ export type Database = {
           },
         ]
       }
+      corp_badges: {
+        Row: {
+          awarded_at: string
+          awarded_by: string | null
+          badge_type: string
+          company_id: string
+          description: string | null
+          icon: string | null
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          awarded_by?: string | null
+          badge_type: string
+          company_id: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          awarded_by?: string | null
+          badge_type?: string
+          company_id?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_badges_awarded_by_fkey"
+            columns: ["awarded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_badges_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corp_documents: {
         Row: {
           company_id: string
@@ -1268,27 +1326,33 @@ export type Database = {
       corp_feed_polls: {
         Row: {
           allow_multiple: boolean
+          closed_at: string | null
           created_at: string
           ends_at: string | null
           id: string
           post_id: string
           question: string
+          status: string
         }
         Insert: {
           allow_multiple?: boolean
+          closed_at?: string | null
           created_at?: string
           ends_at?: string | null
           id?: string
           post_id: string
           question: string
+          status?: string
         }
         Update: {
           allow_multiple?: boolean
+          closed_at?: string | null
           created_at?: string
           ends_at?: string | null
           id?: string
           post_id?: string
           question?: string
+          status?: string
         }
         Relationships: [
           {
