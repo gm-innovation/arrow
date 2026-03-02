@@ -1075,6 +1075,41 @@ export type Database = {
           },
         ]
       }
+      corp_feed_mentions: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          mention_type: string
+          mention_value: string
+          post_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id?: string
+          mention_type: string
+          mention_value: string
+          post_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          mention_type?: string
+          mention_value?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_mentions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "corp_feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corp_feed_posts: {
         Row: {
           author_id: string
