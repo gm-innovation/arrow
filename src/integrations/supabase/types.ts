@@ -1161,6 +1161,44 @@ export type Database = {
           },
         ]
       }
+      corp_group_join_requests: {
+        Row: {
+          group_id: string
+          id: string
+          requested_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_group_join_requests_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "corp_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corp_group_members: {
         Row: {
           group_id: string
