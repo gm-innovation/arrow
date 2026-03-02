@@ -1,0 +1,1 @@
+ALTER TABLE public.corp_feed_polls ADD COLUMN group_id uuid REFERENCES public.corp_groups(id) ON DELETE CASCADE;

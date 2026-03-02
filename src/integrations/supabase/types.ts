@@ -1329,6 +1329,7 @@ export type Database = {
           closed_at: string | null
           created_at: string
           ends_at: string | null
+          group_id: string | null
           id: string
           post_id: string
           question: string
@@ -1339,6 +1340,7 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           ends_at?: string | null
+          group_id?: string | null
           id?: string
           post_id: string
           question: string
@@ -1349,12 +1351,20 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           ends_at?: string | null
+          group_id?: string | null
           id?: string
           post_id?: string
           question?: string
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "corp_feed_polls_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "corp_groups"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "corp_feed_polls_post_id_fkey"
             columns: ["post_id"]
