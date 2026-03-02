@@ -956,6 +956,47 @@ export type Database = {
           },
         ]
       }
+      corp_feed_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string
+          file_url: string
+          id: string
+          mime_type: string | null
+          post_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string
+          file_url: string
+          id?: string
+          mime_type?: string | null
+          post_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string
+          file_url?: string
+          id?: string
+          mime_type?: string | null
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_feed_attachments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "corp_feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corp_feed_comments: {
         Row: {
           author_id: string
