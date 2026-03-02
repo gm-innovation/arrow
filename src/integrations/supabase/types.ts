@@ -1161,6 +1161,93 @@ export type Database = {
           },
         ]
       }
+      corp_group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "corp_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      corp_groups: {
+        Row: {
+          avatar_url: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          group_type: string
+          id: string
+          name: string
+          role_slug: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          group_type?: string
+          id?: string
+          name: string
+          role_slug?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          group_type?: string
+          id?: string
+          name?: string
+          role_slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "corp_groups_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corp_request_attachments: {
         Row: {
           created_at: string
@@ -3321,30 +3408,36 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          birth_date: string | null
           company_id: string | null
           created_at: string
           email: string
           full_name: string
+          hire_date: string | null
           id: string
           phone: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          birth_date?: string | null
           company_id?: string | null
           created_at?: string
           email: string
           full_name: string
+          hire_date?: string | null
           id: string
           phone?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          birth_date?: string | null
           company_id?: string | null
           created_at?: string
           email?: string
           full_name?: string
+          hire_date?: string | null
           id?: string
           phone?: string | null
           updated_at?: string
