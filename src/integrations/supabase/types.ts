@@ -1737,6 +1737,7 @@ export type Database = {
       corp_request_types: {
         Row: {
           active: boolean
+          category: string
           company_id: string
           created_at: string
           department_id: string | null
@@ -1750,6 +1751,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          category?: string
           company_id: string
           created_at?: string
           department_id?: string | null
@@ -1763,6 +1765,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          category?: string
           company_id?: string
           created_at?: string
           department_id?: string | null
