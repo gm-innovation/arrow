@@ -880,34 +880,40 @@ export type Database = {
           awarded_at: string
           awarded_by: string | null
           badge_type: string
+          category: string | null
           company_id: string
           description: string | null
           icon: string | null
           id: string
           title: string
           user_id: string
+          xp_value: number | null
         }
         Insert: {
           awarded_at?: string
           awarded_by?: string | null
           badge_type: string
+          category?: string | null
           company_id: string
           description?: string | null
           icon?: string | null
           id?: string
           title: string
           user_id: string
+          xp_value?: number | null
         }
         Update: {
           awarded_at?: string
           awarded_by?: string | null
           badge_type?: string
+          category?: string | null
           company_id?: string
           description?: string | null
           icon?: string | null
           id?: string
           title?: string
           user_id?: string
+          xp_value?: number | null
         }
         Relationships: [
           {
