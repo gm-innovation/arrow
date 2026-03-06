@@ -1594,6 +1594,7 @@ export type Database = {
       }
       corp_groups: {
         Row: {
+          admin_user_id: string | null
           avatar_url: string | null
           company_id: string
           created_at: string
@@ -1605,6 +1606,7 @@ export type Database = {
           role_slug: string | null
         }
         Insert: {
+          admin_user_id?: string | null
           avatar_url?: string | null
           company_id: string
           created_at?: string
@@ -1616,6 +1618,7 @@ export type Database = {
           role_slug?: string | null
         }
         Update: {
+          admin_user_id?: string | null
           avatar_url?: string | null
           company_id?: string
           created_at?: string
