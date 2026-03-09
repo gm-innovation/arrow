@@ -514,12 +514,66 @@ export type Database = {
           },
         ]
       }
+      client_addresses: {
+        Row: {
+          cep: string | null
+          city: string | null
+          client_id: string
+          complement: string | null
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          label: string | null
+          state: string | null
+          street: string | null
+          street_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          cep?: string | null
+          city?: string | null
+          client_id: string
+          complement?: string | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          label?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          cep?: string | null
+          city?: string | null
+          client_id?: string
+          complement?: string | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          label?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_addresses_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_contacts: {
         Row: {
           client_id: string
           created_at: string
           email: string | null
           id: string
+          is_general: boolean | null
           is_primary: boolean | null
           name: string
           phone: string | null
@@ -532,6 +586,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          is_general?: boolean | null
           is_primary?: boolean | null
           name: string
           phone?: string | null
@@ -544,6 +599,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          is_general?: boolean | null
           is_primary?: boolean | null
           name?: string
           phone?: string | null
@@ -554,6 +610,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "client_contacts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_legal_entities: {
+        Row: {
+          client_id: string
+          cnpj: string | null
+          created_at: string | null
+          id: string
+          is_primary: boolean | null
+          legal_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          client_id: string
+          cnpj?: string | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          legal_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string
+          cnpj?: string | null
+          created_at?: string | null
+          id?: string
+          is_primary?: boolean | null
+          legal_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_legal_entities_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
@@ -736,6 +830,39 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_vessel_links: {
+        Row: {
+          contact_id: string
+          id: string
+          vessel_id: string
+        }
+        Insert: {
+          contact_id: string
+          id?: string
+          vessel_id: string
+        }
+        Update: {
+          contact_id?: string
+          id?: string
+          vessel_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_vessel_links_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "client_contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_vessel_links_vessel_id_fkey"
+            columns: ["vessel_id"]
+            isOneToOne: false
+            referencedRelation: "vessels"
             referencedColumns: ["id"]
           },
         ]
