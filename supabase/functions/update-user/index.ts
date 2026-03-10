@@ -51,9 +51,9 @@ serve(async (req) => {
 
     const callerRole = callerRoleData.role;
 
-    // Only admin and super_admin can update users
-    if (callerRole !== 'admin' && callerRole !== 'super_admin') {
-      throw new Error('Forbidden: Only admins can update users');
+    // Only coordinator and super_admin can update users
+    if (callerRole !== 'coordinator' && callerRole !== 'super_admin') {
+      throw new Error('Forbidden: Only coordinators and super admins can update users');
     }
 
     const { user_id, full_name, phone, company_id, role } = await req.json();
