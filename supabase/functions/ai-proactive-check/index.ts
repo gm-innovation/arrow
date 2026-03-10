@@ -46,7 +46,7 @@ serve(async (req) => {
       const { data: userRoles } = await supabase
         .from('user_roles')
         .select('user_id')
-        .eq('role', 'admin')
+        .eq('role', 'coordinator')
         .in('user_id', coordinators?.map(c => c.id) || []);
 
       const coordinatorIds = userRoles?.map(r => r.user_id) || [];

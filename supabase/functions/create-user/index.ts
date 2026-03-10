@@ -65,8 +65,8 @@ serve(async (req) => {
     const callerRole = callerRoleData.role;
     console.log('Caller role:', callerRole);
 
-    // Only admin, super_admin and hr can create users
-    if (callerRole !== 'admin' && callerRole !== 'super_admin' && callerRole !== 'hr') {
+    // Only coordinator, super_admin and hr can create users
+    if (callerRole !== 'coordinator' && callerRole !== 'super_admin' && callerRole !== 'hr') {
       console.error('Unauthorized role attempted to create user:', callerRole);
       return new Response(
         JSON.stringify({ error: 'Permissão negada - apenas administradores e RH podem criar usuários' }),
@@ -85,10 +85,10 @@ serve(async (req) => {
     }
 
     // Role-based authorization checks
-    const allowedRoles = ['technician', 'admin', 'manager', 'hr', 'commercial', 'director', 'compras', 'qualidade', 'financeiro'];
+    const allowedRoles = ['technician', 'coordinator', 'manager', 'hr', 'commercial', 'director', 'compras', 'qualidade', 'financeiro'];
     
     // Admin and HR can only create users in their own company
-    if (callerRole === 'admin' || callerRole === 'hr') {
+    if (callerRole === 'coordinator' || callerRole === 'hr') {
       // Get caller's company
       const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
         .from('profiles')
@@ -112,9 +112,9 @@ serve(async (req) => {
         );
       }
       
-      // Admin cannot create super_admin
-      if (callerRole === 'admin' && role === 'super_admin') {
-        console.error('Admin tried to create super_admin');
+      // Coordinator cannot create super_admin
+      if (callerRole === 'coordinator' && role === 'super_admin') {
+        console.error('Coordinator tried to create super_admin');
         return new Response(
           JSON.stringify({ error: 'Permissão negada - você não pode criar super administradores' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
