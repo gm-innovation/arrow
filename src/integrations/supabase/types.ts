@@ -4872,6 +4872,7 @@ export type Database = {
           is_docking: boolean | null
           location: string | null
           order_number: string
+          parent_docking_id: string | null
           planned_location: string | null
           requester_contact_id: string | null
           scheduled_date: string | null
@@ -4900,6 +4901,7 @@ export type Database = {
           is_docking?: boolean | null
           location?: string | null
           order_number: string
+          parent_docking_id?: string | null
           planned_location?: string | null
           requester_contact_id?: string | null
           scheduled_date?: string | null
@@ -4928,6 +4930,7 @@ export type Database = {
           is_docking?: boolean | null
           location?: string | null
           order_number?: string
+          parent_docking_id?: string | null
           planned_location?: string | null
           requester_contact_id?: string | null
           scheduled_date?: string | null
@@ -4972,6 +4975,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_parent_docking_id_fkey"
+            columns: ["parent_docking_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
             referencedColumns: ["id"]
           },
           {
@@ -5370,6 +5380,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           description: string | null
+          docking_activity_group: string | null
           due_date: string | null
           id: string
           priority: number | null
@@ -5387,6 +5398,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           description?: string | null
+          docking_activity_group?: string | null
           due_date?: string | null
           id?: string
           priority?: number | null
@@ -5404,6 +5416,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           description?: string | null
+          docking_activity_group?: string | null
           due_date?: string | null
           id?: string
           priority?: number | null
