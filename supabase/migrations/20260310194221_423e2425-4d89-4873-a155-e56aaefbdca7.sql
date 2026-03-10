@@ -1,0 +1,1 @@
+ALTER TABLE corp_requests ADD COLUMN IF NOT EXISTS approved_amount numeric;
