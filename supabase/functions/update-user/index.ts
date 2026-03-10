@@ -71,13 +71,13 @@ serve(async (req) => {
 
     const targetCurrentRole = targetRoleData?.role;
 
-    // Prevent admins from modifying super_admins
-    if (callerRole === 'admin' && targetCurrentRole === 'super_admin') {
-      throw new Error('Forbidden: Admins cannot modify super_admin accounts');
+    // Prevent coordinators from modifying super_admins
+    if (callerRole === 'coordinator' && targetCurrentRole === 'super_admin') {
+      throw new Error('Forbidden: Coordinators cannot modify super_admin accounts');
     }
 
-    // Prevent admins from creating super_admins
-    if (callerRole === 'admin' && role === 'super_admin') {
+    // Prevent coordinators from creating super_admins
+    if (callerRole === 'coordinator' && role === 'super_admin') {
       throw new Error('Forbidden: Only super_admins can assign super_admin role');
     }
 
