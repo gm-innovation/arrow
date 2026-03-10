@@ -5530,10 +5530,15 @@ export type Database = {
           category: string | null
           company_id: string
           created_at: string
+          default_estimated_value: number | null
+          default_periodicity: number | null
           description: string | null
           id: string
+          is_recurrent: boolean
           name: string
           photo_labels: string[] | null
+          pricing_type: string | null
+          recurrence_type: string | null
           steps: string[] | null
           tools: string[] | null
           updated_at: string
@@ -5542,10 +5547,15 @@ export type Database = {
           category?: string | null
           company_id: string
           created_at?: string
+          default_estimated_value?: number | null
+          default_periodicity?: number | null
           description?: string | null
           id?: string
+          is_recurrent?: boolean
           name: string
           photo_labels?: string[] | null
+          pricing_type?: string | null
+          recurrence_type?: string | null
           steps?: string[] | null
           tools?: string[] | null
           updated_at?: string
@@ -5554,10 +5564,15 @@ export type Database = {
           category?: string | null
           company_id?: string
           created_at?: string
+          default_estimated_value?: number | null
+          default_periodicity?: number | null
           description?: string | null
           id?: string
+          is_recurrent?: boolean
           name?: string
           photo_labels?: string[] | null
+          pricing_type?: string | null
+          recurrence_type?: string | null
           steps?: string[] | null
           tools?: string[] | null
           updated_at?: string
