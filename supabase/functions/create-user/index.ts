@@ -88,7 +88,7 @@ serve(async (req) => {
     const allowedRoles = ['technician', 'coordinator', 'manager', 'hr', 'commercial', 'director', 'compras', 'qualidade', 'financeiro'];
     
     // Admin and HR can only create users in their own company
-    if (callerRole === 'admin' || callerRole === 'hr') {
+    if (callerRole === 'coordinator' || callerRole === 'hr') {
       // Get caller's company
       const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
         .from('profiles')
