@@ -4869,6 +4869,7 @@ export type Database = {
           description: string | null
           expected_context: string | null
           id: string
+          is_docking: boolean | null
           location: string | null
           order_number: string
           planned_location: string | null
@@ -4896,6 +4897,7 @@ export type Database = {
           description?: string | null
           expected_context?: string | null
           id?: string
+          is_docking?: boolean | null
           location?: string | null
           order_number: string
           planned_location?: string | null
@@ -4923,6 +4925,7 @@ export type Database = {
           description?: string | null
           expected_context?: string | null
           id?: string
+          is_docking?: boolean | null
           location?: string | null
           order_number?: string
           planned_location?: string | null
@@ -5370,6 +5373,8 @@ export type Database = {
           due_date: string | null
           id: string
           priority: number | null
+          scheduled_date: string | null
+          scheduled_time: string | null
           service_order_id: string
           status: Database["public"]["Enums"]["task_status"] | null
           task_order_number: string | null
@@ -5385,6 +5390,8 @@ export type Database = {
           due_date?: string | null
           id?: string
           priority?: number | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
           service_order_id: string
           status?: Database["public"]["Enums"]["task_status"] | null
           task_order_number?: string | null
@@ -5400,6 +5407,8 @@ export type Database = {
           due_date?: string | null
           id?: string
           priority?: number | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
           service_order_id?: string
           status?: Database["public"]["Enums"]["task_status"] | null
           task_order_number?: string | null
