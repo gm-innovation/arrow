@@ -671,6 +671,7 @@ export type Database = {
           last_contact_date: string | null
           name: string
           notes: string | null
+          omie_client_id: number | null
           phone: string | null
           segment: string | null
           source: string | null
@@ -694,6 +695,7 @@ export type Database = {
           last_contact_date?: string | null
           name: string
           notes?: string | null
+          omie_client_id?: number | null
           phone?: string | null
           segment?: string | null
           source?: string | null
@@ -717,6 +719,7 @@ export type Database = {
           last_contact_date?: string | null
           name?: string
           notes?: string | null
+          omie_client_id?: number | null
           phone?: string | null
           segment?: string | null
           source?: string | null
@@ -745,6 +748,9 @@ export type Database = {
           id: string
           logo_url: string | null
           name: string
+          omie_app_key: string | null
+          omie_app_secret: string | null
+          omie_sync_enabled: boolean | null
           payment_status: Database["public"]["Enums"]["payment_status"] | null
           phone: string | null
           subscription_plan:
@@ -761,6 +767,9 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name: string
+          omie_app_key?: string | null
+          omie_app_secret?: string | null
+          omie_sync_enabled?: boolean | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
           subscription_plan?:
@@ -777,6 +786,9 @@ export type Database = {
           id?: string
           logo_url?: string | null
           name?: string
+          omie_app_key?: string | null
+          omie_app_secret?: string | null
+          omie_sync_enabled?: boolean | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
           subscription_plan?:
@@ -4871,6 +4883,8 @@ export type Database = {
           id: string
           is_docking: boolean | null
           location: string | null
+          omie_os_id: number | null
+          omie_os_integration_code: string | null
           order_number: string
           parent_docking_id: string | null
           planned_location: string | null
@@ -4900,6 +4914,8 @@ export type Database = {
           id?: string
           is_docking?: boolean | null
           location?: string | null
+          omie_os_id?: number | null
+          omie_os_integration_code?: string | null
           order_number: string
           parent_docking_id?: string | null
           planned_location?: string | null
@@ -4929,6 +4945,8 @@ export type Database = {
           id?: string
           is_docking?: boolean | null
           location?: string | null
+          omie_os_id?: number | null
+          omie_os_integration_code?: string | null
           order_number?: string
           parent_docking_id?: string | null
           planned_location?: string | null
