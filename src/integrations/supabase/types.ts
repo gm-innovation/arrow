@@ -2700,6 +2700,121 @@ export type Database = {
           },
         ]
       }
+      crm_sale_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          markup_percentage: number | null
+          name: string
+          quantity: number
+          sale_id: string
+          stock_product_id: string | null
+          total_value: number | null
+          unit_value: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          markup_percentage?: number | null
+          name: string
+          quantity?: number
+          sale_id: string
+          stock_product_id?: string | null
+          total_value?: number | null
+          unit_value?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          markup_percentage?: number | null
+          name?: string
+          quantity?: number
+          sale_id?: string
+          stock_product_id?: string | null
+          total_value?: number | null
+          unit_value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "crm_sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_sale_items_stock_product_id_fkey"
+            columns: ["stock_product_id"]
+            isOneToOne: false
+            referencedRelation: "stock_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      crm_sales: {
+        Row: {
+          client_id: string | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          notes: string | null
+          opportunity_id: string | null
+          sale_number: string | null
+          status: string | null
+          total_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          opportunity_id?: string | null
+          sale_number?: string | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          opportunity_id?: string | null
+          sale_number?: string | null
+          status?: string | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_sales_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_sales_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "crm_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_tasks: {
         Row: {
           assigned_to: string | null
@@ -5126,6 +5241,68 @@ export type Database = {
             columns: ["service_order_id"]
             isOneToOne: false
             referencedRelation: "service_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_products: {
+        Row: {
+          category: string | null
+          company_id: string
+          created_at: string | null
+          current_quantity: number | null
+          external_product_code: string | null
+          external_product_id: number | null
+          id: string
+          is_active: boolean | null
+          last_synced_at: string | null
+          min_quantity: number | null
+          name: string
+          sell_price: number | null
+          unit: string | null
+          unit_cost: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          company_id: string
+          created_at?: string | null
+          current_quantity?: number | null
+          external_product_code?: string | null
+          external_product_id?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          min_quantity?: number | null
+          name: string
+          sell_price?: number | null
+          unit?: string | null
+          unit_cost?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          company_id?: string
+          created_at?: string | null
+          current_quantity?: number | null
+          external_product_code?: string | null
+          external_product_id?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          min_quantity?: number | null
+          name?: string
+          sell_price?: number | null
+          unit?: string | null
+          unit_cost?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
