@@ -82,7 +82,7 @@ serve(async (req) => {
     }
 
     // Only super_admin can change company_id
-    if (callerRole === 'admin' && company_id !== undefined) {
+    if (callerRole === 'coordinator' && company_id !== undefined) {
       // Get the target's current company
       const { data: targetProfile } = await supabaseAdmin
         .from('profiles')
