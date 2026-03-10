@@ -4860,6 +4860,7 @@ export type Database = {
           access_point_id: string | null
           boarding_method: string | null
           client_id: string | null
+          client_reference: string | null
           company_id: string
           completed_date: string | null
           coordinator_id: string | null
@@ -4886,6 +4887,7 @@ export type Database = {
           access_point_id?: string | null
           boarding_method?: string | null
           client_id?: string | null
+          client_reference?: string | null
           company_id: string
           completed_date?: string | null
           coordinator_id?: string | null
@@ -4912,6 +4914,7 @@ export type Database = {
           access_point_id?: string | null
           boarding_method?: string | null
           client_id?: string | null
+          client_reference?: string | null
           company_id?: string
           completed_date?: string | null
           coordinator_id?: string | null
