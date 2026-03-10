@@ -95,8 +95,8 @@ serve(async (req) => {
       }
     }
 
-    // If caller is admin (not super_admin), verify target is in the same company
-    if (callerRole === 'admin') {
+    // If caller is coordinator (not super_admin), verify target is in the same company
+    if (callerRole === 'coordinator') {
       const { data: callerProfile } = await supabaseAdmin
         .from('profiles')
         .select('company_id')

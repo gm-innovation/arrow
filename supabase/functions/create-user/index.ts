@@ -112,9 +112,9 @@ serve(async (req) => {
         );
       }
       
-      // Admin cannot create super_admin
-      if (callerRole === 'admin' && role === 'super_admin') {
-        console.error('Admin tried to create super_admin');
+      // Coordinator cannot create super_admin
+      if (callerRole === 'coordinator' && role === 'super_admin') {
+        console.error('Coordinator tried to create super_admin');
         return new Response(
           JSON.stringify({ error: 'Permissão negada - você não pode criar super administradores' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
