@@ -1945,6 +1945,7 @@ export type Database = {
       corp_requests: {
         Row: {
           amount: number | null
+          approved_amount: number | null
           company_id: string
           created_at: string
           department_id: string | null
@@ -1966,6 +1967,7 @@ export type Database = {
         }
         Insert: {
           amount?: number | null
+          approved_amount?: number | null
           company_id: string
           created_at?: string
           department_id?: string | null
@@ -1987,6 +1989,7 @@ export type Database = {
         }
         Update: {
           amount?: number | null
+          approved_amount?: number | null
           company_id?: string
           created_at?: string
           department_id?: string | null
