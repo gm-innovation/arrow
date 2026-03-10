@@ -6684,6 +6684,7 @@ export type Database = {
         | "compras"
         | "qualidade"
         | "financeiro"
+        | "coordinator"
       expense_type: "hospedagem" | "alimentacao"
       measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO" | "ISENTO"
       measurement_status: "draft" | "finalized"
@@ -6862,6 +6863,7 @@ export const Constants = {
         "compras",
         "qualidade",
         "financeiro",
+        "coordinator",
       ],
       expense_type: ["hospedagem", "alimentacao"],
       measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO", "ISENTO"],
