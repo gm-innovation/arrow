@@ -65,11 +65,11 @@ serve(async (req) => {
     const callerRole = callerRoleData.role;
     console.log('Caller role:', callerRole);
 
-    // Only coordinator, super_admin and hr can create users
-    if (callerRole !== 'coordinator' && callerRole !== 'super_admin' && callerRole !== 'hr') {
+    // Only super_admin, hr and director can create users
+    if (callerRole !== 'super_admin' && callerRole !== 'hr' && callerRole !== 'director') {
       console.error('Unauthorized role attempted to create user:', callerRole);
       return new Response(
-        JSON.stringify({ error: 'Permissão negada - apenas administradores e RH podem criar usuários' }),
+        JSON.stringify({ error: 'Permissão negada - apenas RH, diretores e super admins podem criar usuários' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
       );
     }
