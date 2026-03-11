@@ -320,15 +320,36 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
 
   const result = await callOmie("/servicos/os/", "ConsultarOS", consultParams, creds);
 
-  // Extract service description from ServicosPrestados
+  // Log raw Omie response structure for debugging
+  console.log("=== OMIE RAW RESPONSE KEYS ===", JSON.stringify(Object.keys(result)));
+  
+  // Extract service description from multiple possible Omie fields
   const servicosPrestados = result?.ServicosPrestados || [];
+  console.log("=== ServicosPrestados ===", JSON.stringify(servicosPrestados).substring(0, 2000));
+
   let serviceDescription = "";
   if (servicosPrestados.length > 0) {
+    // Try multiple field name variations used by Omie API
     serviceDescription = servicosPrestados
-      .map((s: any) => s.cDescricao || s.descricao || "")
+      .map((s: any) => s.cDescricao || s.cDescrServico || s.descricao || s.cDescricaoServico || "")
       .filter(Boolean)
       .join("\n");
   }
+
+  // Fallback: check InformacoesAdicionais and Observacoes
+  if (!serviceDescription) {
+    const infoAdicional = result?.InformacoesAdicionais?.cDadosAdicionaisNF || "";
+    const observacoes = result?.Observacoes?.cObsOS || result?.Observacoes?.cObservacao || "";
+    serviceDescription = [infoAdicional, observacoes].filter(Boolean).join("\n");
+    console.log("=== Fallback description sources ===", { infoAdicional: infoAdicional.substring(0, 200), observacoes: observacoes.substring(0, 200) });
+  }
+
+  // Additional fallback: check Descricao at root or Cabecalho level
+  if (!serviceDescription) {
+    serviceDescription = result?.cDescricaoOS || result?.Cabecalho?.cDescricaoOS || "";
+  }
+
+  console.log("=== EXTRACTED SERVICE DESCRIPTION ===", serviceDescription.substring(0, 500));
   result.serviceDescription = serviceDescription;
 
   // Enrich with local client data
@@ -345,7 +366,6 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
 
       // Try to find vessel from service description
       if (serviceDescription) {
-        // Look for patterns like "Embarcação: NAME" or "EMBARCAÇÃO: NAME"
         const vesselMatch = serviceDescription.match(/embarca[çc][ãa]o\s*[:;-]\s*(.+)/i);
         if (vesselMatch) {
           const vesselName = vesselMatch[1].trim().split(/[\n\r,;]/)[0].trim();
@@ -357,7 +377,7 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
               .ilike("name", `%${vesselName}%`)
               .maybeSingle();
             if (localVessel) {
-      result.localVessel = localVessel;
+              result.localVessel = localVessel;
             }
           }
         }
@@ -366,18 +386,22 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
   }
 
   // AI-powered extraction from service description
-  if (serviceDescription) {
+  if (serviceDescription.trim()) {
     try {
+      console.log("=== CALLING AI PARSER ===");
       const parsedData = await parseServiceDescriptionWithAI(
         serviceDescription,
         supabase,
         companyId,
         result.localClient?.id
       );
+      console.log("=== AI PARSED DATA ===", JSON.stringify(parsedData));
       result.parsedData = parsedData;
     } catch (err) {
       console.error("AI parsing failed, continuing without:", err);
     }
+  } else {
+    console.log("=== NO SERVICE DESCRIPTION FOUND, SKIPPING AI ===");
   }
 
   return result;
