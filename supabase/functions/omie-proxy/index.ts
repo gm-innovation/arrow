@@ -137,6 +137,177 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
   return { synced, errors, total_pages: totalPages };
 }
 
+async function parseServiceDescriptionWithAI(
+  text: string,
+  supabaseClient: any,
+  companyId: string,
+  clientId?: string
+): Promise<Record<string, any>> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY || !text.trim()) return {};
+
+  try {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "system",
+            content: `You are a data extraction agent. Extract structured information from a Brazilian service order description. The text may contain fields like vessel name, team members, date, location, requester, supervisor, coordinator, and scope/description of work. Extract whatever is available. Dates are in DD/MM/YYYY format. Names may be first names only.`,
+          },
+          { role: "user", content: text },
+        ],
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "extract_service_data",
+              description: "Extract structured data from a service order description",
+              parameters: {
+                type: "object",
+                properties: {
+                  vessel_name: { type: "string", description: "Name of the vessel/ship" },
+                  team_members: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Names of team members/technicians",
+                  },
+                  service_date: { type: "string", description: "Date in YYYY-MM-DD format" },
+                  service_time: { type: "string", description: "Time in HH:MM format if available" },
+                  location: { type: "string", description: "Location/address of the service" },
+                  requester_name: { type: "string", description: "Name of the person who requested the service" },
+                  supervisor_name: { type: "string", description: "Name of the supervisor" },
+                  coordinator_name: { type: "string", description: "Name of the coordinator" },
+                  scope_description: { type: "string", description: "Description of the work scope, what services will be performed" },
+                },
+                required: [],
+                additionalProperties: false,
+              },
+            },
+          },
+        ],
+        tool_choice: { type: "function", function: { name: "extract_service_data" } },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("AI Gateway error:", response.status, await response.text());
+      return {};
+    }
+
+    const aiResult = await response.json();
+    const toolCall = aiResult.choices?.[0]?.message?.tool_calls?.[0];
+    if (!toolCall?.function?.arguments) return {};
+
+    const extracted = JSON.parse(toolCall.function.arguments);
+    console.log("AI extracted data:", JSON.stringify(extracted));
+
+    const result: Record<string, any> = {};
+
+    // Match team members to local technicians
+    if (extracted.team_members?.length > 0) {
+      const matchedTechs: { id: string; name: string }[] = [];
+      for (const memberName of extracted.team_members) {
+        const { data: techMatch } = await supabaseClient
+          .from("technicians")
+          .select("id, profiles:user_id(full_name)")
+          .eq("company_id", companyId)
+          .eq("active", true);
+
+        if (techMatch) {
+          const found = techMatch.find((t: any) => {
+            const fullName = t.profiles?.full_name || "";
+            return fullName.toLowerCase().includes(memberName.toLowerCase()) ||
+              memberName.toLowerCase().includes(fullName.split(" ")[0]?.toLowerCase());
+          });
+          if (found) matchedTechs.push({ id: found.id, name: found.profiles?.full_name });
+        }
+      }
+      if (matchedTechs.length > 0) result.matchedTechnicians = matchedTechs;
+    }
+
+    // Match requester to client contacts
+    if (extracted.requester_name && clientId) {
+      const { data: contacts } = await supabaseClient
+        .from("client_contacts")
+        .select("id, name")
+        .eq("client_id", clientId);
+
+      if (contacts) {
+        const found = contacts.find((c: any) =>
+          c.name.toLowerCase().includes(extracted.requester_name.toLowerCase()) ||
+          extracted.requester_name.toLowerCase().includes(c.name.split(" ")[0]?.toLowerCase())
+        );
+        if (found) result.matchedRequester = { id: found.id, name: found.name };
+      }
+    }
+
+    // Match supervisor and coordinator to profiles with coordinator role
+    const matchCoordinator = async (name: string, field: string) => {
+      if (!name) return;
+      const { data: coordRoles } = await supabaseClient
+        .from("user_roles")
+        .select("user_id")
+        .eq("role", "coordinator");
+
+      if (coordRoles?.length) {
+        const userIds = coordRoles.map((r: any) => r.user_id);
+        const { data: profiles } = await supabaseClient
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", userIds)
+          .eq("company_id", companyId);
+
+        if (profiles) {
+          const found = profiles.find((p: any) =>
+            p.full_name.toLowerCase().includes(name.toLowerCase()) ||
+            name.toLowerCase().includes(p.full_name.split(" ")[0]?.toLowerCase())
+          );
+          if (found) result[field] = { id: found.id, name: found.full_name };
+        }
+      }
+    };
+
+    await matchCoordinator(extracted.supervisor_name, "matchedSupervisor");
+    await matchCoordinator(extracted.coordinator_name, "matchedCoordinator");
+
+    // Match task types from scope
+    if (extracted.scope_description) {
+      const { data: taskTypesData } = await supabaseClient
+        .from("task_types")
+        .select("id, name")
+        .eq("company_id", companyId);
+
+      if (taskTypesData) {
+        const matchedTypes = taskTypesData.filter((tt: any) => {
+          const ttName = tt.name.toLowerCase();
+          const scope = extracted.scope_description.toLowerCase();
+          return scope.includes(ttName) || ttName.split(" ").some((w: string) => w.length > 3 && scope.includes(w));
+        });
+        if (matchedTypes.length > 0) result.matchedTaskTypes = matchedTypes.map((t: any) => ({ id: t.id, name: t.name }));
+      }
+      result.scopeDescription = extracted.scope_description;
+    }
+
+    // Direct fields
+    if (extracted.service_date) {
+      const time = extracted.service_time || "08:00";
+      result.serviceDateTime = `${extracted.service_date}T${time}`;
+    }
+    if (extracted.location) result.location = extracted.location;
+
+    return result;
+  } catch (err) {
+    console.error("AI parsing error:", err);
+    return {};
+  }
+}
+
 async function handleConsultOrder(creds: OmieCredentials, params: any, supabase: any, companyId: string) {
   if (!params?.nCodOS && !params?.cCodIntOS && !params?.cNumOS) {
     throw new Error("nCodOS, cCodIntOS ou cNumOS é obrigatório");
@@ -186,11 +357,26 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
               .ilike("name", `%${vesselName}%`)
               .maybeSingle();
             if (localVessel) {
-              result.localVessel = localVessel;
+      result.localVessel = localVessel;
             }
           }
         }
       }
+    }
+  }
+
+  // AI-powered extraction from service description
+  if (serviceDescription) {
+    try {
+      const parsedData = await parseServiceDescriptionWithAI(
+        serviceDescription,
+        supabase,
+        companyId,
+        result.localClient?.id
+      );
+      result.parsedData = parsedData;
+    } catch (err) {
+      console.error("AI parsing failed, continuing without:", err);
     }
   }
 
