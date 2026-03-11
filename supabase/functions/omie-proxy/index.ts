@@ -154,13 +154,14 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
 async function handleListOrders(creds: OmieCredentials, params: any) {
   const page = params?.page || 1;
   const result = await callOmie("/servicos/os/", "ListarOS", {
-    nPagina: page,
-    nRegPorPagina: 50,
+    pagina: page,
+    registros_por_pagina: 50,
+    apenas_importado_api: "N",
   }, creds);
   return {
     orders: result.osCadastro || [],
-    total: result.nTotRegistros || 0,
-    pages: result.nTotPaginas || 0,
+    total: result.total_de_registros || 0,
+    pages: result.total_de_paginas || 0,
     current_page: page,
   };
 }
