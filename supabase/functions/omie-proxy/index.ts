@@ -137,8 +137,7 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
   return { synced, errors, total_pages: totalPages };
 }
 
-async function handleConsultOrder(creds: OmieCredentials, params: any) {
-  // Accept nCodOS, cCodIntOS, or cNumOS
+async function handleConsultOrder(creds: OmieCredentials, params: any, supabase: any, companyId: string) {
   if (!params?.nCodOS && !params?.cCodIntOS && !params?.cNumOS) {
     throw new Error("nCodOS, cCodIntOS ou cNumOS é obrigatório");
   }
@@ -149,6 +148,21 @@ async function handleConsultOrder(creds: OmieCredentials, params: any) {
   if (params.cNumOS) consultParams.cNumOS = String(params.cNumOS);
 
   const result = await callOmie("/servicos/os/", "ConsultarOS", consultParams, creds);
+
+  // Enrich with local client data
+  const nCodCli = result?.Cabecalho?.nCodCli;
+  if (nCodCli) {
+    const { data: localClient } = await supabase
+      .from("clients")
+      .select("id, name")
+      .eq("company_id", companyId)
+      .eq("omie_client_id", nCodCli)
+      .maybeSingle();
+    if (localClient) {
+      result.localClient = localClient;
+    }
+  }
+
   return result;
 }
 
