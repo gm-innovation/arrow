@@ -331,7 +331,7 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
   if (servicosPrestados.length > 0) {
     // Try multiple field name variations used by Omie API
     serviceDescription = servicosPrestados
-      .map((s: any) => s.cDescricao || s.cDescrServico || s.descricao || s.cDescricaoServico || "")
+      .map((s: any) => s.cDescServ || s.cDescricao || s.cDescrServico || s.descricao || s.cDescricaoServico || "")
       .filter(Boolean)
       .join("\n");
   }
