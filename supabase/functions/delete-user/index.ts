@@ -76,9 +76,9 @@ serve(async (req) => {
 
     const targetRole = targetRoleData?.role;
 
-    // Prevent admins from deleting super_admins
-    if (callerRole === 'admin' && targetRole === 'super_admin') {
-      throw new Error('Forbidden: Admins cannot delete super_admins');
+    // Prevent non-super_admins from deleting super_admins
+    if (targetRole === 'super_admin' && callerRole !== 'super_admin') {
+      throw new Error('Forbidden: Only super_admins can delete super_admins');
     }
 
     // If caller is admin or hr (not super_admin), verify target is in the same company
