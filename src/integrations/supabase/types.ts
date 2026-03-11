@@ -6581,7 +6581,7 @@ export type Database = {
           assigned_by: string | null
           id: string
           is_lead: boolean | null
-          technician_id: string | null
+          technician_id: string
           visit_id: string
         }
         Insert: {
@@ -6589,7 +6589,7 @@ export type Database = {
           assigned_by?: string | null
           id?: string
           is_lead?: boolean | null
-          technician_id?: string | null
+          technician_id: string
           visit_id: string
         }
         Update: {
@@ -6597,7 +6597,7 @@ export type Database = {
           assigned_by?: string | null
           id?: string
           is_lead?: boolean | null
-          technician_id?: string | null
+          technician_id?: string
           visit_id?: string
         }
         Relationships: [
