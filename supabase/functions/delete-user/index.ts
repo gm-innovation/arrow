@@ -51,9 +51,9 @@ serve(async (req) => {
 
     const callerRole = callerRoleData.role;
 
-    // Allow admin, super_admin, and hr to delete users
-    if (callerRole !== 'admin' && callerRole !== 'super_admin' && callerRole !== 'hr') {
-      throw new Error('Forbidden: Only admins and HR can delete users');
+    // Allow super_admin, hr, and director to delete users
+    if (callerRole !== 'super_admin' && callerRole !== 'hr' && callerRole !== 'director') {
+      throw new Error('Forbidden: Only HR, directors and super admins can delete users');
     }
 
     const { user_id } = await req.json();
