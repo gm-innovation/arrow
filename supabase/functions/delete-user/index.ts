@@ -81,8 +81,8 @@ serve(async (req) => {
       throw new Error('Forbidden: Only super_admins can delete super_admins');
     }
 
-    // If caller is admin or hr (not super_admin), verify target is in the same company
-    if (callerRole === 'admin' || callerRole === 'hr') {
+    // If caller is hr or director (not super_admin), verify target is in the same company
+    if (callerRole === 'hr' || callerRole === 'director') {
       const { data: callerProfile } = await supabaseAdmin
         .from('profiles')
         .select('company_id')

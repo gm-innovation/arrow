@@ -87,8 +87,8 @@ serve(async (req) => {
     // Role-based authorization checks
     const allowedRoles = ['technician', 'coordinator', 'manager', 'hr', 'commercial', 'director', 'compras', 'qualidade', 'financeiro'];
     
-    // Admin and HR can only create users in their own company
-    if (callerRole === 'coordinator' || callerRole === 'hr') {
+    // HR and Director can only create users in their own company
+    if (callerRole === 'hr' || callerRole === 'director') {
       // Get caller's company
       const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
         .from('profiles')
@@ -112,20 +112,11 @@ serve(async (req) => {
         );
       }
       
-      // Coordinator cannot create super_admin
-      if (callerRole === 'coordinator' && role === 'super_admin') {
-        console.error('Coordinator tried to create super_admin');
+      // Non-super_admin cannot create super_admin
+      if (role === 'super_admin') {
+        console.error(`${callerRole} tried to create super_admin`);
         return new Response(
           JSON.stringify({ error: 'Permissão negada - você não pode criar super administradores' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
-        );
-      }
-      
-      // HR can only create technicians
-      if (callerRole === 'hr' && role !== 'technician') {
-        console.error('HR tried to create non-technician user:', role);
-        return new Response(
-          JSON.stringify({ error: 'Permissão negada - RH só pode criar técnicos' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
         );
       }
