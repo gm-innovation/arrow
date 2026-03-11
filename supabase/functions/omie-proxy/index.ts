@@ -276,7 +276,7 @@ Deno.serve(async (req) => {
           result = await handleSyncClients(creds, supabaseAdmin, companyId);
           break;
         case "consult_order":
-          result = await handleConsultOrder(creds, params);
+          result = await handleConsultOrder(creds, params, supabaseAdmin, companyId);
           break;
         case "attach_file":
           result = await handleAttachFile(creds, params);
