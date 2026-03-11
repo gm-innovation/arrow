@@ -672,6 +672,7 @@ export type Database = {
           name: string
           notes: string | null
           omie_client_id: number | null
+          parent_client_id: string | null
           phone: string | null
           segment: string | null
           source: string | null
@@ -696,6 +697,7 @@ export type Database = {
           name: string
           notes?: string | null
           omie_client_id?: number | null
+          parent_client_id?: string | null
           phone?: string | null
           segment?: string | null
           source?: string | null
@@ -720,6 +722,7 @@ export type Database = {
           name?: string
           notes?: string | null
           omie_client_id?: number | null
+          parent_client_id?: string | null
           phone?: string | null
           segment?: string | null
           source?: string | null
@@ -734,6 +737,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_parent_client_id_fkey"
+            columns: ["parent_client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
             referencedColumns: ["id"]
           },
         ]
