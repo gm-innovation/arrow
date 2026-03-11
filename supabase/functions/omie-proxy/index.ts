@@ -231,50 +231,53 @@ async function parseServiceDescriptionWithAI(
       if (matchedTechs.length > 0) result.matchedTechnicians = matchedTechs;
     }
 
-    // Match requester to client contacts
+    // Match requester to client contacts (auto-create if not found)
     if (extracted.requester_name && clientId) {
       const { data: contacts } = await supabaseClient
         .from("client_contacts")
         .select("id, name")
         .eq("client_id", clientId);
 
-      if (contacts) {
-        const found = contacts.find((c: any) =>
-          c.name.toLowerCase().includes(extracted.requester_name.toLowerCase()) ||
-          extracted.requester_name.toLowerCase().includes(c.name.split(" ")[0]?.toLowerCase())
-        );
-        if (found) result.matchedRequester = { id: found.id, name: found.name };
+      let found = contacts?.find((c: any) =>
+        c.name.toLowerCase().includes(extracted.requester_name.toLowerCase()) ||
+        extracted.requester_name.toLowerCase().includes(c.name.split(" ")[0]?.toLowerCase())
+      );
+      if (found) {
+        result.matchedRequester = { id: found.id, name: found.name };
+      } else {
+        // Auto-create contact
+        const { data: newContact } = await supabaseClient
+          .from("client_contacts")
+          .insert({ client_id: clientId, name: extracted.requester_name, role: "Solicitante" })
+          .select("id, name")
+          .single();
+        if (newContact) {
+          result.matchedRequester = { id: newContact.id, name: newContact.name, autoCreated: true };
+          console.log("Auto-created contact:", newContact.name);
+        }
       }
     }
 
-    // Match supervisor and coordinator to profiles with coordinator role
-    const matchCoordinator = async (name: string, field: string) => {
+    // Match supervisor and coordinator to ANY profile in the company
+    const matchPersonnel = async (name: string, field: string) => {
       if (!name) return;
-      const { data: coordRoles } = await supabaseClient
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "coordinator");
+      // Search all profiles in the company (not just coordinators)
+      const { data: profiles } = await supabaseClient
+        .from("profiles")
+        .select("id, full_name")
+        .eq("company_id", companyId);
 
-      if (coordRoles?.length) {
-        const userIds = coordRoles.map((r: any) => r.user_id);
-        const { data: profiles } = await supabaseClient
-          .from("profiles")
-          .select("id, full_name")
-          .in("id", userIds)
-          .eq("company_id", companyId);
-
-        if (profiles) {
-          const found = profiles.find((p: any) =>
-            p.full_name.toLowerCase().includes(name.toLowerCase()) ||
-            name.toLowerCase().includes(p.full_name.split(" ")[0]?.toLowerCase())
-          );
-          if (found) result[field] = { id: found.id, name: found.full_name };
-        }
+      if (profiles) {
+        const found = profiles.find((p: any) =>
+          p.full_name?.toLowerCase().includes(name.toLowerCase()) ||
+          name.toLowerCase().includes(p.full_name?.split(" ")[0]?.toLowerCase())
+        );
+        if (found) result[field] = { id: found.id, name: found.full_name };
       }
     };
 
-    await matchCoordinator(extracted.supervisor_name, "matchedSupervisor");
-    await matchCoordinator(extracted.coordinator_name, "matchedCoordinator");
+    await matchPersonnel(extracted.supervisor_name, "matchedSupervisor");
+    await matchPersonnel(extracted.coordinator_name, "matchedCoordinator");
 
     // Match task types from scope
     if (extracted.scope_description) {
@@ -300,6 +303,9 @@ async function parseServiceDescriptionWithAI(
       result.serviceDateTime = `${extracted.service_date}T${time}`;
     }
     if (extracted.location) result.location = extracted.location;
+
+    // Store raw extracted names for UI display
+    result._rawExtracted = extracted;
 
     return result;
   } catch (err) {
@@ -364,11 +370,11 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
     if (localClient) {
       result.localClient = localClient;
 
-      // Try to find vessel from service description
+      // Try to find vessel from service description (auto-create if not found)
       if (serviceDescription) {
         const vesselMatch = serviceDescription.match(/embarca[çc][ãa]o\s*[:;-]\s*(.+)/i);
         if (vesselMatch) {
-          const vesselName = vesselMatch[1].trim().split(/[\n\r,;]/)[0].trim();
+          const vesselName = vesselMatch[1].trim().split(/[\n\r,;|]/)[0].trim();
           if (vesselName) {
             const { data: localVessel } = await supabase
               .from("vessels")
@@ -378,6 +384,17 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
               .maybeSingle();
             if (localVessel) {
               result.localVessel = localVessel;
+            } else {
+              // Auto-create vessel for this client
+              const { data: newVessel } = await supabase
+                .from("vessels")
+                .insert({ client_id: localClient.id, name: vesselName.toUpperCase() })
+                .select("id, name")
+                .single();
+              if (newVessel) {
+                result.localVessel = { ...newVessel, autoCreated: true };
+                console.log("Auto-created vessel:", newVessel.name);
+              }
             }
           }
         }
