@@ -13,34 +13,6 @@ interface OmieCredentials {
   app_secret: string;
 }
 
-async function getCredentials(supabase: any, userId: string): Promise<OmieCredentials> {
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("company_id")
-    .eq("id", userId)
-    .single();
-
-  if (profileError || !profile?.company_id) {
-    throw new Error("Perfil ou empresa não encontrados");
-  }
-
-  const { data: company, error: companyError } = await supabase
-    .from("companies")
-    .select("omie_app_key, omie_app_secret, omie_sync_enabled")
-    .eq("id", profile.company_id)
-    .single();
-
-  if (companyError || !company) {
-    throw new Error("Empresa não encontrada");
-  }
-
-  if (!company.omie_app_key || !company.omie_app_secret) {
-    throw new Error("Credenciais Omie não configuradas");
-  }
-
-  return { app_key: company.omie_app_key, app_secret: company.omie_app_secret };
-}
-
 async function callOmie(endpoint: string, call: string, params: any, creds: OmieCredentials, retryCount = 0): Promise<any> {
   const body = {
     call,
@@ -61,22 +33,24 @@ async function callOmie(endpoint: string, call: string, params: any, creds: Omie
   try {
     parsed = JSON.parse(text);
   } catch {
-    if (!res.ok) {
-      throw new Error(`Omie API error ${res.status}: ${text.substring(0, 200)}`);
-    }
-    throw new Error(`Resposta inválida do Omie: ${text.substring(0, 200)}`);
+    throw new Error(`Omie API error ${res.status}: ${text.substring(0, 200)}`);
   }
 
-  // Handle REDUNDANT error with automatic retry
-  if (parsed.faultstring && parsed.faultstring.includes("REDUNDANT") && retryCount < 1) {
-    console.log("Omie REDUNDANT error detected, waiting 10s before retry...");
-    await new Promise(resolve => setTimeout(resolve, 10000));
+  // Handle REDUNDANT error with dynamic retry
+  if (parsed.faultstring && parsed.faultstring.includes("REDUNDANT") && retryCount < 2) {
+    const waitMatch = parsed.faultstring.match(/(\d+)\s*segundo/i);
+    const waitSeconds = waitMatch ? Math.min(parseInt(waitMatch[1]) + 2, 30) : 12;
+    console.log(`Omie REDUNDANT error, waiting ${waitSeconds}s (retry ${retryCount + 1})...`);
+    await new Promise(resolve => setTimeout(resolve, waitSeconds * 1000));
     return callOmie(endpoint, call, params, creds, retryCount + 1);
   }
 
+  if (parsed.faultstring) {
+    throw new Error(parsed.faultstring);
+  }
+
   if (!res.ok) {
-    const faultMsg = parsed.faultstring || text.substring(0, 200);
-    throw new Error(`Omie API error ${res.status}: ${faultMsg}`);
+    throw new Error(`Omie API error ${res.status}: ${text.substring(0, 200)}`);
   }
 
   return parsed;
@@ -163,80 +137,16 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
   return { synced, errors, total_pages: totalPages };
 }
 
-async function handleListOrders(creds: OmieCredentials, params: any) {
-  const page = params?.page || 1;
-  const result = await callOmie("/servicos/os/", "ListarOS", {
-    pagina: page,
-    registros_por_pagina: 100,
-    apenas_importado_api: "N",
-  }, creds);
-  return {
-    orders: result.osCadastro || [],
-    total: result.total_de_registros || 0,
-    pages: result.total_de_paginas || 0,
-    current_page: page,
-  };
-}
-
-async function handleSearchOrders(creds: OmieCredentials, params: any) {
-  const searchTerm = (params?.search || "").toLowerCase().trim();
-  if (!searchTerm) {
-    return handleListOrders(creds, { page: 1 });
-  }
-
-  const allMatches: any[] = [];
-  let page = 1;
-  let totalPages = 1;
-  const maxPages = 10; // safety limit
-
-  while (page <= totalPages && page <= maxPages) {
-    const result = await callOmie("/servicos/os/", "ListarOS", {
-      pagina: page,
-      registros_por_pagina: 100,
-      apenas_importado_api: "N",
-    }, creds);
-
-    totalPages = result.total_de_paginas || 1;
-    const orders = result.osCadastro || [];
-
-    for (const order of orders) {
-      const cab = order.Cabecalho || {};
-      const info = order.InformacoesAdicionais || {};
-      const numOS = (cab.cNumOS || "").toLowerCase();
-      const codOS = (cab.nCodOS?.toString() || "");
-      const clientName = (info.cNomeCliente || "").toLowerCase();
-
-      if (
-        numOS.includes(searchTerm) ||
-        codOS.includes(searchTerm) ||
-        clientName.includes(searchTerm)
-      ) {
-        allMatches.push(order);
-      }
-    }
-
-    // If we found results on this page, likely enough
-    if (allMatches.length >= 20) break;
-
-    page++;
-  }
-
-  return {
-    orders: allMatches,
-    total: allMatches.length,
-    pages: 1,
-    current_page: 1,
-    searched_pages: page,
-  };
-}
-
 async function handleConsultOrder(creds: OmieCredentials, params: any) {
-  if (!params?.nCodOS && !params?.cCodIntOS) {
-    throw new Error("nCodOS ou cCodIntOS é obrigatório");
+  // Accept nCodOS, cCodIntOS, or cNumOS
+  if (!params?.nCodOS && !params?.cCodIntOS && !params?.cNumOS) {
+    throw new Error("nCodOS, cCodIntOS ou cNumOS é obrigatório");
   }
+  
   const consultParams: any = {};
-  if (params.nCodOS) consultParams.nCodOS = params.nCodOS;
+  if (params.nCodOS) consultParams.nCodOS = Number(params.nCodOS);
   if (params.cCodIntOS) consultParams.cCodIntOS = params.cCodIntOS;
+  if (params.cNumOS) consultParams.cNumOS = String(params.cNumOS);
 
   const result = await callOmie("/servicos/os/", "ConsultarOS", consultParams, creds);
   return result;
@@ -307,7 +217,6 @@ Deno.serve(async (req) => {
 
     const userId = user.id;
 
-    // Get company_id
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("company_id")
@@ -327,7 +236,6 @@ Deno.serve(async (req) => {
     if (action === "save_credentials") {
       result = await handleSaveCredentials(supabaseAdmin, companyId, params);
     } else {
-      // All other actions need Omie credentials
       const { data: company } = await supabaseAdmin
         .from("companies")
         .select("omie_app_key, omie_app_secret")
@@ -352,12 +260,6 @@ Deno.serve(async (req) => {
           break;
         case "sync_clients":
           result = await handleSyncClients(creds, supabaseAdmin, companyId);
-          break;
-        case "list_orders":
-          result = await handleListOrders(creds, params);
-          break;
-        case "search_orders":
-          result = await handleSearchOrders(creds, params);
           break;
         case "consult_order":
           result = await handleConsultOrder(creds, params);
