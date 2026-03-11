@@ -72,32 +72,32 @@ serve(async (req) => {
 
     const targetCurrentRole = targetRoleData?.role;
 
-    // Prevent coordinators from modifying super_admins
-    if (callerRole === 'coordinator' && targetCurrentRole === 'super_admin') {
-      throw new Error('Forbidden: Coordinators cannot modify super_admin accounts');
-    }
-
-    // Prevent coordinators from creating super_admins
-    if (callerRole === 'coordinator' && role === 'super_admin') {
-      throw new Error('Forbidden: Only super_admins can assign super_admin role');
-    }
-
-    // Only super_admin can change company_id
-    if (callerRole === 'coordinator' && company_id !== undefined) {
-      // Get the target's current company
-      const { data: targetProfile } = await supabaseAdmin
-        .from('profiles')
-        .select('company_id')
-        .eq('id', user_id)
-        .single();
-
-      if (targetProfile?.company_id !== company_id) {
-        throw new Error('Forbidden: Only super_admins can change user company');
+    // Non-super_admin restrictions
+    if (callerRole !== 'super_admin') {
+      // Cannot modify super_admins
+      if (targetCurrentRole === 'super_admin') {
+        throw new Error('Forbidden: Cannot modify super_admin accounts');
       }
-    }
 
-    // If caller is coordinator (not super_admin), verify target is in the same company
-    if (callerRole === 'coordinator') {
+      // Cannot assign super_admin role
+      if (role === 'super_admin') {
+        throw new Error('Forbidden: Only super_admins can assign super_admin role');
+      }
+
+      // Cannot change company_id
+      if (company_id !== undefined) {
+        const { data: targetProfile } = await supabaseAdmin
+          .from('profiles')
+          .select('company_id')
+          .eq('id', user_id)
+          .single();
+
+        if (targetProfile?.company_id !== company_id) {
+          throw new Error('Forbidden: Only super_admins can change user company');
+        }
+      }
+
+      // Verify target is in the same company
       const { data: callerProfile } = await supabaseAdmin
         .from('profiles')
         .select('company_id')
