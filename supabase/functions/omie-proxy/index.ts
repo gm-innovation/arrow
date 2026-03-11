@@ -304,6 +304,9 @@ async function parseServiceDescriptionWithAI(
     }
     if (extracted.location) result.location = extracted.location;
 
+    // Store raw extracted names for UI display
+    result._rawExtracted = extracted;
+
     return result;
   } catch (err) {
     console.error("AI parsing error:", err);
