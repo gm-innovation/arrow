@@ -52,9 +52,9 @@ serve(async (req) => {
     const callerRole = callerRoleData.role;
 
     // Roles authorized to update users
-    const authorizedRoles = ['coordinator', 'super_admin', 'hr', 'director'];
+    const authorizedRoles = ['super_admin', 'hr', 'director'];
     if (!authorizedRoles.includes(callerRole)) {
-      throw new Error('Forbidden: Only coordinators, HR, directors and super admins can update users');
+      throw new Error('Forbidden: Only HR, directors and super admins can update users');
     }
 
     const { user_id, full_name, phone, company_id, role } = await req.json();

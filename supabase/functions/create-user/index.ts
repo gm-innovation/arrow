@@ -65,11 +65,11 @@ serve(async (req) => {
     const callerRole = callerRoleData.role;
     console.log('Caller role:', callerRole);
 
-    // Only coordinator, super_admin and hr can create users
-    if (callerRole !== 'coordinator' && callerRole !== 'super_admin' && callerRole !== 'hr') {
+    // Only super_admin, hr and director can create users
+    if (callerRole !== 'super_admin' && callerRole !== 'hr' && callerRole !== 'director') {
       console.error('Unauthorized role attempted to create user:', callerRole);
       return new Response(
-        JSON.stringify({ error: 'Permissão negada - apenas administradores e RH podem criar usuários' }),
+        JSON.stringify({ error: 'Permissão negada - apenas RH, diretores e super admins podem criar usuários' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
       );
     }
@@ -87,8 +87,8 @@ serve(async (req) => {
     // Role-based authorization checks
     const allowedRoles = ['technician', 'coordinator', 'manager', 'hr', 'commercial', 'director', 'compras', 'qualidade', 'financeiro'];
     
-    // Admin and HR can only create users in their own company
-    if (callerRole === 'coordinator' || callerRole === 'hr') {
+    // HR and Director can only create users in their own company
+    if (callerRole === 'hr' || callerRole === 'director') {
       // Get caller's company
       const { data: callerProfile, error: callerProfileError } = await supabaseAdmin
         .from('profiles')
@@ -112,20 +112,11 @@ serve(async (req) => {
         );
       }
       
-      // Coordinator cannot create super_admin
-      if (callerRole === 'coordinator' && role === 'super_admin') {
-        console.error('Coordinator tried to create super_admin');
+      // Non-super_admin cannot create super_admin
+      if (role === 'super_admin') {
+        console.error(`${callerRole} tried to create super_admin`);
         return new Response(
           JSON.stringify({ error: 'Permissão negada - você não pode criar super administradores' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
-        );
-      }
-      
-      // HR can only create technicians
-      if (callerRole === 'hr' && role !== 'technician') {
-        console.error('HR tried to create non-technician user:', role);
-        return new Response(
-          JSON.stringify({ error: 'Permissão negada - RH só pode criar técnicos' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
         );
       }
