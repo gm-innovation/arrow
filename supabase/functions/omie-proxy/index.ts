@@ -357,11 +357,26 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
               .ilike("name", `%${vesselName}%`)
               .maybeSingle();
             if (localVessel) {
-              result.localVessel = localVessel;
+      result.localVessel = localVessel;
             }
           }
         }
       }
+    }
+  }
+
+  // AI-powered extraction from service description
+  if (serviceDescription) {
+    try {
+      const parsedData = await parseServiceDescriptionWithAI(
+        serviceDescription,
+        supabase,
+        companyId,
+        result.localClient?.id
+      );
+      result.parsedData = parsedData;
+    } catch (err) {
+      console.error("AI parsing failed, continuing without:", err);
     }
   }
 
