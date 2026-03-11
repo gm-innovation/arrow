@@ -149,6 +149,17 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
 
   const result = await callOmie("/servicos/os/", "ConsultarOS", consultParams, creds);
 
+  // Extract service description from ServicosPrestados
+  const servicosPrestados = result?.ServicosPrestados || [];
+  let serviceDescription = "";
+  if (servicosPrestados.length > 0) {
+    serviceDescription = servicosPrestados
+      .map((s: any) => s.cDescricao || s.descricao || "")
+      .filter(Boolean)
+      .join("\n");
+  }
+  result.serviceDescription = serviceDescription;
+
   // Enrich with local client data
   const nCodCli = result?.Cabecalho?.nCodCli;
   if (nCodCli) {
@@ -160,6 +171,26 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
       .maybeSingle();
     if (localClient) {
       result.localClient = localClient;
+
+      // Try to find vessel from service description
+      if (serviceDescription) {
+        // Look for patterns like "Embarcação: NAME" or "EMBARCAÇÃO: NAME"
+        const vesselMatch = serviceDescription.match(/embarca[çc][ãa]o\s*[:;-]\s*(.+)/i);
+        if (vesselMatch) {
+          const vesselName = vesselMatch[1].trim().split(/[\n\r,;]/)[0].trim();
+          if (vesselName) {
+            const { data: localVessel } = await supabase
+              .from("vessels")
+              .select("id, name")
+              .eq("client_id", localClient.id)
+              .ilike("name", `%${vesselName}%`)
+              .maybeSingle();
+            if (localVessel) {
+              result.localVessel = localVessel;
+            }
+          }
+        }
+      }
     }
   }
 
