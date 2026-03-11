@@ -2995,6 +2995,9 @@ export type Database = {
       }
       employee_onboarding: {
         Row: {
+          access_token: string
+          candidate_email: string | null
+          candidate_name: string | null
           company_id: string
           completed_at: string | null
           created_at: string | null
@@ -3004,9 +3007,12 @@ export type Database = {
           started_at: string | null
           status: string
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          access_token?: string
+          candidate_email?: string | null
+          candidate_name?: string | null
           company_id: string
           completed_at?: string | null
           created_at?: string | null
@@ -3016,9 +3022,12 @@ export type Database = {
           started_at?: string | null
           status?: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          access_token?: string
+          candidate_email?: string | null
+          candidate_name?: string | null
           company_id?: string
           completed_at?: string | null
           created_at?: string | null
@@ -3028,7 +3037,7 @@ export type Database = {
           started_at?: string | null
           status?: string
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
