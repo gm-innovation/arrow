@@ -367,11 +367,11 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
     if (localClient) {
       result.localClient = localClient;
 
-      // Try to find vessel from service description
+      // Try to find vessel from service description (auto-create if not found)
       if (serviceDescription) {
         const vesselMatch = serviceDescription.match(/embarca[çc][ãa]o\s*[:;-]\s*(.+)/i);
         if (vesselMatch) {
-          const vesselName = vesselMatch[1].trim().split(/[\n\r,;]/)[0].trim();
+          const vesselName = vesselMatch[1].trim().split(/[\n\r,;|]/)[0].trim();
           if (vesselName) {
             const { data: localVessel } = await supabase
               .from("vessels")
@@ -381,6 +381,17 @@ async function handleConsultOrder(creds: OmieCredentials, params: any, supabase:
               .maybeSingle();
             if (localVessel) {
               result.localVessel = localVessel;
+            } else {
+              // Auto-create vessel for this client
+              const { data: newVessel } = await supabase
+                .from("vessels")
+                .insert({ client_id: localClient.id, name: vesselName.toUpperCase() })
+                .select("id, name")
+                .single();
+              if (newVessel) {
+                result.localVessel = { ...newVessel, autoCreated: true };
+                console.log("Auto-created vessel:", newVessel.name);
+              }
             }
           }
         }
