@@ -258,29 +258,21 @@ async function parseServiceDescriptionWithAI(
       }
     }
 
-    // Match supervisor and coordinator to profiles with coordinator role
-    const matchCoordinator = async (name: string, field: string) => {
+    // Match supervisor and coordinator to ANY profile in the company
+    const matchPersonnel = async (name: string, field: string) => {
       if (!name) return;
-      const { data: coordRoles } = await supabaseClient
-        .from("user_roles")
-        .select("user_id")
-        .eq("role", "coordinator");
+      // Search all profiles in the company (not just coordinators)
+      const { data: profiles } = await supabaseClient
+        .from("profiles")
+        .select("id, full_name")
+        .eq("company_id", companyId);
 
-      if (coordRoles?.length) {
-        const userIds = coordRoles.map((r: any) => r.user_id);
-        const { data: profiles } = await supabaseClient
-          .from("profiles")
-          .select("id, full_name")
-          .in("id", userIds)
-          .eq("company_id", companyId);
-
-        if (profiles) {
-          const found = profiles.find((p: any) =>
-            p.full_name.toLowerCase().includes(name.toLowerCase()) ||
-            name.toLowerCase().includes(p.full_name.split(" ")[0]?.toLowerCase())
-          );
-          if (found) result[field] = { id: found.id, name: found.full_name };
-        }
+      if (profiles) {
+        const found = profiles.find((p: any) =>
+          p.full_name?.toLowerCase().includes(name.toLowerCase()) ||
+          name.toLowerCase().includes(p.full_name?.split(" ")[0]?.toLowerCase())
+        );
+        if (found) result[field] = { id: found.id, name: found.full_name };
       }
     };
 
