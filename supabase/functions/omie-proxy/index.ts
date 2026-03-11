@@ -276,8 +276,8 @@ async function parseServiceDescriptionWithAI(
       }
     };
 
-    await matchCoordinator(extracted.supervisor_name, "matchedSupervisor");
-    await matchCoordinator(extracted.coordinator_name, "matchedCoordinator");
+    await matchPersonnel(extracted.supervisor_name, "matchedSupervisor");
+    await matchPersonnel(extracted.coordinator_name, "matchedCoordinator");
 
     // Match task types from scope
     if (extracted.scope_description) {
