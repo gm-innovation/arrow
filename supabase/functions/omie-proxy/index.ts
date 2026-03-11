@@ -101,50 +101,41 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
   while (page <= totalPages) {
     const result = await callOmie("/geral/clientes/", "ListarClientes", {
       pagina: page,
-      registros_por_pagina: 50,
+      registros_por_pagina: 500,
       apenas_importado_api: "N",
     }, creds);
 
     totalPages = result.total_de_paginas || 1;
     const clients = result.clientes_cadastro || [];
 
-    for (const client of clients) {
-      try {
-        const clientData = {
-          company_id: companyId,
-          name: client.nome_fantasia || client.razao_social || "Sem nome",
-          email: client.email || null,
-          phone: client.telefone1_numero || null,
-          cnpj: client.cnpj_cpf || null,
-          address: [client.endereco, client.endereco_numero, client.bairro].filter(Boolean).join(", ") || null,
-          city: client.cidade || null,
-          state: client.estado || null,
-          cep: client.cep || null,
-          omie_client_id: client.codigo_cliente_omie,
-          contact_person: client.contato || null,
-        };
+    // Build batch for upsert
+    const batch = clients.map((client: any) => ({
+      company_id: companyId,
+      name: client.nome_fantasia || client.razao_social || "Sem nome",
+      email: client.email || null,
+      phone: client.telefone1_numero || null,
+      cnpj: client.cnpj_cpf || null,
+      address: [client.endereco, client.endereco_numero, client.bairro].filter(Boolean).join(", ") || null,
+      city: client.cidade || null,
+      state: client.estado || null,
+      cep: client.cep || null,
+      omie_client_id: client.codigo_cliente_omie,
+      contact_person: client.contato || null,
+    }));
 
-        // Upsert by omie_client_id
-        const { data: existing } = await supabase
-          .from("clients")
-          .select("id")
-          .eq("company_id", companyId)
-          .eq("omie_client_id", client.codigo_cliente_omie)
-          .maybeSingle();
+    if (batch.length > 0) {
+      const { error: upsertError, data } = await supabase
+        .from("clients")
+        .upsert(batch, { onConflict: "company_id,omie_client_id", ignoreDuplicates: false })
+        .select("id");
 
-        if (existing) {
-          await supabase
-            .from("clients")
-            .update(clientData)
-            .eq("id", existing.id);
-        } else {
-          await supabase.from("clients").insert(clientData);
-        }
-        synced++;
-      } catch (e: any) {
-        errors.push(`Cliente ${client.codigo_cliente_omie}: ${e.message}`);
+      if (upsertError) {
+        errors.push(`Página ${page}: ${upsertError.message}`);
+      } else {
+        synced += data?.length || batch.length;
       }
     }
+
     page++;
   }
 
