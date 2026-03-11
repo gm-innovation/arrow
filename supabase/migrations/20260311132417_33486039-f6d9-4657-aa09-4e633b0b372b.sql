@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS idx_clients_company_omie ON public.clients(company_id, omie_client_id) WHERE omie_client_id IS NOT NULL;
