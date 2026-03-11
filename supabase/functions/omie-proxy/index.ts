@@ -231,19 +231,30 @@ async function parseServiceDescriptionWithAI(
       if (matchedTechs.length > 0) result.matchedTechnicians = matchedTechs;
     }
 
-    // Match requester to client contacts
+    // Match requester to client contacts (auto-create if not found)
     if (extracted.requester_name && clientId) {
       const { data: contacts } = await supabaseClient
         .from("client_contacts")
         .select("id, name")
         .eq("client_id", clientId);
 
-      if (contacts) {
-        const found = contacts.find((c: any) =>
-          c.name.toLowerCase().includes(extracted.requester_name.toLowerCase()) ||
-          extracted.requester_name.toLowerCase().includes(c.name.split(" ")[0]?.toLowerCase())
-        );
-        if (found) result.matchedRequester = { id: found.id, name: found.name };
+      let found = contacts?.find((c: any) =>
+        c.name.toLowerCase().includes(extracted.requester_name.toLowerCase()) ||
+        extracted.requester_name.toLowerCase().includes(c.name.split(" ")[0]?.toLowerCase())
+      );
+      if (found) {
+        result.matchedRequester = { id: found.id, name: found.name };
+      } else {
+        // Auto-create contact
+        const { data: newContact } = await supabaseClient
+          .from("client_contacts")
+          .insert({ client_id: clientId, name: extracted.requester_name, role: "Solicitante" })
+          .select("id, name")
+          .single();
+        if (newContact) {
+          result.matchedRequester = { id: newContact.id, name: newContact.name, autoCreated: true };
+          console.log("Auto-created contact:", newContact.name);
+        }
       }
     }
 
