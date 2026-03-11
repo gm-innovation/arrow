@@ -41,7 +41,7 @@ async function getCredentials(supabase: any, userId: string): Promise<OmieCreden
   return { app_key: company.omie_app_key, app_secret: company.omie_app_secret };
 }
 
-async function callOmie(endpoint: string, call: string, params: any, creds: OmieCredentials) {
+async function callOmie(endpoint: string, call: string, params: any, creds: OmieCredentials, retryCount = 0): Promise<any> {
   const body = {
     call,
     app_key: creds.app_key,
@@ -57,15 +57,29 @@ async function callOmie(endpoint: string, call: string, params: any, creds: Omie
 
   const text = await res.text();
   
-  if (!res.ok) {
-    throw new Error(`Omie API error ${res.status}: ${text}`);
-  }
-
+  let parsed: any;
   try {
-    return JSON.parse(text);
+    parsed = JSON.parse(text);
   } catch {
+    if (!res.ok) {
+      throw new Error(`Omie API error ${res.status}: ${text.substring(0, 200)}`);
+    }
     throw new Error(`Resposta inválida do Omie: ${text.substring(0, 200)}`);
   }
+
+  // Handle REDUNDANT error with automatic retry
+  if (parsed.faultstring && parsed.faultstring.includes("REDUNDANT") && retryCount < 1) {
+    console.log("Omie REDUNDANT error detected, waiting 10s before retry...");
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    return callOmie(endpoint, call, params, creds, retryCount + 1);
+  }
+
+  if (!res.ok) {
+    const faultMsg = parsed.faultstring || text.substring(0, 200);
+    throw new Error(`Omie API error ${res.status}: ${faultMsg}`);
+  }
+
+  return parsed;
 }
 
 async function handleTestConnection(creds: OmieCredentials) {
@@ -108,7 +122,6 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
     totalPages = result.total_de_paginas || 1;
     const clients = result.clientes_cadastro || [];
 
-    // Build batch for upsert
     const batch = clients.map((client: any) => ({
       company_id: companyId,
       name: client.nome_fantasia || client.razao_social || "Sem nome",
@@ -139,7 +152,6 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
     page++;
   }
 
-  // Log sync
   await supabase.from("crm_integration_logs").insert({
     company_id: companyId,
     entity_type: "omie_sync_clients",
@@ -155,7 +167,7 @@ async function handleListOrders(creds: OmieCredentials, params: any) {
   const page = params?.page || 1;
   const result = await callOmie("/servicos/os/", "ListarOS", {
     pagina: page,
-    registros_por_pagina: 50,
+    registros_por_pagina: 100,
     apenas_importado_api: "N",
   }, creds);
   return {
@@ -163,6 +175,58 @@ async function handleListOrders(creds: OmieCredentials, params: any) {
     total: result.total_de_registros || 0,
     pages: result.total_de_paginas || 0,
     current_page: page,
+  };
+}
+
+async function handleSearchOrders(creds: OmieCredentials, params: any) {
+  const searchTerm = (params?.search || "").toLowerCase().trim();
+  if (!searchTerm) {
+    return handleListOrders(creds, { page: 1 });
+  }
+
+  const allMatches: any[] = [];
+  let page = 1;
+  let totalPages = 1;
+  const maxPages = 10; // safety limit
+
+  while (page <= totalPages && page <= maxPages) {
+    const result = await callOmie("/servicos/os/", "ListarOS", {
+      pagina: page,
+      registros_por_pagina: 100,
+      apenas_importado_api: "N",
+    }, creds);
+
+    totalPages = result.total_de_paginas || 1;
+    const orders = result.osCadastro || [];
+
+    for (const order of orders) {
+      const cab = order.Cabecalho || {};
+      const info = order.InformacoesAdicionais || {};
+      const numOS = (cab.cNumOS || "").toLowerCase();
+      const codOS = (cab.nCodOS?.toString() || "");
+      const clientName = (info.cNomeCliente || "").toLowerCase();
+
+      if (
+        numOS.includes(searchTerm) ||
+        codOS.includes(searchTerm) ||
+        clientName.includes(searchTerm)
+      ) {
+        allMatches.push(order);
+      }
+    }
+
+    // If we found results on this page, likely enough
+    if (allMatches.length >= 20) break;
+
+    page++;
+  }
+
+  return {
+    orders: allMatches,
+    total: allMatches.length,
+    pages: 1,
+    current_page: 1,
+    searched_pages: page,
   };
 }
 
@@ -174,7 +238,7 @@ async function handleConsultOrder(creds: OmieCredentials, params: any) {
   if (params.nCodOS) consultParams.nCodOS = params.nCodOS;
   if (params.cCodIntOS) consultParams.cCodIntOS = params.cCodIntOS;
 
-  const result = await callOmie("/servicos/os/", "ConsultarOS", consultParams);
+  const result = await callOmie("/servicos/os/", "ConsultarOS", consultParams, creds);
   return result;
 }
 
@@ -190,7 +254,7 @@ async function handleAttachFile(creds: OmieCredentials, params: any) {
     cConteudoBase64: params.cConteudoBase64,
     cMimeType: params.cMimeType || "application/pdf",
     cTabela: "os-servico",
-  });
+  }, creds);
   return result;
 }
 
@@ -233,16 +297,15 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } },
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseUser.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabaseUser.auth.getUser();
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const userId = claimsData.claims.sub as string;
+    const userId = user.id;
 
     // Get company_id
     const { data: profile } = await supabaseAdmin
@@ -292,6 +355,9 @@ Deno.serve(async (req) => {
           break;
         case "list_orders":
           result = await handleListOrders(creds, params);
+          break;
+        case "search_orders":
+          result = await handleSearchOrders(creds, params);
           break;
         case "consult_order":
           result = await handleConsultOrder(creds, params);
