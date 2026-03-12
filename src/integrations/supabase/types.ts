@@ -6752,6 +6752,50 @@ export type Database = {
           },
         ]
       }
+      university_reward_settings: {
+        Row: {
+          badge_title_template: string
+          company_id: string
+          created_at: string | null
+          icon: string
+          id: string
+          post_to_feed: boolean
+          reward_type: string
+          updated_at: string | null
+          xp_value: number
+        }
+        Insert: {
+          badge_title_template?: string
+          company_id: string
+          created_at?: string | null
+          icon?: string
+          id?: string
+          post_to_feed?: boolean
+          reward_type: string
+          updated_at?: string | null
+          xp_value?: number
+        }
+        Update: {
+          badge_title_template?: string
+          company_id?: string
+          created_at?: string | null
+          icon?: string
+          id?: string
+          post_to_feed?: boolean
+          reward_type?: string
+          updated_at?: string | null
+          xp_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "university_reward_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       university_trail_courses: {
         Row: {
           course_id: string
