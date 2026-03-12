@@ -4159,7 +4159,7 @@ export type Database = {
           reviewed_by: string | null
           status: string | null
           uploaded_at: string | null
-          uploaded_by: string
+          uploaded_by: string | null
         }
         Insert: {
           document_type_id: string
@@ -4172,7 +4172,7 @@ export type Database = {
           reviewed_by?: string | null
           status?: string | null
           uploaded_at?: string | null
-          uploaded_by: string
+          uploaded_by?: string | null
         }
         Update: {
           document_type_id?: string
@@ -4185,7 +4185,7 @@ export type Database = {
           reviewed_by?: string | null
           status?: string | null
           uploaded_at?: string | null
-          uploaded_by?: string
+          uploaded_by?: string | null
         }
         Relationships: [
           {
