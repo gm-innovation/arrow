@@ -2993,6 +2993,53 @@ export type Database = {
           },
         ]
       }
+      employee_notes: {
+        Row: {
+          author_id: string
+          company_id: string
+          content: string
+          created_at: string | null
+          employee_user_id: string
+          id: string
+          is_confidential: boolean | null
+          note_type: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          company_id: string
+          content: string
+          created_at?: string | null
+          employee_user_id: string
+          id?: string
+          is_confidential?: boolean | null
+          note_type?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          company_id?: string
+          content?: string
+          created_at?: string | null
+          employee_user_id?: string
+          id?: string
+          is_confidential?: boolean | null
+          note_type?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_notes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_onboarding: {
         Row: {
           access_token: string
@@ -6788,6 +6835,10 @@ export type Database = {
       }
       is_department_manager: {
         Args: { _department_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_hr_or_director_in_company: {
+        Args: { _company_id: string; _user_id: string }
         Returns: boolean
       }
       is_tech_assigned_to_order: {
