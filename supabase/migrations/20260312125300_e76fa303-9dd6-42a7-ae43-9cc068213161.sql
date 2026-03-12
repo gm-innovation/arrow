@@ -1,0 +1,1 @@
+ALTER TABLE onboarding_documents ALTER COLUMN uploaded_by DROP NOT NULL;
