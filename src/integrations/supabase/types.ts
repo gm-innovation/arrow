@@ -3004,6 +3004,7 @@ export type Database = {
           created_by: string
           id: string
           notes: string | null
+          position_tag: string | null
           started_at: string | null
           status: string
           updated_at: string | null
@@ -3019,6 +3020,7 @@ export type Database = {
           created_by: string
           id?: string
           notes?: string | null
+          position_tag?: string | null
           started_at?: string | null
           status?: string
           updated_at?: string | null
@@ -3034,6 +3036,7 @@ export type Database = {
           created_by?: string
           id?: string
           notes?: string | null
+          position_tag?: string | null
           started_at?: string | null
           status?: string
           updated_at?: string | null
@@ -4111,6 +4114,7 @@ export type Database = {
           id: string
           is_required: boolean | null
           name: string
+          position_tag: string | null
           sort_order: number | null
         }
         Insert: {
@@ -4120,6 +4124,7 @@ export type Database = {
           id?: string
           is_required?: boolean | null
           name: string
+          position_tag?: string | null
           sort_order?: number | null
         }
         Update: {
@@ -4129,6 +4134,7 @@ export type Database = {
           id?: string
           is_required?: boolean | null
           name?: string
+          position_tag?: string | null
           sort_order?: number | null
         }
         Relationships: [
