@@ -4372,12 +4372,18 @@ export type Database = {
           birth_date: string | null
           company_id: string | null
           cover_url: string | null
+          cpf: string | null
           created_at: string
           email: string
           full_name: string
+          gender: string | null
+          height: number | null
           hire_date: string | null
           id: string
+          nationality: string | null
           phone: string | null
+          rg: string | null
+          status: string
           updated_at: string
         }
         Insert: {
@@ -4386,12 +4392,18 @@ export type Database = {
           birth_date?: string | null
           company_id?: string | null
           cover_url?: string | null
+          cpf?: string | null
           created_at?: string
           email: string
           full_name: string
+          gender?: string | null
+          height?: number | null
           hire_date?: string | null
           id: string
+          nationality?: string | null
           phone?: string | null
+          rg?: string | null
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -4400,12 +4412,18 @@ export type Database = {
           birth_date?: string | null
           company_id?: string | null
           cover_url?: string | null
+          cpf?: string | null
           created_at?: string
           email?: string
           full_name?: string
+          gender?: string | null
+          height?: number | null
           hire_date?: string | null
           id?: string
+          nationality?: string | null
           phone?: string | null
+          rg?: string | null
+          status?: string
           updated_at?: string
         }
         Relationships: [
