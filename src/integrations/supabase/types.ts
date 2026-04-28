@@ -8486,6 +8486,7 @@ export type Database = {
         Args: { _company_id: string; _user_id: string }
         Returns: boolean
       }
+      is_operational_role: { Args: { _user_id: string }; Returns: boolean }
       is_tech_assigned_to_order: {
         Args: { _service_order_id: string; _user_id: string }
         Returns: boolean
