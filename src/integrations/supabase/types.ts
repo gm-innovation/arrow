@@ -5277,6 +5277,7 @@ export type Database = {
         Row: {
           company_id: string
           company_name: string | null
+          converted_at: string | null
           converted_opportunity_id: string | null
           created_at: string
           email: string
@@ -5285,6 +5286,7 @@ export type Database = {
           items: Json
           message: string | null
           name: string
+          opportunity_id: string | null
           phone: string | null
           source: string
           status: string
@@ -5295,6 +5297,7 @@ export type Database = {
         Insert: {
           company_id: string
           company_name?: string | null
+          converted_at?: string | null
           converted_opportunity_id?: string | null
           created_at?: string
           email: string
@@ -5303,6 +5306,7 @@ export type Database = {
           items?: Json
           message?: string | null
           name: string
+          opportunity_id?: string | null
           phone?: string | null
           source?: string
           status?: string
@@ -5313,6 +5317,7 @@ export type Database = {
         Update: {
           company_id?: string
           company_name?: string | null
+          converted_at?: string | null
           converted_opportunity_id?: string | null
           created_at?: string
           email?: string
@@ -5321,6 +5326,7 @@ export type Database = {
           items?: Json
           message?: string | null
           name?: string
+          opportunity_id?: string | null
           phone?: string | null
           source?: string
           status?: string
@@ -5334,6 +5340,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_site_leads_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "crm_opportunities"
             referencedColumns: ["id"]
           },
         ]

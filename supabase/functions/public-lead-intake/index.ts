@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
     const { data: staff } = await supabase
       .from('user_roles')
       .select('user_id, role')
-      .in('role', ['coordinator', 'director', 'admin'])
+      .in('role', ['coordinator', 'director', 'admin', 'commercial', 'marketing'])
 
     if (staff && staff.length) {
       const ids = [...new Set(staff.map((s) => s.user_id))]
@@ -148,8 +148,9 @@ Deno.serve(async (req) => {
             user_id: p.id,
             title: body.type === 'rfq' ? 'Nova solicitação de proposta' : 'Novo contato pelo site',
             message: `${body.name} <${body.email}>`,
-            type: 'info',
-            link: '/manager/site-leads',
+            notification_type: 'request_created',
+            reference_id: lead.id,
+            read: false,
           })),
         )
       }
