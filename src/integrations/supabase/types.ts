@@ -3695,6 +3695,7 @@ export type Database = {
           created_at: string | null
           created_by: string
           id: string
+          job_application_id: string | null
           notes: string | null
           position_tag: string | null
           started_at: string | null
@@ -3711,6 +3712,7 @@ export type Database = {
           created_at?: string | null
           created_by: string
           id?: string
+          job_application_id?: string | null
           notes?: string | null
           position_tag?: string | null
           started_at?: string | null
@@ -3727,6 +3729,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string
           id?: string
+          job_application_id?: string | null
           notes?: string | null
           position_tag?: string | null
           started_at?: string | null
@@ -3740,6 +3743,13 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_onboarding_job_application_id_fkey"
+            columns: ["job_application_id"]
+            isOneToOne: false
+            referencedRelation: "job_applications"
             referencedColumns: ["id"]
           },
         ]
@@ -4452,6 +4462,181 @@ export type Database = {
             columns: ["technician_id"]
             isOneToOne: false
             referencedRelation: "technicians_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_application_notes: {
+        Row: {
+          application_id: string
+          author_id: string
+          created_at: string
+          id: string
+          note: string
+        }
+        Insert: {
+          application_id: string
+          author_id: string
+          created_at?: string
+          id?: string
+          note: string
+        }
+        Update: {
+          application_id?: string
+          author_id?: string
+          created_at?: string
+          id?: string
+          note?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_application_notes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "job_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_applications: {
+        Row: {
+          area_of_interest: string | null
+          availability: string | null
+          city: string | null
+          company_id: string
+          cover_letter: string | null
+          created_at: string
+          cv_file_name: string | null
+          cv_file_url: string | null
+          email: string
+          full_name: string
+          id: string
+          ip: string | null
+          job_opening_id: string | null
+          linkedin_url: string | null
+          phone: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          salary_expectation: number | null
+          source: string
+          state: string | null
+          status: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          area_of_interest?: string | null
+          availability?: string | null
+          city?: string | null
+          company_id: string
+          cover_letter?: string | null
+          created_at?: string
+          cv_file_name?: string | null
+          cv_file_url?: string | null
+          email: string
+          full_name: string
+          id?: string
+          ip?: string | null
+          job_opening_id?: string | null
+          linkedin_url?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          salary_expectation?: number | null
+          source?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          area_of_interest?: string | null
+          availability?: string | null
+          city?: string | null
+          company_id?: string
+          cover_letter?: string | null
+          created_at?: string
+          cv_file_name?: string | null
+          cv_file_url?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          ip?: string | null
+          job_opening_id?: string | null
+          linkedin_url?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          salary_expectation?: number | null
+          source?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_applications_job_opening_id_fkey"
+            columns: ["job_opening_id"]
+            isOneToOne: false
+            referencedRelation: "job_openings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_openings: {
+        Row: {
+          area: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          employment_type: string | null
+          id: string
+          is_active: boolean
+          location: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          area?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          employment_type?: string | null
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          area?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          employment_type?: string | null
+          id?: string
+          is_active?: boolean
+          location?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_openings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
