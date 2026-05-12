@@ -926,6 +926,8 @@ export type Database = {
           omie_sync_enabled: boolean | null
           payment_status: Database["public"]["Enums"]["payment_status"] | null
           phone: string | null
+          public_intake_enabled: boolean
+          public_site_slug: string | null
           subscription_plan:
             | Database["public"]["Enums"]["subscription_plan"]
             | null
@@ -945,6 +947,8 @@ export type Database = {
           omie_sync_enabled?: boolean | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
+          public_intake_enabled?: boolean
+          public_site_slug?: string | null
           subscription_plan?:
             | Database["public"]["Enums"]["subscription_plan"]
             | null
@@ -964,6 +968,8 @@ export type Database = {
           omie_sync_enabled?: boolean | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
+          public_intake_enabled?: boolean
+          public_site_slug?: string | null
           subscription_plan?:
             | Database["public"]["Enums"]["subscription_plan"]
             | null
@@ -5242,6 +5248,89 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_lead_rate_limit: {
+        Row: {
+          count: number
+          ip: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          ip: string
+          window_start: string
+        }
+        Update: {
+          count?: number
+          ip?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      public_site_leads: {
+        Row: {
+          company_id: string
+          company_name: string | null
+          converted_opportunity_id: string | null
+          created_at: string
+          email: string
+          id: string
+          ip: string | null
+          items: Json
+          message: string | null
+          name: string
+          phone: string | null
+          source: string
+          status: string
+          type: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          company_id: string
+          company_name?: string | null
+          converted_opportunity_id?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          ip?: string | null
+          items?: Json
+          message?: string | null
+          name: string
+          phone?: string | null
+          source?: string
+          status?: string
+          type: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          company_id?: string
+          company_name?: string | null
+          converted_opportunity_id?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          ip?: string | null
+          items?: Json
+          message?: string | null
+          name?: string
+          phone?: string | null
+          source?: string
+          status?: string
+          type?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_site_leads_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
