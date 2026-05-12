@@ -28,6 +28,7 @@ async function sha256Hex(input: string): Promise<string> {
 }
 
 const CreateSchema = z.object({
+  company_id: z.string().uuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   scopes: z.array(z.string()).min(1),
@@ -56,17 +57,11 @@ Deno.serve(async (req) => {
   }
   const userId = claims.claims.sub as string;
 
-  // role check
+  // role check — exclusivo super_admin
   const { data: roles } = await admin.from("user_roles").select("role").eq("user_id", userId);
   const roleSet = new Set((roles ?? []).map((r) => r.role));
-  if (!roleSet.has("director") && !roleSet.has("super_admin")) {
-    return new Response(JSON.stringify({ error: "Forbidden: requires director or super_admin" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-  }
-
-  const { data: profile } = await admin.from("profiles").select("company_id").eq("id", userId).maybeSingle();
-  const companyId = profile?.company_id;
-  if (!companyId) {
-    return new Response(JSON.stringify({ error: "User has no company" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  if (!roleSet.has("super_admin")) {
+    return new Response(JSON.stringify({ error: "Forbidden: super_admin only" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
   const url = new URL(req.url);
@@ -82,11 +77,16 @@ Deno.serve(async (req) => {
       if (invalid.length) {
         return new Response(JSON.stringify({ error: `invalid scopes: ${invalid.join(", ")}` }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
+      // valida company existente
+      const { data: companyRow } = await admin.from("companies").select("id").eq("id", parsed.data.company_id).maybeSingle();
+      if (!companyRow) {
+        return new Response(JSON.stringify({ error: "Empresa não encontrada" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
       const key = generateKey();
       const key_hash = await sha256Hex(key);
-      const key_prefix = key.slice(0, 17); // "ark_live_" + 8 chars
+      const key_prefix = key.slice(0, 17);
       const { data, error } = await admin.from("api_integrations").insert({
-        company_id: companyId,
+        company_id: parsed.data.company_id,
         name: parsed.data.name,
         description: parsed.data.description ?? null,
         key_hash,
@@ -103,11 +103,7 @@ Deno.serve(async (req) => {
 
     if (req.method === "DELETE" && path.startsWith("/")) {
       const id = path.slice(1);
-      const { error } = await admin
-        .from("api_integrations")
-        .update({ status: "revoked" })
-        .eq("id", id)
-        .eq("company_id", companyId);
+      const { error } = await admin.from("api_integrations").update({ status: "revoked" }).eq("id", id);
       if (error) throw error;
       return new Response(JSON.stringify({ ok: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
