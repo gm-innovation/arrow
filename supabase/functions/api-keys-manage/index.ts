@@ -28,6 +28,7 @@ async function sha256Hex(input: string): Promise<string> {
 }
 
 const CreateSchema = z.object({
+  company_id: z.string().uuid(),
   name: z.string().min(1).max(100),
   description: z.string().max(500).optional(),
   scopes: z.array(z.string()).min(1),
