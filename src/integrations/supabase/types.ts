@@ -8903,6 +8903,14 @@ export type Database = {
         Args: { _company_id: string; _from_city: string; _to_city: string }
         Returns: number
       }
+      get_company_public_logo: {
+        Args: { _company_id: string }
+        Returns: {
+          id: string
+          logo_url: string
+          name: string
+        }[]
+      }
       get_employee_hr_profile: {
         Args: { _user_id: string }
         Returns: {
@@ -8933,6 +8941,51 @@ export type Database = {
           phone: string
           rg: string
         }[]
+      }
+      get_onboarding_by_token: {
+        Args: { _token: string }
+        Returns: {
+          access_token: string
+          candidate_email: string | null
+          candidate_name: string | null
+          company_id: string
+          completed_at: string | null
+          created_at: string | null
+          created_by: string
+          id: string
+          job_application_id: string | null
+          notes: string | null
+          position_tag: string | null
+          started_at: string | null
+          status: string
+          updated_at: string | null
+          user_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "employee_onboarding"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_onboarding_doc_types_by_token: {
+        Args: { _token: string }
+        Returns: {
+          company_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_required: boolean | null
+          name: string
+          position_tag: string | null
+          sort_order: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "onboarding_document_types"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       get_technician_availability: {
         Args: { _check_date: string; _technician_id: string }
