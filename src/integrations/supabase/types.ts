@@ -2925,6 +2925,8 @@ export type Database = {
           opportunity_type: string | null
           priority: string | null
           probability: number | null
+          segment: string
+          service_order_id: string | null
           stage: string
           title: string
           updated_at: string
@@ -2946,6 +2948,8 @@ export type Database = {
           opportunity_type?: string | null
           priority?: string | null
           probability?: number | null
+          segment?: string
+          service_order_id?: string | null
           stage?: string
           title: string
           updated_at?: string
@@ -2967,6 +2971,8 @@ export type Database = {
           opportunity_type?: string | null
           priority?: string | null
           probability?: number | null
+          segment?: string
+          service_order_id?: string | null
           stage?: string
           title?: string
           updated_at?: string
@@ -3033,6 +3039,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunities_service_order_id_fkey"
+            columns: ["service_order_id"]
+            isOneToOne: false
+            referencedRelation: "service_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -5501,6 +5514,7 @@ export type Database = {
       }
       public_site_leads: {
         Row: {
+          assigned_to: string | null
           company_id: string
           company_name: string | null
           converted_at: string | null
@@ -5514,6 +5528,7 @@ export type Database = {
           name: string
           opportunity_id: string | null
           phone: string | null
+          segment: string
           source: string
           status: string
           type: string
@@ -5521,6 +5536,7 @@ export type Database = {
           user_agent: string | null
         }
         Insert: {
+          assigned_to?: string | null
           company_id: string
           company_name?: string | null
           converted_at?: string | null
@@ -5534,6 +5550,7 @@ export type Database = {
           name: string
           opportunity_id?: string | null
           phone?: string | null
+          segment?: string
           source?: string
           status?: string
           type: string
@@ -5541,6 +5558,7 @@ export type Database = {
           user_agent?: string | null
         }
         Update: {
+          assigned_to?: string | null
           company_id?: string
           company_name?: string | null
           converted_at?: string | null
@@ -5554,6 +5572,7 @@ export type Database = {
           name?: string
           opportunity_id?: string | null
           phone?: string | null
+          segment?: string
           source?: string
           status?: string
           type?: string
@@ -5561,6 +5580,27 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "public_site_leads_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_site_leads_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_site_leads_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "public_site_leads_company_id_fkey"
             columns: ["company_id"]
