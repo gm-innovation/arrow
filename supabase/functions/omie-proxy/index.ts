@@ -84,7 +84,25 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
   let page = 1;
   let totalPages = 1;
   let synced = 0;
+  let skipped = 0;
   let errors: string[] = [];
+
+  // Carregar blocklist (clientes excluídos que não devem voltar)
+  const { data: blockRows } = await supabase
+    .from("omie_sync_blocklist")
+    .select("omie_client_id, cnpj")
+    .eq("company_id", companyId);
+  const blockedOmieIds = new Set((blockRows || []).map((r: any) => String(r.omie_client_id)).filter(Boolean));
+  const blockedCnpjs = new Set((blockRows || []).map((r: any) => String(r.cnpj || "").replace(/\D/g, "")).filter(Boolean));
+
+  // Carregar clientes existentes marcados como ignore_omie_sync
+  const { data: ignoredRows } = await supabase
+    .from("clients")
+    .select("omie_client_id, cnpj")
+    .eq("company_id", companyId)
+    .eq("ignore_omie_sync", true);
+  const ignoredOmieIds = new Set((ignoredRows || []).map((r: any) => String(r.omie_client_id)).filter(Boolean));
+  const ignoredCnpjs = new Set((ignoredRows || []).map((r: any) => String(r.cnpj || "").replace(/\D/g, "")).filter(Boolean));
 
   while (page <= totalPages) {
     const result = await callOmie("/geral/clientes/", "ListarClientes", {
@@ -96,19 +114,27 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
     totalPages = result.total_de_paginas || 1;
     const clients = result.clientes_cadastro || [];
 
-    const batch = clients.map((client: any) => ({
-      company_id: companyId,
-      name: client.nome_fantasia || client.razao_social || "Sem nome",
-      email: client.email || null,
-      phone: client.telefone1_numero || null,
-      cnpj: client.cnpj_cpf || null,
-      address: [client.endereco, client.endereco_numero, client.bairro].filter(Boolean).join(", ") || null,
-      city: client.cidade || null,
-      state: client.estado || null,
-      cep: client.cep || null,
-      omie_client_id: client.codigo_cliente_omie,
-      contact_person: client.contato || null,
-    }));
+    const batch = clients
+      .filter((client: any) => {
+        const oid = String(client.codigo_cliente_omie || "");
+        const cnpjDigits = String(client.cnpj_cpf || "").replace(/\D/g, "");
+        if (oid && (blockedOmieIds.has(oid) || ignoredOmieIds.has(oid))) { skipped++; return false; }
+        if (cnpjDigits && (blockedCnpjs.has(cnpjDigits) || ignoredCnpjs.has(cnpjDigits))) { skipped++; return false; }
+        return true;
+      })
+      .map((client: any) => ({
+        company_id: companyId,
+        name: client.nome_fantasia || client.razao_social || "Sem nome",
+        email: client.email || null,
+        phone: client.telefone1_numero || null,
+        cnpj: client.cnpj_cpf || null,
+        address: [client.endereco, client.endereco_numero, client.bairro].filter(Boolean).join(", ") || null,
+        city: client.cidade || null,
+        state: client.estado || null,
+        cep: client.cep || null,
+        omie_client_id: client.codigo_cliente_omie,
+        contact_person: client.contato || null,
+      }));
 
     if (batch.length > 0) {
       const { error: upsertError, data } = await supabase
@@ -131,10 +157,10 @@ async function handleSyncClients(creds: OmieCredentials, supabase: any, companyI
     entity_type: "omie_sync_clients",
     action: "sync",
     status: errors.length > 0 ? "partial" : "success",
-    details: { synced, errors, total_pages: totalPages },
+    details: { synced, skipped, errors, total_pages: totalPages },
   } as any);
 
-  return { synced, errors, total_pages: totalPages };
+  return { synced, skipped, errors, total_pages: totalPages };
 }
 
 async function parseServiceDescriptionWithAI(

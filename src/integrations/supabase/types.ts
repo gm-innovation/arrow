@@ -831,6 +831,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          ignore_omie_sync: boolean
           last_contact_date: string | null
           name: string
           notes: string | null
@@ -856,6 +857,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          ignore_omie_sync?: boolean
           last_contact_date?: string | null
           name: string
           notes?: string | null
@@ -881,6 +883,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          ignore_omie_sync?: boolean
           last_contact_date?: string | null
           name?: string
           notes?: string | null
@@ -5150,6 +5153,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      omie_sync_blocklist: {
+        Row: {
+          blocked_at: string
+          blocked_by: string | null
+          cnpj: string | null
+          company_id: string
+          id: string
+          omie_client_id: string | null
+          reason: string | null
+        }
+        Insert: {
+          blocked_at?: string
+          blocked_by?: string | null
+          cnpj?: string | null
+          company_id: string
+          id?: string
+          omie_client_id?: string | null
+          reason?: string | null
+        }
+        Update: {
+          blocked_at?: string
+          blocked_by?: string | null
+          cnpj?: string | null
+          company_id?: string
+          id?: string
+          omie_client_id?: string | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "omie_sync_blocklist_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       onboarding_document_types: {
         Row: {
