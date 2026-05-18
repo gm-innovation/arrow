@@ -4637,6 +4637,72 @@ export type Database = {
           },
         ]
       }
+      job_application_tag_assignments: {
+        Row: {
+          application_id: string
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          tag_id: string
+        }
+        Insert: {
+          application_id: string
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          tag_id: string
+        }
+        Update: {
+          application_id?: string
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_application_tag_assignments_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "job_applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_application_tag_assignments_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "job_application_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_application_tags: {
+        Row: {
+          color: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       job_applications: {
         Row: {
           area_of_interest: string | null
@@ -4645,6 +4711,7 @@ export type Database = {
           company_id: string
           cover_letter: string | null
           created_at: string
+          cv_extracted_data: Json | null
           cv_file_name: string | null
           cv_file_url: string | null
           email: string
@@ -4670,6 +4737,7 @@ export type Database = {
           company_id: string
           cover_letter?: string | null
           created_at?: string
+          cv_extracted_data?: Json | null
           cv_file_name?: string | null
           cv_file_url?: string | null
           email: string
@@ -4695,6 +4763,7 @@ export type Database = {
           company_id?: string
           cover_letter?: string | null
           created_at?: string
+          cv_extracted_data?: Json | null
           cv_file_name?: string | null
           cv_file_url?: string | null
           email?: string
