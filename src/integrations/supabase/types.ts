@@ -930,6 +930,7 @@ export type Database = {
           payment_status: Database["public"]["Enums"]["payment_status"] | null
           phone: string | null
           public_intake_enabled: boolean
+          public_site_base_url: string | null
           public_site_slug: string | null
           subscription_plan:
             | Database["public"]["Enums"]["subscription_plan"]
@@ -951,6 +952,7 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
           public_intake_enabled?: boolean
+          public_site_base_url?: string | null
           public_site_slug?: string | null
           subscription_plan?:
             | Database["public"]["Enums"]["subscription_plan"]
@@ -972,6 +974,7 @@ export type Database = {
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
           phone?: string | null
           public_intake_enabled?: boolean
+          public_site_base_url?: string | null
           public_site_slug?: string | null
           subscription_plan?:
             | Database["public"]["Enums"]["subscription_plan"]
