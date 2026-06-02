@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
 
   const { data: company, error: companyErr } = await supabase
     .from('companies')
-    .select('id, logo_url, public_intake_enabled')
+    .select('id, name, logo_url, public_intake_enabled, public_site_base_url')
     .eq('public_site_slug', slug)
     .maybeSingle()
 
@@ -54,7 +54,13 @@ Deno.serve(async (req) => {
 
   return json({
     enabled: true,
-    company: { id: company.id, logo_url: company.logo_url ?? null },
+    company: {
+      id: company.id,
+      name: company.name ?? null,
+      logo_url: company.logo_url ?? null,
+      website_url: company.public_site_base_url ?? null,
+    },
     openings: openings ?? [],
   })
 })
+
