@@ -9364,6 +9364,21 @@ export type Database = {
         Args: { _task_id: string; _user_id: string }
         Returns: boolean
       }
+      update_company_careers_page: {
+        Args: {
+          _about_text: string
+          _about_title: string
+          _company_id: string
+          _mission: string
+          _values: string[]
+        }
+        Returns: {
+          careers_about_text: string
+          careers_about_title: string
+          careers_mission: string
+          careers_values: string[]
+        }[]
+      }
       update_forecast_actuals: { Args: never; Returns: undefined }
       user_company_id: { Args: { _user_id: string }; Returns: string }
       user_has_corp_role: {
