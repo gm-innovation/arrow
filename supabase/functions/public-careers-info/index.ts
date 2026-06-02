@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
 
   const { data: company, error: companyErr } = await supabase
     .from('companies')
-    .select('id, name, logo_url, public_intake_enabled, public_site_base_url')
+    .select('id, name, logo_url, public_intake_enabled, public_site_base_url, careers_about_title, careers_about_text, careers_mission, careers_values')
     .eq('public_site_slug', slug)
     .maybeSingle()
 
@@ -41,16 +41,23 @@ Deno.serve(async (req) => {
     return json({ enabled: false })
   }
 
-  const { data: openings, error: jobsErr } = await supabase
-    .from('job_openings')
-    .select('id, title, area, description, location, employment_type')
-    .eq('company_id', company.id)
-    .eq('is_active', true)
-    .order('created_at', { ascending: false })
+  const [{ data: openings, error: jobsErr }, { data: benefits, error: benefitsErr }] = await Promise.all([
+    supabase
+      .from('job_openings')
+      .select('id, title, area, description, location, employment_type')
+      .eq('company_id', company.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('company_benefits')
+      .select('id, title, description, icon, display_order')
+      .eq('company_id', company.id)
+      .eq('is_active', true)
+      .order('display_order', { ascending: true }),
+  ])
 
-  if (jobsErr) {
-    console.error('openings lookup failed', jobsErr)
-  }
+  if (jobsErr) console.error('openings lookup failed', jobsErr)
+  if (benefitsErr) console.error('benefits lookup failed', benefitsErr)
 
   return json({
     enabled: true,
@@ -59,8 +66,12 @@ Deno.serve(async (req) => {
       name: company.name ?? null,
       logo_url: company.logo_url ?? null,
       website_url: company.public_site_base_url ?? null,
+      about_title: company.careers_about_title ?? null,
+      about_text: company.careers_about_text ?? null,
+      mission: company.careers_mission ?? null,
+      values: company.careers_values ?? null,
     },
     openings: openings ?? [],
+    benefits: benefits ?? [],
   })
 })
-

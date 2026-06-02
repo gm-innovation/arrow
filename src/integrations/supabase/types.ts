@@ -917,6 +917,10 @@ export type Database = {
       companies: {
         Row: {
           address: string | null
+          careers_about_text: string | null
+          careers_about_title: string | null
+          careers_mission: string | null
+          careers_values: string[] | null
           cep: string | null
           cnpj: string | null
           created_at: string
@@ -939,6 +943,10 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          careers_about_text?: string | null
+          careers_about_title?: string | null
+          careers_mission?: string | null
+          careers_values?: string[] | null
           cep?: string | null
           cnpj?: string | null
           created_at?: string
@@ -961,6 +969,10 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          careers_about_text?: string | null
+          careers_about_title?: string | null
+          careers_mission?: string | null
+          careers_values?: string[] | null
           cep?: string | null
           cnpj?: string | null
           created_at?: string
@@ -982,6 +994,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      company_benefits: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string | null
+          display_order: number
+          icon: string | null
+          id: string
+          is_active: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_benefits_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       company_holidays: {
         Row: {
