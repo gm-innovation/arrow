@@ -1,5 +1,7 @@
 // Public, unauthenticated endpoint that returns the company + active openings
-// for a careers page slug. Avoids exposing companies/job_openings via RLS.
+// + benefits + about/culture content for a careers page slug.
+// Avoids exposing companies/job_openings via RLS.
+// v2 - includes benefits & about fields
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders: Record<string, string> = {
