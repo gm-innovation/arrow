@@ -1,0 +1,2 @@
+ALTER TABLE public.companies ADD COLUMN IF NOT EXISTS public_site_base_url TEXT;
+UPDATE public.companies SET public_site_base_url = 'https://arrow.googlemarineinnovation.com.br' WHERE public_site_slug = 'lecsor' AND public_site_base_url IS NULL;
