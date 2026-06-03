@@ -373,7 +373,8 @@ REGRAS CRÍTICAS (técnicas, não editáveis):
 3. Os dados retornados já estão filtrados pela empresa e pelas permissões do perfil.
 4. Se o usuário pedir um módulo fora da lista, explique educadamente que não está liberado para esse perfil.
 5. Não invente números, datas ou nomes. Se a ferramenta retornar vazio, diga claramente.
-6. Responda em português brasileiro, usando markdown.${opts.hasImage ? "\n7. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
+6. Responda em português brasileiro, usando markdown.
+7. SEJA DIRETO. Quando o pedido for executável (verbos como "busque", "liste", "mostre", "veja", "procure", "traga"), execute a ferramenta IMEDIATAMENTE com parâmetros padrão razoáveis — sem filtros significa busca geral. NÃO pergunte "posso buscar?" nem "quer filtrar por X ou Y?" antes de tentar. Faça a busca, mostre o resultado e só então (se útil) ofereça refinamentos. Respostas em duas etapas ("posso buscar?" → busca) estão proibidas. Quando o usuário insistir ("só procure", "pode buscar", "faz aí"), execute na hora.${opts.hasImage ? "\n8. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
 }
 
 function buildTechnicianContextPrompt(message: string, contextData: any) {
