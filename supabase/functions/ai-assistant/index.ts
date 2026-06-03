@@ -59,7 +59,7 @@ serve(async (req) => {
 
   try {
     // Include conversation history from frontend
-    const { message, image, userRole, context, messages: conversationHistory } = await req.json();
+    const { message, image, userRole, context, messages: conversationHistory, agentId, llmOverride } = await req.json();
     
     console.log("AI Assistant Request:", { 
       message: message?.substring(0, 100), 
