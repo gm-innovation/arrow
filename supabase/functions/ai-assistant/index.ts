@@ -102,7 +102,8 @@ serve(async (req) => {
 
     // ----- Behavior settings from agent manager -----
     const behavior = (agentRow?.behavior ?? {}) as any;
-    const roleInstruction: string = behavior?.role_instructions?.[userRole] ?? "";
+    const customRoleInstruction: string = (behavior?.role_instructions?.[userRole] ?? "").trim();
+    const roleInstruction: string = customRoleInstruction || DEFAULT_ROLE_INSTRUCTIONS[userRole] || "";
     const memorySize: number = Number.isFinite(behavior?.memory_size) ? Math.max(0, Math.min(50, behavior.memory_size)) : 10;
     const autoFlows = (behavior?.auto_flows ?? {}) as Record<string, boolean>;
     const detectReportEnabled = autoFlows.detect_report !== false; // default on
