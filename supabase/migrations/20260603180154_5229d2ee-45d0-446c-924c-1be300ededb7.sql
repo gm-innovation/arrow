@@ -1,0 +1,1 @@
+UPDATE public.ai_agents SET identity = identity || jsonb_build_object('name', name) WHERE identity->>'name' IS DISTINCT FROM name;
