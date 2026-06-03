@@ -64,6 +64,122 @@ export type Database = {
           },
         ]
       }
+      ai_agents: {
+        Row: {
+          appearance: Json
+          behavior: Json
+          company_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          enabled: boolean
+          guardrails: Json
+          id: string
+          identity: Json
+          is_default: boolean
+          name: string
+          scope: Json
+          slug: string
+          tools_model: Json
+          updated_at: string
+        }
+        Insert: {
+          appearance?: Json
+          behavior?: Json
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean
+          guardrails?: Json
+          id?: string
+          identity?: Json
+          is_default?: boolean
+          name: string
+          scope?: Json
+          slug: string
+          tools_model?: Json
+          updated_at?: string
+        }
+        Update: {
+          appearance?: Json
+          behavior?: Json
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          enabled?: boolean
+          guardrails?: Json
+          id?: string
+          identity?: Json
+          is_default?: boolean
+          name?: string
+          scope?: Json
+          slug?: string
+          tools_model?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_agents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_channel_bindings: {
+        Row: {
+          agent_id: string
+          channel: string
+          company_id: string | null
+          config: Json
+          created_at: string
+          created_by: string | null
+          enabled: boolean
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          channel: string
+          company_id?: string | null
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          channel?: string
+          company_id?: string | null
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          enabled?: boolean
+          id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_channel_bindings_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_channel_bindings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_conversations: {
         Row: {
           company_id: string | null
@@ -95,6 +211,63 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "ai_conversations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_email_activity: {
+        Row: {
+          action: string
+          agent_id: string | null
+          company_id: string | null
+          created_at: string
+          error_message: string | null
+          external_message_id: string | null
+          from_address: string | null
+          id: string
+          metadata: Json
+          response_preview: string | null
+          subject: string | null
+        }
+        Insert: {
+          action: string
+          agent_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          external_message_id?: string | null
+          from_address?: string | null
+          id?: string
+          metadata?: Json
+          response_preview?: string | null
+          subject?: string | null
+        }
+        Update: {
+          action?: string
+          agent_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          external_message_id?: string | null
+          from_address?: string | null
+          id?: string
+          metadata?: Json
+          response_preview?: string | null
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_email_activity_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_email_activity_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -204,6 +377,208 @@ export type Database = {
           },
         ]
       }
+      ai_fine_tune_jobs: {
+        Row: {
+          agent_id: string | null
+          base_model: string
+          company_id: string | null
+          cost_estimate: number | null
+          created_at: string
+          created_by: string | null
+          dataset_storage_path: string | null
+          error_message: string | null
+          example_count: number
+          external_job_id: string | null
+          fine_tuned_model: string | null
+          id: string
+          metadata: Json
+          provider: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          base_model: string
+          company_id?: string | null
+          cost_estimate?: number | null
+          created_at?: string
+          created_by?: string | null
+          dataset_storage_path?: string | null
+          error_message?: string | null
+          example_count?: number
+          external_job_id?: string | null
+          fine_tuned_model?: string | null
+          id?: string
+          metadata?: Json
+          provider?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          base_model?: string
+          company_id?: string | null
+          cost_estimate?: number | null
+          created_at?: string
+          created_by?: string | null
+          dataset_storage_path?: string | null
+          error_message?: string | null
+          example_count?: number
+          external_job_id?: string | null
+          fine_tuned_model?: string | null
+          id?: string
+          metadata?: Json
+          provider?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_fine_tune_jobs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_fine_tune_jobs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_knowledge_chunks: {
+        Row: {
+          agent_id: string | null
+          chunk_index: number
+          company_id: string | null
+          content: string
+          created_at: string
+          embedding: string | null
+          id: string
+          source_id: string
+          token_count: number | null
+        }
+        Insert: {
+          agent_id?: string | null
+          chunk_index: number
+          company_id?: string | null
+          content: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          source_id: string
+          token_count?: number | null
+        }
+        Update: {
+          agent_id?: string | null
+          chunk_index?: number
+          company_id?: string | null
+          content?: string
+          created_at?: string
+          embedding?: string | null
+          id?: string
+          source_id?: string
+          token_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_knowledge_chunks_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_knowledge_chunks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_knowledge_chunks_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "ai_knowledge_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_knowledge_sources: {
+        Row: {
+          agent_id: string | null
+          chunk_count: number
+          company_id: string | null
+          created_at: string
+          created_by: string | null
+          error_message: string | null
+          id: string
+          raw_text: string | null
+          scope: Json
+          source_type: string
+          status: string
+          storage_path: string | null
+          tags: string[]
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          chunk_count?: number
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          raw_text?: string | null
+          scope?: Json
+          source_type: string
+          status?: string
+          storage_path?: string | null
+          tags?: string[]
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          chunk_count?: number
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_message?: string | null
+          id?: string
+          raw_text?: string | null
+          scope?: Json
+          source_type?: string
+          status?: string
+          storage_path?: string | null
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_knowledge_sources_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_knowledge_sources_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_messages: {
         Row: {
           content: string
@@ -276,6 +651,66 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "ai_proactive_alerts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_training_examples: {
+        Row: {
+          active: boolean
+          agent_id: string | null
+          company_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          ideal_answer: string
+          question: string
+          source: string | null
+          source_message_id: string | null
+          tags: string[]
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          agent_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          ideal_answer: string
+          question: string
+          source?: string | null
+          source_message_id?: string | null
+          tags?: string[]
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          agent_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          ideal_answer?: string
+          question?: string
+          source?: string | null
+          source_message_id?: string | null
+          tags?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_training_examples_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "ai_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_training_examples_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
@@ -9713,6 +10148,21 @@ export type Database = {
       mark_messages_as_read: {
         Args: { _conversation_id: string }
         Returns: undefined
+      }
+      match_ai_knowledge: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          p_agent_id?: string
+          p_company_id?: string
+          query_embedding: string
+        }
+        Returns: {
+          content: string
+          id: string
+          similarity: number
+          source_id: string
+        }[]
       }
       recalculate_measurement: {
         Args: { p_measurement_id: string }
