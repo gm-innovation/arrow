@@ -146,7 +146,7 @@ function basicQueryTool(opts: {
           properties: {
             search: { type: "string", description: "Busca textual" },
             status: { type: "string", description: "Filtro de status" },
-            since_days: { type: "number", description: "Apenas registros dos últimos N dias" },
+            since_days: { type: "number", description: "Apenas para intervalos temporais EXPLÍCITOS do usuário (ex.: 'últimos 7 dias', 'este mês', 'hoje'). NÃO usar para a palavra 'novo/novos' — isso é status, não data. Se o usuário não mencionar período, NÃO envie este parâmetro." },
             limit: { type: "number", description: `Máximo de resultados (padrão ${LIMIT})` },
           },
         },
