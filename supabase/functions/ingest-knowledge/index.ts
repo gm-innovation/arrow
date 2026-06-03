@@ -16,18 +16,12 @@ async function extractText(storagePath: string | null, sourceType: string, raw: 
     return await data.text();
   }
   if (sourceType === 'pdf') {
-    // Minimal PDF text extraction via pdfjs CDN
     try {
-      const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.0.379/legacy/build/pdf.mjs');
+      const { extractText: unpdfExtract, getDocumentProxy } = await import('https://esm.sh/unpdf@0.12.1');
       const buf = new Uint8Array(await data.arrayBuffer());
-      const doc = await pdfjs.getDocument({ data: buf, useWorkerFetch: false, isEvalSupported: false, useSystemFonts: true }).promise;
-      let text = '';
-      for (let i = 1; i <= doc.numPages; i++) {
-        const page = await doc.getPage(i);
-        const content = await page.getTextContent();
-        text += content.items.map((it: any) => it.str).join(' ') + '\n\n';
-      }
-      return text;
+      const pdf = await getDocumentProxy(buf);
+      const { text } = await unpdfExtract(pdf, { mergePages: true });
+      return Array.isArray(text) ? text.join('\n\n') : String(text ?? '');
     } catch (e) {
       console.error('pdf parse error', e);
       return '';
