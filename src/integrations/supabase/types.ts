@@ -9410,6 +9410,7 @@ export type Database = {
         | "training"
         | "sick_leave"
         | "other"
+        | "home_office"
       app_role:
         | "super_admin"
         | "admin"
@@ -9589,6 +9590,7 @@ export const Constants = {
         "training",
         "sick_leave",
         "other",
+        "home_office",
       ],
       app_role: [
         "super_admin",
