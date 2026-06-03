@@ -4056,8 +4056,6 @@ export type Database = {
       }
       epi_items: {
         Row: {
-          ca_expires_at: string | null
-          ca_number: string | null
           company_id: string
           created_at: string
           created_by: string | null
@@ -4071,8 +4069,6 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          ca_expires_at?: string | null
-          ca_number?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -4086,8 +4082,6 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          ca_expires_at?: string | null
-          ca_number?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null
@@ -4823,6 +4817,57 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      home_office_schedules: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          end_date: string
+          id: string
+          notes: string | null
+          start_date: string
+          technician_id: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          end_date: string
+          id?: string
+          notes?: string | null
+          start_date: string
+          technician_id: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          end_date?: string
+          id?: string
+          notes?: string | null
+          start_date?: string
+          technician_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "home_office_schedules_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "home_office_schedules_technician_id_fkey"
+            columns: ["technician_id"]
+            isOneToOne: false
+            referencedRelation: "technicians_public"
             referencedColumns: ["id"]
           },
         ]
