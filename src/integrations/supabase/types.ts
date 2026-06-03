@@ -3952,6 +3952,254 @@ export type Database = {
           },
         ]
       }
+      epi_deliveries: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          delivered_at: string
+          epi_item_id: string
+          expires_at: string | null
+          id: string
+          notes: string | null
+          quantity: number
+          recipient_profile_id: string
+          signature_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string
+          epi_item_id: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          quantity?: number
+          recipient_profile_id: string
+          signature_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string
+          epi_item_id?: string
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          quantity?: number
+          recipient_profile_id?: string
+          signature_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epi_deliveries_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_epi_item_id_fkey"
+            columns: ["epi_item_id"]
+            isOneToOne: false
+            referencedRelation: "epi_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_recipient_profile_id_fkey"
+            columns: ["recipient_profile_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_recipient_profile_id_fkey"
+            columns: ["recipient_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_recipient_profile_id_fkey"
+            columns: ["recipient_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epi_items: {
+        Row: {
+          ca_expires_at: string | null
+          ca_number: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          current_stock: number
+          description: string | null
+          id: string
+          is_active: boolean
+          min_stock: number
+          name: string
+          size: string | null
+          updated_at: string
+        }
+        Insert: {
+          ca_expires_at?: string | null
+          ca_number?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          current_stock?: number
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          min_stock?: number
+          name: string
+          size?: string | null
+          updated_at?: string
+        }
+        Update: {
+          ca_expires_at?: string | null
+          ca_number?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          current_stock?: number
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          min_stock?: number
+          name?: string
+          size?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epi_items_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epi_stock_movements: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          epi_item_id: string
+          id: string
+          movement_type: string
+          notes: string | null
+          quantity: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          epi_item_id: string
+          id?: string
+          movement_type: string
+          notes?: string | null
+          quantity: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          epi_item_id?: string
+          id?: string
+          movement_type?: string
+          notes?: string | null
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epi_stock_movements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_stock_movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_stock_movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_stock_movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_stock_movements_epi_item_id_fkey"
+            columns: ["epi_item_id"]
+            isOneToOne: false
+            referencedRelation: "epi_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       finance_categories: {
         Row: {
           category_type: string
@@ -4572,6 +4820,89 @@ export type Database = {
           },
           {
             foreignKeyName: "forecast_history_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_partnerships: {
+        Row: {
+          benefit: string | null
+          category: string | null
+          company_id: string
+          contact: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          link: string | null
+          logo_url: string | null
+          name: string
+          updated_at: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          benefit?: string | null
+          category?: string | null
+          company_id: string
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          link?: string | null
+          logo_url?: string | null
+          name: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          benefit?: string | null
+          category?: string | null
+          company_id?: string
+          contact?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          link?: string | null
+          logo_url?: string | null
+          name?: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_partnerships_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_partnerships_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_partnerships_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_partnerships_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles_public"
@@ -9410,6 +9741,7 @@ export type Database = {
         | "training"
         | "sick_leave"
         | "other"
+        | "home_office"
       app_role:
         | "super_admin"
         | "admin"
@@ -9589,6 +9921,7 @@ export const Constants = {
         "training",
         "sick_leave",
         "other",
+        "home_office",
       ],
       app_role: [
         "super_admin",
