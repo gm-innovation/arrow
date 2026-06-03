@@ -54,340 +54,317 @@ const productivityPatterns = [
   /top\s*t[eé]cnicos?/i,
 ];
 
+// Normalize roles coming from frontend to canonical names
+function normalizeRole(r?: string): string {
+  if (!r) return "technician";
+  if (r === "admin") return "coordinator"; // legacy
+  return r;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Include conversation history from frontend
-    const { message, image, userRole, context, messages: conversationHistory, agentId, llmOverride } = await req.json();
-    
-    console.log("AI Assistant Request:", { 
-      message: message?.substring(0, 100), 
-      userRole, 
+    const { message, image, userRole: rawRole, context, messages: conversationHistory, agentId, llmOverride } = await req.json();
+    const userRole = normalizeRole(rawRole);
+
+    console.log("AI Assistant Request:", {
+      message: message?.substring(0, 100),
+      userRole,
       companyId: context?.companyId,
-      hasHistory: !!conversationHistory?.length 
+      hasHistory: !!conversationHistory?.length,
     });
-    
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
-    
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-    
-    let contextData: any = {};
-    let systemPrompt = '';
-    let useTools = false;
-    let tools: any[] = [];
-    
-    // Check intents
+
+    // ----- Load agent identity (name/persona) -----
+    let agentRow: any = null;
+    if (agentId) {
+      const { data } = await supabase.from("ai_agents").select("name, identity, behavior, tools_model").eq("id", agentId).maybeSingle();
+      agentRow = data;
+    }
+    if (!agentRow) {
+      const { data } = await supabase
+        .from("ai_agents")
+        .select("name, identity, behavior, tools_model")
+        .eq("is_default", true)
+        .is("company_id", null)
+        .maybeSingle();
+      agentRow = data;
+    }
+    const agentName: string = agentRow?.name || agentRow?.identity?.name || "Assistente";
+    const agentPersona: string = agentRow?.identity?.persona || agentRow?.identity?.description || "";
+    const agentTone: string = agentRow?.identity?.tone || agentRow?.behavior?.tone || "profissional, claro e proativo";
+
+    // ----- Technician report-generation flow (kept as-is) -----
     const hasReportIntent = reportIntentPatterns.some(p => p.test(message));
-    const hasAvailabilityQuestion = availabilityPatterns.some(p => p.test(message));
-    const hasOsStatusQuestion = osStatusPatterns.some(p => p.test(message));
-    const hasProductivityQuestion = productivityPatterns.some(p => p.test(message));
-    
-    console.log("Intent detection:", { hasReportIntent, hasAvailabilityQuestion, hasOsStatusQuestion, hasProductivityQuestion });
-    
-    // Detect target date for availability questions
-    const targetDateInfo = detectTargetDate(message);
-    
-    // Build context based on user role
-    if (userRole === 'technician') {
-      systemPrompt = buildTechnicianSystemPrompt(!!image, hasReportIntent);
-      
-      // Try semantic search first, fallback to keyword search
-      if (message.length > 10) {
-        const similarReports = await searchSimilarReportsSemantic(supabase, message, context?.companyId);
-        if (similarReports.length > 0) {
-          contextData.similarReports = similarReports;
-          contextData.searchMethod = 'semantic';
-        } else {
-          // Fallback to keyword search
-          const keywordReports = await searchSimilarReportsKeyword(supabase, message, context?.companyId);
-          contextData.similarReports = keywordReports;
-          contextData.searchMethod = 'keyword';
-        }
-        
-        // Get technicians who solved similar problems
-        if (contextData.similarReports?.length > 0) {
-          const technicianIds = [...new Set(contextData.similarReports.map((r: any) => r.technician_id).filter(Boolean))];
-          if (technicianIds.length > 0) {
-            const { data: technicians } = await supabase
-              .from('technicians')
-              .select('id, user_id, profiles:user_id(full_name, phone)')
-              .in('id', technicianIds);
-            contextData.experiencedTechnicians = technicians;
-          }
-        }
-      }
-      
-      // Get task type info if context has task_type_id
-      if (context?.taskTypeId) {
-        const { data: taskType } = await supabase
-          .from('task_types')
-          .select('name, description, tools, steps')
-          .eq('id', context.taskTypeId)
-          .single();
-        contextData.taskType = taskType;
-      }
-      
-      // Setup tool calling for report generation
-      if (hasReportIntent) {
-        useTools = true;
-        tools = [{
-          type: "function",
-          function: {
-            name: "generate_report_fields",
-            description: "Extrai campos estruturados de um relatório técnico a partir da descrição fornecida pelo técnico",
-            parameters: {
-              type: "object",
-              properties: {
-                reportedIssue: { 
-                  type: "string", 
-                  description: "Problema reportado pelo cliente ou identificado pelo técnico" 
-                },
-                executedWork: { 
-                  type: "string", 
-                  description: "Trabalho executado pelo técnico para resolver o problema" 
-                },
-                result: { 
-                  type: "string", 
-                  enum: ["Solucionado", "Parcialmente Solucionado", "Pendente", "Não Solucionado"],
-                  description: "Resultado do serviço realizado"
-                },
-                brandInfo: { type: "string", description: "Marca do equipamento trabalhado" },
-                modelInfo: { type: "string", description: "Modelo do equipamento trabalhado" },
-                serialNumber: { type: "string", description: "Número de série do equipamento" },
-                observations: { type: "string", description: "Observações adicionais relevantes" }
-              },
-              required: ["reportedIssue", "executedWork", "result"]
-            }
-          }
-        }];
-      }
-    } else if (userRole === 'admin') {
-      systemPrompt = buildCoordinatorSystemPrompt();
-      
-      console.log("Admin context check:", { 
-        hasAvailabilityQuestion, 
-        companyId: context?.companyId,
-        targetDate: targetDateInfo.dateStr
-      });
-      
-      // PROACTIVE: Fetch availability data when question is detected
-      if (hasAvailabilityQuestion && context?.companyId) {
-        console.log("Fetching availability for:", context.companyId, targetDateInfo.date);
-        const availabilityData = await fetchTechnicianAvailability(supabase, context.companyId, targetDateInfo.date);
-        console.log("Availability result:", { 
-          freeTechnicians: availabilityData.freeTechnicians?.length,
-          scheduledTechnicians: availabilityData.scheduledTechnicians?.length
-        });
-        contextData.availabilityReport = {
-          ...availabilityData,
-          dateStr: targetDateInfo.dateStr,
-          dateLabel: targetDateInfo.label
-        };
-      }
-      
-      // PROACTIVE: Fetch OS status data when question is detected
-      if (hasOsStatusQuestion && context?.companyId) {
-        const osStatusData = await fetchOsStatus(supabase, context.companyId);
-        contextData.osStatusReport = osStatusData;
-      }
-      
-      // PROACTIVE: Fetch technician productivity data
-      if (hasProductivityQuestion && context?.companyId) {
-        console.log("Fetching technician productivity for:", context.companyId);
-        const productivityData = await fetchTechnicianProductivity(supabase, context.companyId);
-        console.log("Productivity result:", { techniciansCount: productivityData?.length });
-        contextData.productivityReport = productivityData;
-      }
-      
-      // Always fetch basic stats for coordinators
-      if (context?.companyId) {
-        const { data: recentOrders } = await supabase
-          .from('service_orders')
-          .select('id, status, created_at, scheduled_date')
-          .eq('company_id', context.companyId)
-          .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
-          .order('created_at', { ascending: false })
-          .limit(50);
-        contextData.recentOrders = recentOrders;
-        
-        // Get technician count
-        const { data: technicians } = await supabase
-          .from('technicians')
-          .select('id, active, specialty, profiles:user_id(full_name)')
-          .eq('company_id', context.companyId)
-          .eq('active', true);
-        contextData.availableTechnicians = technicians;
-      }
-    } else if (userRole === 'manager') {
-      systemPrompt = buildManagerSystemPrompt();
-      
-      // Get company-wide metrics
-      if (context?.companyId) {
-        const { data: metrics } = await supabase
-          .from('service_orders')
-          .select('status, created_by')
-          .eq('company_id', context.companyId)
-          .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString());
-        contextData.companyMetrics = metrics;
-      }
-    }
-    
-    // Build the full prompt with context
-    const fullPrompt = buildPromptWithContext(message, contextData, userRole);
-    
-    // Build message content (text or multimodal)
-    let messageContent: any;
-    if (image) {
-      // Multimodal message with image
-      messageContent = [
-        { type: "text", text: fullPrompt },
-        { type: "image_url", image_url: { url: image.startsWith('data:') ? image : `data:image/jpeg;base64,${image}` } }
-      ];
-    } else {
-      messageContent = fullPrompt;
-    }
-    
-    // Build conversation messages array - include history for context
-    const conversationMessages = [
-      { role: "system", content: systemPrompt },
-    ];
-    
-    // Add conversation history (last 10 messages for context)
-    if (conversationHistory && Array.isArray(conversationHistory)) {
-      const recentHistory = conversationHistory.slice(-10);
-      recentHistory.forEach((msg: any) => {
-        if (msg.role && msg.content) {
-          conversationMessages.push({
-            role: msg.role,
-            content: msg.content
-          });
-        }
+    if (userRole === "technician" && hasReportIntent) {
+      return await handleTechnicianReport({
+        supabase, message, image, context, conversationHistory,
+        agentName, agentRow, llmOverride,
       });
     }
-    
-    // Add current message
-    conversationMessages.push({ role: "user", content: messageContent });
-    
-    // Resolve LLM settings: agent (if agentId given) > override > defaults
+
+    // ----- Build tool catalog filtered by role -----
+    const { specs: toolSpecs, map: toolMap } = getToolsForRole(userRole);
+
+    // ----- System prompt -----
+    const systemPrompt = buildSystemPrompt({
+      agentName, agentPersona, agentTone, role: userRole, hasImage: !!image,
+    });
+
+    const conversationMessages: any[] = [{ role: "system", content: systemPrompt }];
+    if (Array.isArray(conversationHistory)) {
+      for (const m of conversationHistory.slice(-10)) {
+        if (m?.role && m?.content) conversationMessages.push({ role: m.role, content: m.content });
+      }
+    }
+    const userContent = image
+      ? [
+          { type: "text", text: message },
+          { type: "image_url", image_url: { url: image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}` } },
+        ]
+      : message;
+    conversationMessages.push({ role: "user", content: userContent });
+
+    // ----- Resolve LLM settings -----
     let llmProvider: LLMProvider = "lovable";
     let llmModel = image ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash";
     let llmTemperature: number | undefined;
     let llmMaxTokens: number | undefined;
     let openrouterRoute: string | undefined;
     let openrouterProviders: string[] | undefined;
+    const tm = (agentRow?.tools_model ?? {}) as any;
+    if (tm.provider) llmProvider = tm.provider;
+    if (tm.model) llmModel = tm.model;
+    if (typeof tm.temperature === "number") llmTemperature = tm.temperature;
+    if (typeof tm.max_tokens === "number") llmMaxTokens = tm.max_tokens;
+    if (tm.openrouter_route) openrouterRoute = tm.openrouter_route;
+    if (Array.isArray(tm.openrouter_providers)) openrouterProviders = tm.openrouter_providers;
+    if (llmOverride?.provider) llmProvider = llmOverride.provider;
+    if (llmOverride?.model) llmModel = llmOverride.model;
 
-    if (agentId) {
-      const { data: agent } = await supabase
-        .from("ai_agents")
-        .select("tools_model")
-        .eq("id", agentId)
-        .maybeSingle();
-      const tm = (agent?.tools_model ?? {}) as any;
-      if (tm.provider) llmProvider = tm.provider;
-      if (tm.model) llmModel = tm.model;
-      if (typeof tm.temperature === "number") llmTemperature = tm.temperature;
-      if (typeof tm.max_tokens === "number") llmMaxTokens = tm.max_tokens;
-      if (tm.openrouter_route) openrouterRoute = tm.openrouter_route;
-      if (Array.isArray(tm.openrouter_providers)) openrouterProviders = tm.openrouter_providers;
-    }
-    if (llmOverride) {
-      if (llmOverride.provider) llmProvider = llmOverride.provider;
-      if (llmOverride.model) llmModel = llmOverride.model;
-    }
-
-    // Build request body
-    const requestBody: any = {
-      model: llmModel,
-      messages: conversationMessages,
-      stream: !useTools,
-    };
-
-    if (useTools && tools.length > 0) {
-      requestBody.tools = tools;
-      requestBody.tool_choice = { type: "function", function: { name: "generate_report_fields" } };
-    }
-
-    // Call LLM via shared dispatcher
-    const { response } = await callLLM({
-      provider: llmProvider,
-      model: llmModel,
-      messages: conversationMessages,
-      tools: useTools && tools.length > 0 ? tools : undefined,
-      tool_choice: useTools && tools.length > 0
-        ? { type: "function", function: { name: "generate_report_fields" } }
-        : undefined,
-      stream: !useTools,
-      temperature: llmTemperature,
-      max_tokens: llmMaxTokens,
-      openrouter_route: openrouterRoute,
-      openrouter_providers: openrouterProviders,
-      title: "Lovable AI Assistant",
-    });
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns segundos." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos insuficientes. Entre em contato com o administrador." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const errorText = await response.text();
-      console.error("LLM gateway error:", response.status, errorText);
-      return new Response(JSON.stringify({ error: "Erro ao processar sua solicitação." }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    // ----- Tool-calling loop -----
+    const toolCtx = { supabase, companyId: context?.companyId, userId: context?.userId, role: userRole };
+    let finalContent = "";
+    const maxIters = 5;
+    for (let iter = 0; iter < maxIters; iter++) {
+      const { response } = await callLLM({
+        provider: llmProvider,
+        model: llmModel,
+        messages: conversationMessages,
+        tools: toolSpecs.length > 0 ? toolSpecs : undefined,
+        stream: false,
+        temperature: llmTemperature,
+        max_tokens: llmMaxTokens,
+        openrouter_route: openrouterRoute,
+        openrouter_providers: openrouterProviders,
+        title: "Lovable AI Assistant",
       });
-    }
 
-    // Handle tool calling response (non-streaming)
-    if (useTools) {
-      const responseData = await response.json();
-      const toolCalls = responseData.choices?.[0]?.message?.tool_calls;
-      
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(JSON.stringify({ error: "Limite de requisições excedido. Tente novamente em alguns segundos." }), {
+            status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        if (response.status === 402) {
+          return new Response(JSON.stringify({ error: "Créditos insuficientes. Entre em contato com o administrador." }), {
+            status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const errorText = await response.text();
+        console.error("LLM gateway error:", response.status, errorText);
+        return new Response(JSON.stringify({ error: "Erro ao processar sua solicitação." }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const data = await response.json();
+      const msg = data.choices?.[0]?.message;
+      const toolCalls = msg?.tool_calls;
+
       if (toolCalls && toolCalls.length > 0) {
-        const functionCall = toolCalls[0];
-        const reportFields = JSON.parse(functionCall.function.arguments);
-        
-        return new Response(JSON.stringify({
-          type: 'report_generation',
-          fields: reportFields,
-          message: "Campos do relatório extraídos com sucesso! Revise e confirme os dados abaixo."
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        conversationMessages.push({ role: "assistant", content: msg.content ?? "", tool_calls: toolCalls });
+        for (const tc of toolCalls) {
+          const fnName = tc.function?.name;
+          let args: any = {};
+          try { args = JSON.parse(tc.function?.arguments || "{}"); } catch { /* ignore */ }
+          const def = toolMap.get(fnName);
+          let result: any;
+          if (!def) {
+            result = { error: `Ferramenta ${fnName} não disponível para seu perfil` };
+          } else {
+            try {
+              result = await def.handler(args, toolCtx);
+            } catch (e) {
+              console.error("Tool error:", fnName, e);
+              result = { error: e instanceof Error ? e.message : String(e) };
+            }
+          }
+          conversationMessages.push({
+            role: "tool",
+            tool_call_id: tc.id,
+            content: JSON.stringify(result).slice(0, 8000),
+          });
+        }
+        continue;
       }
-      
-      // If no tool calls, return the regular response
-      const content = responseData.choices?.[0]?.message?.content || "Desculpe, não consegui processar sua solicitação.";
-      return new Response(JSON.stringify({ type: 'text', content }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+
+      finalContent = msg?.content || "Desculpe, não consegui processar sua solicitação.";
+      break;
     }
 
-    // Stream response
-    return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+    if (!finalContent) finalContent = "Não consegui finalizar a resposta após várias tentativas. Pode reformular?";
+
+    return new Response(JSON.stringify({ type: "text", content: finalContent }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
   } catch (error) {
     console.error("AI Assistant error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
+
+// ----- Technician report-generation handler (preserves previous behavior) -----
+async function handleTechnicianReport(params: {
+  supabase: any; message: string; image?: string; context: any;
+  conversationHistory: any[]; agentName: string; agentRow: any; llmOverride: any;
+}) {
+  const { supabase, message, image, context, conversationHistory, agentName, agentRow, llmOverride } = params;
+  const contextData: any = {};
+  if (message.length > 10) {
+    const similarReports = await searchSimilarReportsSemantic(supabase, message, context?.companyId);
+    if (similarReports.length > 0) {
+      contextData.similarReports = similarReports;
+    } else {
+      contextData.similarReports = await searchSimilarReportsKeyword(supabase, message, context?.companyId);
+    }
+  }
+  if (context?.taskTypeId) {
+    const { data: taskType } = await supabase.from("task_types").select("name, description, tools, steps").eq("id", context.taskTypeId).single();
+    contextData.taskType = taskType;
+  }
+  const systemPrompt = buildTechnicianSystemPrompt(!!image, true).replace(/NavalOS AI/g, agentName);
+  const fullPrompt = buildTechnicianContextPrompt(message, contextData);
+  const messageContent = image
+    ? [{ type: "text", text: fullPrompt }, { type: "image_url", image_url: { url: image.startsWith("data:") ? image : `data:image/jpeg;base64,${image}` } }]
+    : fullPrompt;
+  const conversationMessages: any[] = [{ role: "system", content: systemPrompt }];
+  if (Array.isArray(conversationHistory)) {
+    for (const m of conversationHistory.slice(-10)) {
+      if (m?.role && m?.content) conversationMessages.push({ role: m.role, content: m.content });
+    }
+  }
+  conversationMessages.push({ role: "user", content: messageContent });
+
+  const tools = [{
+    type: "function",
+    function: {
+      name: "generate_report_fields",
+      description: "Extrai campos estruturados de um relatório técnico a partir da descrição fornecida pelo técnico",
+      parameters: {
+        type: "object",
+        properties: {
+          reportedIssue: { type: "string" },
+          executedWork: { type: "string" },
+          result: { type: "string", enum: ["Solucionado", "Parcialmente Solucionado", "Pendente", "Não Solucionado"] },
+          brandInfo: { type: "string" },
+          modelInfo: { type: "string" },
+          serialNumber: { type: "string" },
+          observations: { type: "string" },
+        },
+        required: ["reportedIssue", "executedWork", "result"],
+      },
+    },
+  }];
+
+  const tm = (agentRow?.tools_model ?? {}) as any;
+  const llmProvider: LLMProvider = (llmOverride?.provider || tm.provider || "lovable") as LLMProvider;
+  const llmModel = llmOverride?.model || tm.model || (image ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash");
+
+  const { response } = await callLLM({
+    provider: llmProvider, model: llmModel, messages: conversationMessages,
+    tools, tool_choice: { type: "function", function: { name: "generate_report_fields" } },
+    stream: false, title: "Lovable AI Assistant",
+  });
+  if (!response.ok) {
+    return new Response(JSON.stringify({ error: "Erro ao processar relatório" }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const responseData = await response.json();
+  const toolCalls = responseData.choices?.[0]?.message?.tool_calls;
+  if (toolCalls?.length > 0) {
+    const reportFields = JSON.parse(toolCalls[0].function.arguments);
+    return new Response(JSON.stringify({
+      type: "report_generation",
+      fields: reportFields,
+      message: "Campos do relatório extraídos com sucesso! Revise e confirme os dados abaixo.",
+    }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+  }
+  const content = responseData.choices?.[0]?.message?.content || "Não consegui extrair os campos.";
+  return new Response(JSON.stringify({ type: "text", content }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+// ----- Unified system prompt builder -----
+function buildSystemPrompt(opts: {
+  agentName: string; agentPersona: string; agentTone: string; role: string; hasImage: boolean;
+}) {
+  const today = formatDateBR(new Date());
+  const modules = modulesForRole(opts.role);
+  const moduleList = modules.length
+    ? modules.map(m => `- ${MODULE_LABELS[m]}`).join("\n")
+    : "- (perfil sem módulos consultáveis)";
+
+  const personaBlock = opts.agentPersona
+    ? `Sua persona: ${opts.agentPersona}`
+    : `Você é uma assistente sênior do sistema de gestão naval, atuando como copiloto para os usuários da empresa.`;
+
+  return `Você é ${opts.agentName}.
+
+${personaBlock}
+Tom de voz: ${opts.agentTone}.
+Hoje é ${today}.
+
+Você está conversando com um usuário de perfil "${opts.role}". Esse perfil pode consultar os seguintes módulos do sistema através das suas ferramentas:
+${moduleList}
+
+REGRAS CRÍTICAS:
+1. Você TEM acesso a todos esses módulos via ferramentas (function calling). NUNCA diga que "não tem informação sobre X" ou que "sua função se limita a Y" — primeiro tente uma ferramenta apropriada.
+2. Sempre que o usuário perguntar sobre dados do sistema (leads, oportunidades, OS, clientes, vendas, técnicos, ausências, financeiro, etc.), chame a ferramenta correspondente antes de responder.
+3. Os dados retornados pelas ferramentas já estão filtrados pela empresa do usuário e pelas permissões do perfil. Use-os para responder objetivamente.
+4. Se o usuário pedir um módulo que NÃO está na lista acima, diga educadamente que esse módulo não está liberado para o perfil dele.
+5. Não invente números, datas ou nomes. Se uma ferramenta retornar vazio, diga claramente que não há registros.
+6. Responda sempre em português brasileiro, usando markdown para clareza. Use emojis com parcimônia.
+7. Seja proativa: depois de responder, sugira em 1 linha próximos passos úteis quando fizer sentido.${opts.hasImage ? "\n8. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
+}
+
+function buildTechnicianContextPrompt(message: string, contextData: any) {
+  let ctx = "";
+  if (contextData.similarReports?.length > 0) {
+    ctx += `\n\n--- RELATÓRIOS SIMILARES ---\n`;
+    contextData.similarReports.forEach((r: any, i: number) => {
+      const d = r.report_data || {};
+      ctx += `${i + 1}. Problema: ${d.reportedIssue || "N/A"} | Trabalho: ${d.executedWork || "N/A"} | Resultado: ${d.result || "N/A"}\n`;
+    });
+  }
+  if (contextData.taskType) {
+    ctx += `\n🔧 Tipo de tarefa: ${contextData.taskType.name} | Ferramentas: ${contextData.taskType.tools?.join(", ") || "N/A"}\n`;
+  }
+  return `${ctx}\n\nPergunta do usuário: ${message}`;
+}
+
 
 // Detect target date from message - IMPROVED VERSION
 function detectTargetDate(message: string): { date: Date; dateStr: string; label: string } {
