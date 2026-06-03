@@ -201,7 +201,6 @@ serve(async (req) => {
       const msg = data.choices?.[0]?.message;
       const toolCalls = msg?.tool_calls;
 
-      console.log("LLM iter", iter, "tool_calls:", toolCalls?.length ?? 0, toolCalls?.map((t: any) => t.function?.name).join(","));
       if (toolCalls && toolCalls.length > 0) {
         conversationMessages.push({ role: "assistant", content: msg.content ?? "", tool_calls: toolCalls });
         for (const tc of toolCalls) {
