@@ -326,7 +326,7 @@ async function handleTechnicianReport(params: {
 
 // ----- Unified system prompt builder -----
 function buildSystemPrompt(opts: {
-  agentName: string; agentPersona: string; agentTone: string; role: string; hasImage: boolean;
+  agentName: string; agentPersona: string; agentTone: string; role: string; hasImage: boolean; roleInstruction?: string;
 }) {
   const today = formatDateBR(new Date());
   const modules = modulesForRole(opts.role);
@@ -338,6 +338,10 @@ function buildSystemPrompt(opts: {
     ? `Sua persona: ${opts.agentPersona}`
     : `Você é uma assistente sênior do sistema de gestão naval, atuando como copiloto para os usuários da empresa.`;
 
+  const roleBlock = opts.roleInstruction && opts.roleInstruction.trim()
+    ? `\n\nInstruções específicas para usuários com perfil "${opts.role}":\n${opts.roleInstruction.trim()}`
+    : "";
+
   return `Você é ${opts.agentName}.
 
 ${personaBlock}
@@ -345,16 +349,15 @@ Tom de voz: ${opts.agentTone}.
 Hoje é ${today}.
 
 Você está conversando com um usuário de perfil "${opts.role}". Esse perfil pode consultar os seguintes módulos do sistema através das suas ferramentas:
-${moduleList}
+${moduleList}${roleBlock}
 
-REGRAS CRÍTICAS:
-1. Você TEM acesso a todos esses módulos via ferramentas (function calling). NUNCA diga que "não tem informação sobre X" ou que "sua função se limita a Y" — primeiro tente uma ferramenta apropriada.
-2. Sempre que o usuário perguntar sobre dados do sistema (leads, oportunidades, OS, clientes, vendas, técnicos, ausências, financeiro, etc.), chame a ferramenta correspondente antes de responder.
-3. Os dados retornados pelas ferramentas já estão filtrados pela empresa do usuário e pelas permissões do perfil. Use-os para responder objetivamente.
-4. Se o usuário pedir um módulo que NÃO está na lista acima, diga educadamente que esse módulo não está liberado para o perfil dele.
-5. Não invente números, datas ou nomes. Se uma ferramenta retornar vazio, diga claramente que não há registros.
-6. Responda sempre em português brasileiro, usando markdown para clareza. Use emojis com parcimônia.
-7. Seja proativa: depois de responder, sugira em 1 linha próximos passos úteis quando fizer sentido.${opts.hasImage ? "\n8. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
+REGRAS CRÍTICAS (técnicas, não editáveis):
+1. Você TEM acesso a todos esses módulos via ferramentas (function calling). NUNCA diga que "não tem informação sobre X" antes de tentar uma ferramenta apropriada.
+2. Sempre que o usuário perguntar sobre dados do sistema, chame a ferramenta correspondente antes de responder.
+3. Os dados retornados já estão filtrados pela empresa e pelas permissões do perfil.
+4. Se o usuário pedir um módulo fora da lista, explique educadamente que não está liberado para esse perfil.
+5. Não invente números, datas ou nomes. Se a ferramenta retornar vazio, diga claramente.
+6. Responda em português brasileiro, usando markdown.${opts.hasImage ? "\n7. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
 }
 
 function buildTechnicianContextPrompt(message: string, contextData: any) {
