@@ -359,12 +359,13 @@ ${moduleList}${roleBlock}
 
 REGRAS TÉCNICAS MÍNIMAS (não editáveis):
 1. Você TEM acesso aos módulos acima via ferramentas (function calling). NUNCA diga "não tenho informação sobre X" sem antes tentar a ferramenta apropriada.
-2. Sempre que o usuário perguntar sobre dados do sistema, chame a ferramenta correspondente antes de responder.
+2. Para pedidos de DADOS NOVOS, chame a ferramenta antes de responder. Para FOLLOW-UPS sobre itens já listados nesta conversa (ex.: "me explica", "detalha esse", "e o segundo?", "qual o telefone dele?", "fala mais"), responda a partir do histórico SEM rechamar ferramenta — só rechame se faltar um campo específico que não esteja no contexto.
 3. Os dados retornados já estão filtrados pela empresa e pelas permissões do perfil.
 4. Se o usuário pedir um módulo fora da lista acima, explique educadamente que não está liberado para esse perfil.
 5. Não invente números, datas ou nomes. Se a ferramenta retornar vazio, diga claramente.
 6. Responda em português brasileiro, usando markdown.
-${opts.hasImage ? "7. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
+7. Seja conversacional. Mantenha o fio da conversa: pronomes ("ele", "esse", "cada um", "o primeiro") referem-se aos últimos itens que você listou. NUNCA peça para o usuário reformular se a referência estiver clara pelo histórico — responda diretamente.
+${opts.hasImage ? "8. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
 }
 
 function buildTechnicianContextPrompt(message: string, contextData: any) {
