@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { callLLM, LLMProvider } from "../_shared/llm.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -58,7 +59,7 @@ serve(async (req) => {
 
   try {
     // Include conversation history from frontend
-    const { message, image, userRole, context, messages: conversationHistory } = await req.json();
+    const { message, image, userRole, context, messages: conversationHistory, agentId, llmOverride } = await req.json();
     
     console.log("AI Assistant Request:", { 
       message: message?.substring(0, 100), 
@@ -270,28 +271,60 @@ serve(async (req) => {
     // Add current message
     conversationMessages.push({ role: "user", content: messageContent });
     
+    // Resolve LLM settings: agent (if agentId given) > override > defaults
+    let llmProvider: LLMProvider = "lovable";
+    let llmModel = image ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash";
+    let llmTemperature: number | undefined;
+    let llmMaxTokens: number | undefined;
+    let openrouterRoute: string | undefined;
+    let openrouterProviders: string[] | undefined;
+
+    if (agentId) {
+      const { data: agent } = await supabase
+        .from("ai_agents")
+        .select("tools_model")
+        .eq("id", agentId)
+        .maybeSingle();
+      const tm = (agent?.tools_model ?? {}) as any;
+      if (tm.provider) llmProvider = tm.provider;
+      if (tm.model) llmModel = tm.model;
+      if (typeof tm.temperature === "number") llmTemperature = tm.temperature;
+      if (typeof tm.max_tokens === "number") llmMaxTokens = tm.max_tokens;
+      if (tm.openrouter_route) openrouterRoute = tm.openrouter_route;
+      if (Array.isArray(tm.openrouter_providers)) openrouterProviders = tm.openrouter_providers;
+    }
+    if (llmOverride) {
+      if (llmOverride.provider) llmProvider = llmOverride.provider;
+      if (llmOverride.model) llmModel = llmOverride.model;
+    }
+
     // Build request body
     const requestBody: any = {
-      // Use Pro model for images (better multimodal), Flash for text-only
-      model: image ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash",
+      model: llmModel,
       messages: conversationMessages,
-      stream: !useTools, // Don't stream when using tools
+      stream: !useTools,
     };
-    
-    // Add tools if needed
+
     if (useTools && tools.length > 0) {
       requestBody.tools = tools;
       requestBody.tool_choice = { type: "function", function: { name: "generate_report_fields" } };
     }
-    
-    // Call Lovable AI
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
+
+    // Call LLM via shared dispatcher
+    const { response } = await callLLM({
+      provider: llmProvider,
+      model: llmModel,
+      messages: conversationMessages,
+      tools: useTools && tools.length > 0 ? tools : undefined,
+      tool_choice: useTools && tools.length > 0
+        ? { type: "function", function: { name: "generate_report_fields" } }
+        : undefined,
+      stream: !useTools,
+      temperature: llmTemperature,
+      max_tokens: llmMaxTokens,
+      openrouter_route: openrouterRoute,
+      openrouter_providers: openrouterProviders,
+      title: "Lovable AI Assistant",
     });
 
     if (!response.ok) {
@@ -308,7 +341,7 @@ serve(async (req) => {
         });
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error("LLM gateway error:", response.status, errorText);
       return new Response(JSON.stringify({ error: "Erro ao processar sua solicitação." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
