@@ -100,9 +100,16 @@ serve(async (req) => {
     const agentPersona: string = agentRow?.identity?.persona || agentRow?.identity?.description || "";
     const agentTone: string = agentRow?.identity?.tone || agentRow?.behavior?.tone || "profissional, claro e proativo";
 
-    // ----- Technician report-generation flow (kept as-is) -----
+    // ----- Behavior settings from agent manager -----
+    const behavior = (agentRow?.behavior ?? {}) as any;
+    const roleInstruction: string = behavior?.role_instructions?.[userRole] ?? "";
+    const memorySize: number = Number.isFinite(behavior?.memory_size) ? Math.max(0, Math.min(50, behavior.memory_size)) : 10;
+    const autoFlows = (behavior?.auto_flows ?? {}) as Record<string, boolean>;
+    const detectReportEnabled = autoFlows.detect_report !== false; // default on
+
+    // ----- Technician report-generation flow (kept as-is, gated by auto_flow) -----
     const hasReportIntent = reportIntentPatterns.some(p => p.test(message));
-    if (userRole === "technician" && hasReportIntent) {
+    if (userRole === "technician" && hasReportIntent && detectReportEnabled) {
       return await handleTechnicianReport({
         supabase, message, image, context, conversationHistory,
         agentName, agentRow, llmOverride,
@@ -114,12 +121,12 @@ serve(async (req) => {
 
     // ----- System prompt -----
     const systemPrompt = buildSystemPrompt({
-      agentName, agentPersona, agentTone, role: userRole, hasImage: !!image,
+      agentName, agentPersona, agentTone, role: userRole, hasImage: !!image, roleInstruction,
     });
 
     const conversationMessages: any[] = [{ role: "system", content: systemPrompt }];
-    if (Array.isArray(conversationHistory)) {
-      for (const m of conversationHistory.slice(-10)) {
+    if (Array.isArray(conversationHistory) && memorySize > 0) {
+      for (const m of conversationHistory.slice(-memorySize)) {
         if (m?.role && m?.content) conversationMessages.push({ role: m.role, content: m.content });
       }
     }
