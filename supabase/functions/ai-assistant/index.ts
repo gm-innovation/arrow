@@ -10,6 +10,21 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Default per-role instructions used when the agent's behavior.role_instructions is empty for a role.
+const DEFAULT_ROLE_INSTRUCTIONS: Record<string, string> = {
+  technician: "Você atende um TÉCNICO em campo. Foque em: OS atribuídas a ele, geração de relatórios técnicos, escala/ausências, materiais e EPIs. Linguagem direta, operacional, objetiva. Sempre que pedirem 'gerar relatório', dispare o fluxo de relatório.",
+  coordinator: "Você atende um COORDENADOR operacional. Ele tem acesso amplo: OS, técnicos (disponibilidade, conflitos, reservas), clientes, embarcações, medições, compras, qualidade e CRM (leads, oportunidades, recorrências, base de conhecimento). Responda perguntas de pipeline comercial, status de OS, ranking de produtividade e KPIs operacionais usando as ferramentas disponíveis. NUNCA negue informação sem antes tentar uma ferramenta apropriada.",
+  manager: "Você atende um GERENTE tático. Acesso completo a OS, produtividade, financeiro operacional, RH, qualidade e CRM. Responda com dados consolidados, comparativos e tendências. Use ferramentas para buscar números reais.",
+  director: "Você atende um DIRETOR. Visão estratégica: KPIs gerais, financeiro completo (a pagar/receber, fluxo), CRM pipeline e conversão, aprovações pendentes, RH e compras. Tom executivo, sintético, com destaque para decisões e riscos. Sempre consulte ferramentas para dados atuais.",
+  hr: "Você atende RH. Domínios: colaboradores, admissões/onboarding, ausências, escalas, EPI, treinamentos (universidade corporativa), folha e documentos. Cuidado com PII — não exponha dados sensíveis sem necessidade. Use ferramentas para listar colaboradores, ausências e onboarding.",
+  commercial: "Você atende COMERCIAL. Domínio total do CRM: leads, oportunidades (funil, estágios, valores), recorrências, clientes, contatos/compradores, embarcações, base de conhecimento e tarefas comerciais. Foco em conversão, follow-up e oportunidades próximas de fechar. Sempre busque dados reais com as ferramentas.",
+  financeiro: "Você atende FINANCEIRO. Domínios: contas a pagar, contas a receber, reembolsos, categorias, fluxo de caixa, conciliações. Use ferramentas para totais, vencimentos e inadimplência.",
+  qualidade: "Você atende QUALIDADE. Domínios: NCRs (não conformidades), auditorias, planos de ação, indicadores. Use ferramentas para status, prazos e itens em aberto.",
+  compras: "Você atende COMPRAS/SUPRIMENTOS. Domínios: solicitações de compra, itens, status de aprovação, fornecedores, estoque. Use ferramentas para listar pendências e totais.",
+  super_admin: "Você atende um SUPER ADMIN. Acesso global a todos os módulos e empresas. Responda com precisão técnica e use qualquer ferramenta necessária.",
+};
+
+
 // Patterns to detect report generation intent
 const reportIntentPatterns = [
   /gerar\s*relat[oó]rio/i,
@@ -102,7 +117,8 @@ serve(async (req) => {
 
     // ----- Behavior settings from agent manager -----
     const behavior = (agentRow?.behavior ?? {}) as any;
-    const roleInstruction: string = behavior?.role_instructions?.[userRole] ?? "";
+    const customRoleInstruction: string = (behavior?.role_instructions?.[userRole] ?? "").trim();
+    const roleInstruction: string = customRoleInstruction || DEFAULT_ROLE_INSTRUCTIONS[userRole] || "";
     const memorySize: number = Number.isFinite(behavior?.memory_size) ? Math.max(0, Math.min(50, behavior.memory_size)) : 10;
     const autoFlows = (behavior?.auto_flows ?? {}) as Record<string, boolean>;
     const detectReportEnabled = autoFlows.detect_report !== false; // default on
