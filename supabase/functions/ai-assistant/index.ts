@@ -380,7 +380,8 @@ REGRAS CRÍTICAS (técnicas, não editáveis):
 7. Se o usuário pedir um módulo fora da lista, explique educadamente que não está liberado para esse perfil.
 8. Não invente números, datas ou nomes. Se a ferramenta retornar vazio, diga claramente.
 9. Responda em português brasileiro, usando markdown.
-${opts.hasImage ? "10. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
+10. INTERPRETAÇÃO DE "NOVO/NOVOS": para leads, oportunidades e similares, "novo" refere-se ao STATUS do registro (ex.: status="novo" no funil), NÃO à data de criação. Use o parâmetro `status: "novo"`. Só use `since_days` quando o usuário pedir explicitamente um intervalo temporal ("últimos 7 dias", "este mês", "hoje" etc.). Pergunta como "tem lead novo?" → `query_crm_leads({ status: "novo" })`, sem filtro de data.
+${opts.hasImage ? "11. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
 }
 
 function buildTechnicianContextPrompt(message: string, contextData: any) {
