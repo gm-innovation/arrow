@@ -8754,6 +8754,137 @@ export type Database = {
           },
         ]
       }
+      quality_calibration_checkpoints: {
+        Row: {
+          calibration_id: string
+          created_at: string
+          error: number | null
+          id: string
+          measured_value: number | null
+          nominal_value: number | null
+          notes: string | null
+          pass: boolean | null
+          tolerance: number | null
+        }
+        Insert: {
+          calibration_id: string
+          created_at?: string
+          error?: number | null
+          id?: string
+          measured_value?: number | null
+          nominal_value?: number | null
+          notes?: string | null
+          pass?: boolean | null
+          tolerance?: number | null
+        }
+        Update: {
+          calibration_id?: string
+          created_at?: string
+          error?: number | null
+          id?: string
+          measured_value?: number | null
+          nominal_value?: number | null
+          notes?: string | null
+          pass?: boolean | null
+          tolerance?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_calibration_checkpoints_calibration_id_fkey"
+            columns: ["calibration_id"]
+            isOneToOne: false
+            referencedRelation: "quality_calibrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_calibrations: {
+        Row: {
+          calibration_date: string
+          certificate_file_name: string | null
+          certificate_file_url: string | null
+          certificate_number: string | null
+          company_id: string
+          cost: number | null
+          created_at: string
+          created_by: string | null
+          device_id: string
+          id: string
+          kind: Database["public"]["Enums"]["quality_calibration_kind"]
+          measurement_uncertainty: string | null
+          next_due_at: string | null
+          notes: string | null
+          performed_by_user_id: string | null
+          provider_supplier_id: string | null
+          restrictions: string | null
+          result: Database["public"]["Enums"]["quality_calibration_result"]
+          traceability: string | null
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          calibration_date: string
+          certificate_file_name?: string | null
+          certificate_file_url?: string | null
+          certificate_number?: string | null
+          company_id: string
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          device_id: string
+          id?: string
+          kind?: Database["public"]["Enums"]["quality_calibration_kind"]
+          measurement_uncertainty?: string | null
+          next_due_at?: string | null
+          notes?: string | null
+          performed_by_user_id?: string | null
+          provider_supplier_id?: string | null
+          restrictions?: string | null
+          result?: Database["public"]["Enums"]["quality_calibration_result"]
+          traceability?: string | null
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          calibration_date?: string
+          certificate_file_name?: string | null
+          certificate_file_url?: string | null
+          certificate_number?: string | null
+          company_id?: string
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          device_id?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["quality_calibration_kind"]
+          measurement_uncertainty?: string | null
+          next_due_at?: string | null
+          notes?: string | null
+          performed_by_user_id?: string | null
+          provider_supplier_id?: string | null
+          restrictions?: string | null
+          result?: Database["public"]["Enums"]["quality_calibration_result"]
+          traceability?: string | null
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_calibrations_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "quality_measuring_devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_calibrations_provider_supplier_id_fkey"
+            columns: ["provider_supplier_id"]
+            isOneToOne: false
+            referencedRelation: "quality_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_competencies: {
         Row: {
           active: boolean
@@ -9094,6 +9225,44 @@ export type Database = {
             columns: ["version_id"]
             isOneToOne: false
             referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_device_usage_log: {
+        Row: {
+          company_id: string
+          device_id: string
+          id: string
+          notes: string | null
+          service_order_id: string | null
+          used_at: string
+          used_by: string | null
+        }
+        Insert: {
+          company_id: string
+          device_id: string
+          id?: string
+          notes?: string | null
+          service_order_id?: string | null
+          used_at?: string
+          used_by?: string | null
+        }
+        Update: {
+          company_id?: string
+          device_id?: string
+          id?: string
+          notes?: string | null
+          service_order_id?: string | null
+          used_at?: string
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_device_usage_log_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "quality_measuring_devices"
             referencedColumns: ["id"]
           },
         ]
@@ -10199,6 +10368,90 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      quality_measuring_devices: {
+        Row: {
+          accuracy: string | null
+          acquired_at: string | null
+          calibration_frequency_months: number
+          code: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          criticality: string
+          description: string | null
+          id: string
+          last_calibration_at: string | null
+          location: string | null
+          manufacturer: string | null
+          measurement_range: string | null
+          model: string | null
+          name: string
+          next_calibration_due: string | null
+          notes: string | null
+          resolution: string | null
+          responsible_user_id: string | null
+          retired_at: string | null
+          serial_number: string | null
+          status: Database["public"]["Enums"]["quality_device_status"]
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          accuracy?: string | null
+          acquired_at?: string | null
+          calibration_frequency_months?: number
+          code: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          criticality?: string
+          description?: string | null
+          id?: string
+          last_calibration_at?: string | null
+          location?: string | null
+          manufacturer?: string | null
+          measurement_range?: string | null
+          model?: string | null
+          name: string
+          next_calibration_due?: string | null
+          notes?: string | null
+          resolution?: string | null
+          responsible_user_id?: string | null
+          retired_at?: string | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["quality_device_status"]
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accuracy?: string | null
+          acquired_at?: string | null
+          calibration_frequency_months?: number
+          code?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          criticality?: string
+          description?: string | null
+          id?: string
+          last_calibration_at?: string | null
+          location?: string | null
+          manufacturer?: string | null
+          measurement_range?: string | null
+          model?: string | null
+          name?: string
+          next_calibration_due?: string | null
+          notes?: string | null
+          resolution?: string | null
+          responsible_user_id?: string | null
+          retired_at?: string | null
+          serial_number?: string | null
+          status?: Database["public"]["Enums"]["quality_device_status"]
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       quality_ncr_attachments: {
         Row: {
@@ -15354,6 +15607,11 @@ export type Database = {
         Args: { p_score: number }
         Returns: string
       }
+      quality_device_block_usage: {
+        Args: { p_device_id: string }
+        Returns: boolean
+      }
+      quality_device_status_refresh: { Args: never; Returns: undefined }
       quality_generate_alert_notifications: { Args: never; Returns: number }
       quality_generate_training_plans: {
         Args: { p_user_id: string }
@@ -15569,6 +15827,15 @@ export type Database = {
         | "quality_alert"
       payment_status: "paid" | "pending" | "overdue"
       quality_access_action: "view" | "print" | "download"
+      quality_calibration_kind:
+        | "internal"
+        | "external_lab"
+        | "manufacturer"
+        | "self_check"
+      quality_calibration_result:
+        | "approved"
+        | "approved_with_restriction"
+        | "reproved"
       quality_competency_category:
         | "technical"
         | "behavioral"
@@ -15587,6 +15854,12 @@ export type Database = {
         | "destroyed"
         | "lost"
         | "superseded"
+      quality_device_status:
+        | "active"
+        | "in_calibration"
+        | "out_of_service"
+        | "retired"
+        | "overdue"
       quality_document_content_kind: "rich_text" | "file"
       quality_document_control_mode: "full_control" | "received_only"
       quality_document_status:
@@ -15885,6 +16158,17 @@ export const Constants = {
       ],
       payment_status: ["paid", "pending", "overdue"],
       quality_access_action: ["view", "print", "download"],
+      quality_calibration_kind: [
+        "internal",
+        "external_lab",
+        "manufacturer",
+        "self_check",
+      ],
+      quality_calibration_result: [
+        "approved",
+        "approved_with_restriction",
+        "reproved",
+      ],
       quality_competency_category: [
         "technical",
         "behavioral",
@@ -15905,6 +16189,13 @@ export const Constants = {
         "destroyed",
         "lost",
         "superseded",
+      ],
+      quality_device_status: [
+        "active",
+        "in_calibration",
+        "out_of_service",
+        "retired",
+        "overdue",
       ],
       quality_document_content_kind: ["rich_text", "file"],
       quality_document_control_mode: ["full_control", "received_only"],
