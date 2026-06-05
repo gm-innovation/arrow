@@ -8263,6 +8263,86 @@ export type Database = {
           },
         ]
       }
+      quality_complaints: {
+        Row: {
+          acknowledged_at: string | null
+          client_id: string | null
+          company_id: string
+          complaint_number: number
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          is_anonymous: boolean
+          linked_ncr_id: string | null
+          linked_response_id: string | null
+          received_at: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          responder_email: string | null
+          responder_name: string | null
+          responsible_id: string | null
+          source: Database["public"]["Enums"]["complaint_source"]
+          status: Database["public"]["Enums"]["complaint_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          client_id?: string | null
+          company_id: string
+          complaint_number?: number
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          is_anonymous?: boolean
+          linked_ncr_id?: string | null
+          linked_response_id?: string | null
+          received_at?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          responder_email?: string | null
+          responder_name?: string | null
+          responsible_id?: string | null
+          source?: Database["public"]["Enums"]["complaint_source"]
+          status?: Database["public"]["Enums"]["complaint_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          client_id?: string | null
+          company_id?: string
+          complaint_number?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          is_anonymous?: boolean
+          linked_ncr_id?: string | null
+          linked_response_id?: string | null
+          received_at?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          responder_email?: string | null
+          responder_name?: string | null
+          responsible_id?: string | null
+          source?: Database["public"]["Enums"]["complaint_source"]
+          status?: Database["public"]["Enums"]["complaint_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_complaints_linked_response_id_fkey"
+            columns: ["linked_response_id"]
+            isOneToOne: false
+            referencedRelation: "quality_satisfaction_responses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_controlled_copies: {
         Row: {
           copy_number: number
@@ -9571,6 +9651,167 @@ export type Database = {
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_satisfaction_campaigns: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_at: string
+          id: string
+          name: string
+          starts_at: string
+          status: Database["public"]["Enums"]["satisfaction_campaign_status"]
+          target_client_ids: string[]
+          target_kind: Database["public"]["Enums"]["satisfaction_target_kind"]
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at: string
+          id?: string
+          name: string
+          starts_at: string
+          status?: Database["public"]["Enums"]["satisfaction_campaign_status"]
+          target_client_ids?: string[]
+          target_kind?: Database["public"]["Enums"]["satisfaction_target_kind"]
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_at?: string
+          id?: string
+          name?: string
+          starts_at?: string
+          status?: Database["public"]["Enums"]["satisfaction_campaign_status"]
+          target_client_ids?: string[]
+          target_kind?: Database["public"]["Enums"]["satisfaction_target_kind"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quality_satisfaction_invites: {
+        Row: {
+          campaign_id: string
+          client_id: string | null
+          created_at: string
+          id: string
+          responded_at: string | null
+          sent_at: string | null
+          service_order_id: string | null
+          token: string
+        }
+        Insert: {
+          campaign_id: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          responded_at?: string | null
+          sent_at?: string | null
+          service_order_id?: string | null
+          token?: string
+        }
+        Update: {
+          campaign_id?: string
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          responded_at?: string | null
+          sent_at?: string | null
+          service_order_id?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_satisfaction_invites_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "quality_satisfaction_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_satisfaction_responses: {
+        Row: {
+          campaign_id: string | null
+          client_id: string | null
+          comment: string | null
+          company_id: string
+          created_at: string
+          csat_score: number
+          derived_csat: string | null
+          derived_nps: string | null
+          id: string
+          invite_id: string | null
+          nps_score: number
+          responded_at: string
+          responder_email: string | null
+          responder_ip: string | null
+          responder_name: string | null
+          service_order_id: string | null
+          suggested_ncr_id: string | null
+        }
+        Insert: {
+          campaign_id?: string | null
+          client_id?: string | null
+          comment?: string | null
+          company_id: string
+          created_at?: string
+          csat_score: number
+          derived_csat?: string | null
+          derived_nps?: string | null
+          id?: string
+          invite_id?: string | null
+          nps_score: number
+          responded_at?: string
+          responder_email?: string | null
+          responder_ip?: string | null
+          responder_name?: string | null
+          service_order_id?: string | null
+          suggested_ncr_id?: string | null
+        }
+        Update: {
+          campaign_id?: string | null
+          client_id?: string | null
+          comment?: string | null
+          company_id?: string
+          created_at?: string
+          csat_score?: number
+          derived_csat?: string | null
+          derived_nps?: string | null
+          id?: string
+          invite_id?: string | null
+          nps_score?: number
+          responded_at?: string
+          responder_email?: string | null
+          responder_ip?: string | null
+          responder_name?: string | null
+          service_order_id?: string | null
+          suggested_ncr_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_satisfaction_responses_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "quality_satisfaction_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_satisfaction_responses_invite_id_fkey"
+            columns: ["invite_id"]
+            isOneToOne: true
+            referencedRelation: "quality_satisfaction_invites"
             referencedColumns: ["id"]
           },
         ]
@@ -12776,10 +13017,35 @@ export type Database = {
         Args: { p_review_id: string }
         Returns: undefined
       }
+      quality_complaint_to_ncr: {
+        Args: { p_complaint_id: string }
+        Returns: string
+      }
       quality_generate_alert_notifications: { Args: never; Returns: number }
+      quality_get_invite_public: {
+        Args: { p_token: string }
+        Returns: {
+          already_responded: boolean
+          campaign_id: string
+          campaign_name: string
+          campaign_status: string
+          invite_id: string
+        }[]
+      }
       quality_kpi_get_overview: {
         Args: { p_company_id: string }
         Returns: Json
+      }
+      quality_submit_satisfaction_response: {
+        Args: {
+          p_comment: string
+          p_csat: number
+          p_nps: number
+          p_responder_email: string
+          p_responder_name: string
+          p_token: string
+        }
+        Returns: string
       }
       recalculate_measurement: {
         Args: { p_measurement_id: string }
@@ -12867,6 +13133,19 @@ export type Database = {
         | "financeiro"
         | "coordinator"
         | "marketing"
+      complaint_source:
+        | "survey"
+        | "email"
+        | "phone"
+        | "in_person"
+        | "system"
+        | "other"
+      complaint_status:
+        | "new"
+        | "acknowledged"
+        | "under_analysis"
+        | "resolved"
+        | "rejected"
       expense_type: "hospedagem" | "alimentacao"
       measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO" | "ISENTO"
       measurement_status: "draft" | "finalized"
@@ -12932,6 +13211,8 @@ export type Database = {
         | "closure"
         | "issuance"
         | "other"
+      satisfaction_campaign_status: "draft" | "active" | "closed"
+      satisfaction_target_kind: "all_clients" | "selected"
       service_order_status:
         | "pending"
         | "in_progress"
@@ -13095,6 +13376,21 @@ export const Constants = {
         "coordinator",
         "marketing",
       ],
+      complaint_source: [
+        "survey",
+        "email",
+        "phone",
+        "in_person",
+        "system",
+        "other",
+      ],
+      complaint_status: [
+        "new",
+        "acknowledged",
+        "under_analysis",
+        "resolved",
+        "rejected",
+      ],
       expense_type: ["hospedagem", "alimentacao"],
       measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO", "ISENTO"],
       measurement_status: ["draft", "finalized"],
@@ -13167,6 +13463,8 @@ export const Constants = {
         "issuance",
         "other",
       ],
+      satisfaction_campaign_status: ["draft", "active", "closed"],
+      satisfaction_target_kind: ["all_clients", "selected"],
       service_order_status: [
         "pending",
         "in_progress",
