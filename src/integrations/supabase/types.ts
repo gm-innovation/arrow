@@ -7996,6 +7996,7 @@ export type Database = {
           rejection_reason: string | null
           requester_id: string
           status: string
+          supplier_id: string | null
           title: string
           updated_at: string
         }
@@ -8015,6 +8016,7 @@ export type Database = {
           rejection_reason?: string | null
           requester_id: string
           status?: string
+          supplier_id?: string | null
           title: string
           updated_at?: string
         }
@@ -8034,6 +8036,7 @@ export type Database = {
           rejection_reason?: string | null
           requester_id?: string
           status?: string
+          supplier_id?: string | null
           title?: string
           updated_at?: string
         }
@@ -8142,6 +8145,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_competency_matrix_v"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "purchase_requests_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "quality_suppliers"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -11278,6 +11288,565 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_kpi_timeseries_v"
             referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      quality_supplier_documents: {
+        Row: {
+          company_id: string
+          created_at: string
+          document_type: string
+          file_name: string
+          file_url: string
+          id: string
+          supplier_id: string
+          uploaded_by: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          document_type: string
+          file_name: string
+          file_url: string
+          id?: string
+          supplier_id: string
+          uploaded_by?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          document_type?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          supplier_id?: string
+          uploaded_by?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_supplier_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_documents_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "quality_suppliers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      quality_supplier_evaluation_criteria: {
+        Row: {
+          company_id: string
+          created_at: string
+          criterion_code: string
+          evaluation_id: string
+          id: string
+          notes: string | null
+          score: number
+          weight: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          criterion_code: string
+          evaluation_id: string
+          id?: string
+          notes?: string | null
+          score?: number
+          weight?: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          criterion_code?: string
+          evaluation_id?: string
+          id?: string
+          notes?: string | null
+          score?: number
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_supplier_evaluation_criteria_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluation_criteria_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluation_criteria_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluation_criteria_evaluation_id_fkey"
+            columns: ["evaluation_id"]
+            isOneToOne: false
+            referencedRelation: "quality_supplier_evaluations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_supplier_evaluations: {
+        Row: {
+          company_id: string
+          created_at: string
+          evaluation_date: string
+          evaluator_id: string | null
+          grade: string | null
+          id: string
+          kind: Database["public"]["Enums"]["quality_supplier_evaluation_kind"]
+          next_due_at: string | null
+          period_end: string | null
+          period_start: string | null
+          recommendations: string | null
+          score: number | null
+          status_after:
+            | Database["public"]["Enums"]["quality_supplier_status"]
+            | null
+          summary: string | null
+          supplier_id: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          evaluation_date?: string
+          evaluator_id?: string | null
+          grade?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["quality_supplier_evaluation_kind"]
+          next_due_at?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          recommendations?: string | null
+          score?: number | null
+          status_after?:
+            | Database["public"]["Enums"]["quality_supplier_status"]
+            | null
+          summary?: string | null
+          supplier_id: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          evaluation_date?: string
+          evaluator_id?: string | null
+          grade?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["quality_supplier_evaluation_kind"]
+          next_due_at?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          recommendations?: string | null
+          score?: number | null
+          status_after?:
+            | Database["public"]["Enums"]["quality_supplier_status"]
+            | null
+          summary?: string | null
+          supplier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_supplier_evaluations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_evaluations_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "quality_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_supplier_incidents: {
+        Row: {
+          company_id: string
+          created_at: string
+          description: string
+          id: string
+          incident_date: string
+          linked_ncr_id: string | null
+          reported_by: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          supplier_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          description: string
+          id?: string
+          incident_date?: string
+          linked_ncr_id?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          supplier_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          incident_date?: string
+          linked_ncr_id?: string | null
+          reported_by?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          supplier_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_supplier_incidents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_linked_ncr_id_fkey"
+            columns: ["linked_ncr_id"]
+            isOneToOne: false
+            referencedRelation: "quality_ncrs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_reported_by_fkey"
+            columns: ["reported_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "quality_supplier_incidents_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "quality_suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_suppliers: {
+        Row: {
+          category: Database["public"]["Enums"]["quality_supplier_category"]
+          company_id: string
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          created_by: string | null
+          criticality: Database["public"]["Enums"]["quality_supplier_criticality"]
+          current_grade: string | null
+          current_score: number | null
+          id: string
+          last_evaluation_at: string | null
+          name: string
+          next_evaluation_due: string | null
+          notes: string | null
+          owner_user_id: string | null
+          requalification_frequency_months: number
+          scope_description: string | null
+          status: Database["public"]["Enums"]["quality_supplier_status"]
+          tax_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["quality_supplier_category"]
+          company_id: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          criticality?: Database["public"]["Enums"]["quality_supplier_criticality"]
+          current_grade?: string | null
+          current_score?: number | null
+          id?: string
+          last_evaluation_at?: string | null
+          name: string
+          next_evaluation_due?: string | null
+          notes?: string | null
+          owner_user_id?: string | null
+          requalification_frequency_months?: number
+          scope_description?: string | null
+          status?: Database["public"]["Enums"]["quality_supplier_status"]
+          tax_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["quality_supplier_category"]
+          company_id?: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          created_by?: string | null
+          criticality?: Database["public"]["Enums"]["quality_supplier_criticality"]
+          current_grade?: string | null
+          current_score?: number | null
+          id?: string
+          last_evaluation_at?: string | null
+          name?: string
+          next_evaluation_due?: string | null
+          notes?: string | null
+          owner_user_id?: string | null
+          requalification_frequency_months?: number
+          scope_description?: string | null
+          status?: Database["public"]["Enums"]["quality_supplier_status"]
+          tax_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_suppliers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_suppliers_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -14858,6 +15427,14 @@ export type Database = {
         }
         Returns: string
       }
+      quality_supplier_compute_score: {
+        Args: { p_evaluation_id: string }
+        Returns: undefined
+      }
+      quality_supplier_next_status: {
+        Args: { p_open_critical_incidents: number; p_score: number }
+        Returns: Database["public"]["Enums"]["quality_supplier_status"]
+      }
       quality_user_has_completed_prerequisites: {
         Args: { p_document_id: string; p_user_id: string }
         Returns: boolean
@@ -15080,6 +15657,26 @@ export type Database = {
         | "closure"
         | "issuance"
         | "other"
+      quality_supplier_category:
+        | "material"
+        | "service"
+        | "calibration"
+        | "training"
+        | "software"
+        | "logistics"
+        | "other"
+      quality_supplier_criticality: "low" | "medium" | "high" | "critical"
+      quality_supplier_evaluation_kind:
+        | "initial"
+        | "periodic"
+        | "incident"
+        | "requalification"
+      quality_supplier_status:
+        | "pending"
+        | "approved"
+        | "conditional"
+        | "suspended"
+        | "disqualified"
       quality_training_plan_status:
         | "proposed"
         | "in_progress"
@@ -15387,6 +15984,29 @@ export const Constants = {
         "closure",
         "issuance",
         "other",
+      ],
+      quality_supplier_category: [
+        "material",
+        "service",
+        "calibration",
+        "training",
+        "software",
+        "logistics",
+        "other",
+      ],
+      quality_supplier_criticality: ["low", "medium", "high", "critical"],
+      quality_supplier_evaluation_kind: [
+        "initial",
+        "periodic",
+        "incident",
+        "requalification",
+      ],
+      quality_supplier_status: [
+        "pending",
+        "approved",
+        "conditional",
+        "suspended",
+        "disqualified",
       ],
       quality_training_plan_status: [
         "proposed",
