@@ -7337,6 +7337,421 @@ export type Database = {
           },
         ]
       }
+      quality_controlled_copies: {
+        Row: {
+          copy_number: number
+          created_at: string
+          destroyed_at: string | null
+          document_id: string
+          id: string
+          issued_at: string
+          issued_by: string | null
+          notes: string | null
+          recipient_location: string | null
+          recipient_name: string | null
+          recipient_user_id: string | null
+          returned_at: string | null
+          status: Database["public"]["Enums"]["quality_controlled_copy_status"]
+          updated_at: string
+          version_id: string
+        }
+        Insert: {
+          copy_number: number
+          created_at?: string
+          destroyed_at?: string | null
+          document_id: string
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          notes?: string | null
+          recipient_location?: string | null
+          recipient_name?: string | null
+          recipient_user_id?: string | null
+          returned_at?: string | null
+          status?: Database["public"]["Enums"]["quality_controlled_copy_status"]
+          updated_at?: string
+          version_id: string
+        }
+        Update: {
+          copy_number?: number
+          created_at?: string
+          destroyed_at?: string | null
+          document_id?: string
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          notes?: string | null
+          recipient_location?: string | null
+          recipient_name?: string | null
+          recipient_user_id?: string | null
+          returned_at?: string | null
+          status?: Database["public"]["Enums"]["quality_controlled_copy_status"]
+          updated_at?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_controlled_copies_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_controlled_copies_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_document_access_log: {
+        Row: {
+          action: Database["public"]["Enums"]["quality_access_action"]
+          created_at: string
+          document_id: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
+          version_id: string | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["quality_access_action"]
+          created_at?: string
+          document_id: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          version_id?: string | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["quality_access_action"]
+          created_at?: string
+          document_id?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          version_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_access_log_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_access_log_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_document_approvals: {
+        Row: {
+          approver_role: string | null
+          approver_user_id: string
+          comments: string | null
+          created_at: string
+          decided_at: string
+          decision: string
+          id: string
+          signature_event_id: string | null
+          version_id: string
+        }
+        Insert: {
+          approver_role?: string | null
+          approver_user_id: string
+          comments?: string | null
+          created_at?: string
+          decided_at?: string
+          decision: string
+          id?: string
+          signature_event_id?: string | null
+          version_id: string
+        }
+        Update: {
+          approver_role?: string | null
+          approver_user_id?: string
+          comments?: string | null
+          created_at?: string
+          decided_at?: string
+          decision?: string
+          id?: string
+          signature_event_id?: string | null
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qd_approvals_sigev_fk"
+            columns: ["signature_event_id"]
+            isOneToOne: false
+            referencedRelation: "quality_signature_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_approvals_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_document_permissions: {
+        Row: {
+          can_download: boolean
+          can_print: boolean
+          can_view: boolean
+          created_at: string
+          document_id: string
+          granted_by: string | null
+          id: string
+          receives_controlled_copy: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          can_download?: boolean
+          can_print?: boolean
+          can_view?: boolean
+          created_at?: string
+          document_id: string
+          granted_by?: string | null
+          id?: string
+          receives_controlled_copy?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          can_download?: boolean
+          can_print?: boolean
+          can_view?: boolean
+          created_at?: string
+          document_id?: string
+          granted_by?: string | null
+          id?: string
+          receives_controlled_copy?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_permissions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_document_types: {
+        Row: {
+          code_prefix: string
+          company_id: string
+          created_at: string
+          default_classification: string | null
+          default_review_interval_months: number | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code_prefix: string
+          company_id: string
+          created_at?: string
+          default_classification?: string | null
+          default_review_interval_months?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code_prefix?: string
+          company_id?: string
+          created_at?: string
+          default_classification?: string | null
+          default_review_interval_months?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_types_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_document_versions: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          change_summary: string | null
+          content_kind: Database["public"]["Enums"]["quality_document_content_kind"]
+          created_at: string
+          document_id: string
+          file_mime: string | null
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
+          id: string
+          issued_at: string | null
+          prepared_by: string | null
+          revision_label: string
+          revision_number: number
+          rich_content: Json | null
+          status: Database["public"]["Enums"]["quality_document_status"]
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          change_summary?: string | null
+          content_kind?: Database["public"]["Enums"]["quality_document_content_kind"]
+          created_at?: string
+          document_id: string
+          file_mime?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          issued_at?: string | null
+          prepared_by?: string | null
+          revision_label: string
+          revision_number: number
+          rich_content?: Json | null
+          status?: Database["public"]["Enums"]["quality_document_status"]
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          change_summary?: string | null
+          content_kind?: Database["public"]["Enums"]["quality_document_content_kind"]
+          created_at?: string
+          document_id?: string
+          file_mime?: string | null
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          issued_at?: string | null
+          prepared_by?: string | null
+          revision_label?: string
+          revision_number?: number
+          rich_content?: Json | null
+          status?: Database["public"]["Enums"]["quality_document_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_documents: {
+        Row: {
+          classification: string | null
+          code: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          current_version_id: string | null
+          document_type_id: string | null
+          expires_at: string | null
+          id: string
+          next_review_date: string | null
+          normative_reference: string | null
+          obsolete_at: string | null
+          published_at: string | null
+          status: Database["public"]["Enums"]["quality_document_status"]
+          title: string
+          updated_at: string
+          widely_visible: boolean
+        }
+        Insert: {
+          classification?: string | null
+          code: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          current_version_id?: string | null
+          document_type_id?: string | null
+          expires_at?: string | null
+          id?: string
+          next_review_date?: string | null
+          normative_reference?: string | null
+          obsolete_at?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["quality_document_status"]
+          title: string
+          updated_at?: string
+          widely_visible?: boolean
+        }
+        Update: {
+          classification?: string | null
+          code?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          current_version_id?: string | null
+          document_type_id?: string | null
+          expires_at?: string | null
+          id?: string
+          next_review_date?: string | null
+          normative_reference?: string | null
+          obsolete_at?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["quality_document_status"]
+          title?: string
+          updated_at?: string
+          widely_visible?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_current_version_fk"
+            columns: ["current_version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_document_type_id_fkey"
+            columns: ["document_type_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_ncr_attachments: {
         Row: {
           created_at: string
@@ -7559,6 +7974,110 @@ export type Database = {
             columns: ["responsible_id"]
             isOneToOne: false
             referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_signature_events: {
+        Row: {
+          action: Database["public"]["Enums"]["quality_signature_action"]
+          created_at: string
+          document_id: string | null
+          full_name_snapshot: string | null
+          id: string
+          ip_address: string | null
+          notes: string | null
+          role_snapshot: string | null
+          signature_image_path: string
+          signed_at: string
+          user_agent: string | null
+          user_id: string
+          version_id: string | null
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["quality_signature_action"]
+          created_at?: string
+          document_id?: string | null
+          full_name_snapshot?: string | null
+          id?: string
+          ip_address?: string | null
+          notes?: string | null
+          role_snapshot?: string | null
+          signature_image_path: string
+          signed_at?: string
+          user_agent?: string | null
+          user_id: string
+          version_id?: string | null
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["quality_signature_action"]
+          created_at?: string
+          document_id?: string | null
+          full_name_snapshot?: string | null
+          id?: string
+          ip_address?: string | null
+          notes?: string | null
+          role_snapshot?: string | null
+          signature_image_path?: string
+          signed_at?: string
+          user_agent?: string | null
+          user_id?: string
+          version_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_signature_events_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_signature_events_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_signatures: {
+        Row: {
+          company_id: string
+          created_at: string
+          full_name_snapshot: string | null
+          id: string
+          is_active: boolean
+          signature_image_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          full_name_snapshot?: string | null
+          id?: string
+          is_active?: boolean
+          signature_image_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          full_name_snapshot?: string | null
+          id?: string
+          is_active?: boolean
+          signature_image_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_signatures_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -10269,6 +10788,27 @@ export type Database = {
         | "document_received"
         | "approval_pending"
       payment_status: "paid" | "pending" | "overdue"
+      quality_access_action: "view" | "print" | "download"
+      quality_controlled_copy_status:
+        | "issued"
+        | "returned"
+        | "destroyed"
+        | "lost"
+        | "superseded"
+      quality_document_content_kind: "rich_text" | "file"
+      quality_document_status:
+        | "draft"
+        | "pending_approval"
+        | "published"
+        | "obsolete"
+        | "archived"
+      quality_signature_action:
+        | "approval"
+        | "acknowledgment"
+        | "review"
+        | "closure"
+        | "issuance"
+        | "other"
       service_order_status:
         | "pending"
         | "in_progress"
@@ -10452,6 +10992,30 @@ export const Constants = {
         "approval_pending",
       ],
       payment_status: ["paid", "pending", "overdue"],
+      quality_access_action: ["view", "print", "download"],
+      quality_controlled_copy_status: [
+        "issued",
+        "returned",
+        "destroyed",
+        "lost",
+        "superseded",
+      ],
+      quality_document_content_kind: ["rich_text", "file"],
+      quality_document_status: [
+        "draft",
+        "pending_approval",
+        "published",
+        "obsolete",
+        "archived",
+      ],
+      quality_signature_action: [
+        "approval",
+        "acknowledgment",
+        "review",
+        "closure",
+        "issuance",
+        "other",
+      ],
       service_order_status: [
         "pending",
         "in_progress",
