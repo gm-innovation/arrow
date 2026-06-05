@@ -8469,6 +8469,73 @@ export type Database = {
           },
         ]
       }
+      quality_document_acknowledgement_assignments: {
+        Row: {
+          acknowledged_at: string | null
+          assigned_at: string
+          assigned_by: string | null
+          created_at: string
+          document_id: string
+          due_date: string | null
+          id: string
+          signature_event_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          version_id: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          document_id: string
+          due_date?: string | null
+          id?: string
+          signature_event_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          version_id: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          assigned_at?: string
+          assigned_by?: string | null
+          created_at?: string
+          document_id?: string
+          due_date?: string | null
+          id?: string
+          signature_event_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          version_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_acknowledgement_assign_signature_event_id_fkey"
+            columns: ["signature_event_id"]
+            isOneToOne: false
+            referencedRelation: "quality_signature_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_acknowledgement_assignments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_acknowledgement_assignments_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_document_approvals: {
         Row: {
           approver_role: string | null
@@ -8718,6 +8785,7 @@ export type Database = {
           obsolete_at: string | null
           origin: Database["public"]["Enums"]["quality_origin"]
           published_at: string | null
+          requires_strong_acknowledgement: boolean
           status: Database["public"]["Enums"]["quality_document_status"]
           title: string
           updated_at: string
@@ -8743,6 +8811,7 @@ export type Database = {
           obsolete_at?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
+          requires_strong_acknowledgement?: boolean
           status?: Database["public"]["Enums"]["quality_document_status"]
           title: string
           updated_at?: string
@@ -8768,6 +8837,7 @@ export type Database = {
           obsolete_at?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
+          requires_strong_acknowledgement?: boolean
           status?: Database["public"]["Enums"]["quality_document_status"]
           title?: string
           updated_at?: string
@@ -12699,6 +12769,72 @@ export type Database = {
           },
         ]
       }
+      quality_acknowledgements_v: {
+        Row: {
+          acknowledged_at: string | null
+          assigned_at: string | null
+          assigned_by: string | null
+          assignment_id: string | null
+          company_id: string | null
+          document_code: string | null
+          document_id: string | null
+          document_title: string | null
+          due_date: string | null
+          requires_strong_acknowledgement: boolean | null
+          revision_label: string | null
+          signature_event_id: string | null
+          status: string | null
+          user_id: string | null
+          version_id: string | null
+          version_status:
+            | Database["public"]["Enums"]["quality_document_status"]
+            | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_acknowledgement_assign_signature_event_id_fkey"
+            columns: ["signature_event_id"]
+            isOneToOne: false
+            referencedRelation: "quality_signature_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_acknowledgement_assignments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_acknowledgement_assignments_version_id_fkey"
+            columns: ["version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       quality_alerts_v: {
         Row: {
           category: string | null
@@ -13118,6 +13254,10 @@ export type Database = {
       quality_kpi_get_overview: {
         Args: { p_company_id: string }
         Returns: Json
+      }
+      quality_register_acknowledgement: {
+        Args: { p_assignment_id: string; p_ip?: string; p_user_agent?: string }
+        Returns: string
       }
       quality_seed_safety_document_types: {
         Args: { p_company_id: string }
