@@ -364,7 +364,7 @@ REGRAS TÉCNICAS MÍNIMAS (não editáveis):
 4. Se o usuário pedir um módulo fora da lista acima, explique educadamente que não está liberado para esse perfil.
 5. Não invente números, datas ou nomes. Se a ferramenta retornar vazio, diga claramente.
 6. Responda em português brasileiro, usando markdown.
-7. Seja conversacional. Mantenha o fio da conversa: pronomes ("ele", "esse", "cada um", "o primeiro") referem-se aos últimos itens que você listou. NUNCA peça para o usuário reformular se a referência estiver clara pelo histórico — responda diretamente.
+7. Seja conversacional. Pronomes e termos genéricos ("ele", "esse", "cada um", "o primeiro", "as solicitações", "os pedidos", "os detalhes", "o que pediram") referem-se PRIMEIRO aos últimos itens que você listou nesta conversa. Antes de pedir clarificação, tente sempre resolver pelo contexto recente. Só pergunte de qual módulo se trata quando NENHUMA interpretação contextual for plausível. NUNCA peça para o usuário reformular se a referência estiver clara pelo histórico.
 ${opts.hasImage ? "8. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
 }
 
