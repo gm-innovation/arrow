@@ -7978,6 +7978,157 @@ export type Database = {
           },
         ]
       }
+      quality_org_context: {
+        Row: {
+          applicable_scope: string | null
+          company_id: string
+          created_at: string
+          external_issues: string | null
+          id: string
+          internal_issues: string | null
+          last_review_notes: string | null
+          last_reviewed_at: string | null
+          last_reviewed_by: string | null
+          next_review_due_at: string | null
+          review_frequency_months: number | null
+          updated_at: string
+        }
+        Insert: {
+          applicable_scope?: string | null
+          company_id: string
+          created_at?: string
+          external_issues?: string | null
+          id?: string
+          internal_issues?: string | null
+          last_review_notes?: string | null
+          last_reviewed_at?: string | null
+          last_reviewed_by?: string | null
+          next_review_due_at?: string | null
+          review_frequency_months?: number | null
+          updated_at?: string
+        }
+        Update: {
+          applicable_scope?: string | null
+          company_id?: string
+          created_at?: string
+          external_issues?: string | null
+          id?: string
+          internal_issues?: string | null
+          last_review_notes?: string | null
+          last_reviewed_at?: string | null
+          last_reviewed_by?: string | null
+          next_review_due_at?: string | null
+          review_frequency_months?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_org_context_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_reference_norms: {
+        Row: {
+          code: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          document_id: string | null
+          id: string
+          is_active: boolean
+          issuer: string | null
+          notes: string | null
+          title: string
+          updated_at: string
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          code: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          document_id?: string | null
+          id?: string
+          is_active?: boolean
+          issuer?: string | null
+          notes?: string | null
+          title: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          code?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          document_id?: string | null
+          id?: string
+          is_active?: boolean
+          issuer?: string | null
+          notes?: string | null
+          title?: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_reference_norms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_settings: {
+        Row: {
+          company_id: string
+          created_at: string
+          critical_review_required_topics: Json
+          id: string
+          review_cycles: Json
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          critical_review_required_topics?: Json
+          id?: string
+          review_cycles?: Json
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          critical_review_required_topics?: Json
+          id?: string
+          review_cycles?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_signature_events: {
         Row: {
           action: Database["public"]["Enums"]["quality_signature_action"]
@@ -8078,6 +8229,54 @@ export type Database = {
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_terms: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          definition: string
+          id: string
+          source_norm_id: string | null
+          term: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          definition: string
+          id?: string
+          source_norm_id?: string | null
+          term: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          definition?: string
+          id?: string
+          source_norm_id?: string | null
+          term?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_terms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_terms_source_norm_id_fkey"
+            columns: ["source_norm_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms"
             referencedColumns: ["id"]
           },
         ]
@@ -10446,6 +10645,17 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      quality_review_status_v: {
+        Row: {
+          company_id: string | null
+          computed_status: string | null
+          entity_id: string | null
+          entity_label: string | null
+          entity_type: string | null
+          next_review_due_at: string | null
+        }
+        Relationships: []
       }
       technicians_public: {
         Row: {
