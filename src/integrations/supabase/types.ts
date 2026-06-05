@@ -13119,6 +13119,10 @@ export type Database = {
         Args: { p_company_id: string }
         Returns: Json
       }
+      quality_seed_safety_document_types: {
+        Args: { p_company_id: string }
+        Returns: undefined
+      }
       quality_submit_satisfaction_response: {
         Args: {
           p_comment: string
