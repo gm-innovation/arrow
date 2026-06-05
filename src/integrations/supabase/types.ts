@@ -7102,6 +7102,36 @@ export type Database = {
           },
         ]
       }
+      quality_alert_history: {
+        Row: {
+          company_id: string
+          entity_id: string
+          id: string
+          notification_id: string | null
+          notified_at: string
+          source: string
+          status: string
+        }
+        Insert: {
+          company_id: string
+          entity_id: string
+          id?: string
+          notification_id?: string | null
+          notified_at?: string
+          source: string
+          status: string
+        }
+        Update: {
+          company_id?: string
+          entity_id?: string
+          id?: string
+          notification_id?: string | null
+          notified_at?: string
+          source?: string
+          status?: string
+        }
+        Relationships: []
+      }
       quality_audit_checklist_items: {
         Row: {
           audit_id: string
@@ -7672,60 +7702,78 @@ export type Database = {
       }
       quality_documents: {
         Row: {
+          auto_renewal: boolean
           classification: string | null
           code: string
           company_id: string
           created_at: string
           created_by: string | null
           current_version_id: string | null
+          document_control_mode: Database["public"]["Enums"]["quality_document_control_mode"]
           document_type_id: string | null
           expires_at: string | null
+          external_source: string | null
           id: string
           next_review_date: string | null
           normative_reference: string | null
           obsolete_at: string | null
+          origin: Database["public"]["Enums"]["quality_origin"]
           published_at: string | null
           status: Database["public"]["Enums"]["quality_document_status"]
           title: string
           updated_at: string
+          validity_end: string | null
+          validity_start: string | null
           widely_visible: boolean
         }
         Insert: {
+          auto_renewal?: boolean
           classification?: string | null
           code: string
           company_id: string
           created_at?: string
           created_by?: string | null
           current_version_id?: string | null
+          document_control_mode?: Database["public"]["Enums"]["quality_document_control_mode"]
           document_type_id?: string | null
           expires_at?: string | null
+          external_source?: string | null
           id?: string
           next_review_date?: string | null
           normative_reference?: string | null
           obsolete_at?: string | null
+          origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
           status?: Database["public"]["Enums"]["quality_document_status"]
           title: string
           updated_at?: string
+          validity_end?: string | null
+          validity_start?: string | null
           widely_visible?: boolean
         }
         Update: {
+          auto_renewal?: boolean
           classification?: string | null
           code?: string
           company_id?: string
           created_at?: string
           created_by?: string | null
           current_version_id?: string | null
+          document_control_mode?: Database["public"]["Enums"]["quality_document_control_mode"]
           document_type_id?: string | null
           expires_at?: string | null
+          external_source?: string | null
           id?: string
           next_review_date?: string | null
           normative_reference?: string | null
           obsolete_at?: string | null
+          origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
           status?: Database["public"]["Enums"]["quality_document_status"]
           title?: string
           updated_at?: string
+          validity_end?: string | null
+          validity_start?: string | null
           widely_visible?: boolean
         }
         Relationships: [
@@ -7748,6 +7796,126 @@ export type Database = {
             columns: ["document_type_id"]
             isOneToOne: false
             referencedRelation: "quality_document_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_interested_parties: {
+        Row: {
+          category: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          last_review_notes: string | null
+          last_reviewed_at: string | null
+          last_reviewed_by: string | null
+          monitoring_method: string | null
+          name: string
+          needs_expectations: string | null
+          next_review_due_at: string | null
+          owner_user_id: string | null
+          relevance: string
+          review_frequency_months: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          last_review_notes?: string | null
+          last_reviewed_at?: string | null
+          last_reviewed_by?: string | null
+          monitoring_method?: string | null
+          name: string
+          needs_expectations?: string | null
+          next_review_due_at?: string | null
+          owner_user_id?: string | null
+          relevance?: string
+          review_frequency_months?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          last_review_notes?: string | null
+          last_reviewed_at?: string | null
+          last_reviewed_by?: string | null
+          monitoring_method?: string | null
+          name?: string
+          needs_expectations?: string | null
+          next_review_due_at?: string | null
+          owner_user_id?: string | null
+          relevance?: string
+          review_frequency_months?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quality_interested_party_evidences: {
+        Row: {
+          created_at: string
+          description: string | null
+          document_id: string | null
+          evidence_date: string | null
+          evidence_type: string
+          external_file_path: string | null
+          id: string
+          party_id: string
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          document_id?: string | null
+          evidence_date?: string | null
+          evidence_type?: string
+          external_file_path?: string | null
+          id?: string
+          party_id: string
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          document_id?: string | null
+          evidence_date?: string | null
+          evidence_type?: string
+          external_file_path?: string | null
+          id?: string
+          party_id?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_interested_party_evidences_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_interested_party_evidences_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "quality_interested_parties"
             referencedColumns: ["id"]
           },
         ]
@@ -10646,6 +10814,19 @@ export type Database = {
           },
         ]
       }
+      quality_alerts_v: {
+        Row: {
+          category: string | null
+          company_id: string | null
+          days_remaining: number | null
+          due_date: string | null
+          entity_id: string | null
+          source: string | null
+          status: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
       quality_review_status_v: {
         Row: {
           company_id: string | null
@@ -10893,6 +11074,7 @@ export type Database = {
           source_id: string
         }[]
       }
+      quality_generate_alert_notifications: { Args: never; Returns: number }
       recalculate_measurement: {
         Args: { p_measurement_id: string }
         Returns: undefined
@@ -10997,6 +11179,7 @@ export type Database = {
         | "request_rejected"
         | "document_received"
         | "approval_pending"
+        | "quality_alert"
       payment_status: "paid" | "pending" | "overdue"
       quality_access_action: "view" | "print" | "download"
       quality_controlled_copy_status:
@@ -11006,12 +11189,20 @@ export type Database = {
         | "lost"
         | "superseded"
       quality_document_content_kind: "rich_text" | "file"
+      quality_document_control_mode: "full_control" | "received_only"
       quality_document_status:
         | "draft"
         | "pending_approval"
         | "published"
         | "obsolete"
         | "archived"
+      quality_origin:
+        | "internal"
+        | "client"
+        | "external_norm"
+        | "external_law"
+        | "external_certificate"
+        | "safety"
       quality_signature_action:
         | "approval"
         | "acknowledgment"
@@ -11200,6 +11391,7 @@ export const Constants = {
         "request_rejected",
         "document_received",
         "approval_pending",
+        "quality_alert",
       ],
       payment_status: ["paid", "pending", "overdue"],
       quality_access_action: ["view", "print", "download"],
@@ -11211,12 +11403,21 @@ export const Constants = {
         "superseded",
       ],
       quality_document_content_kind: ["rich_text", "file"],
+      quality_document_control_mode: ["full_control", "received_only"],
       quality_document_status: [
         "draft",
         "pending_approval",
         "published",
         "obsolete",
         "archived",
+      ],
+      quality_origin: [
+        "internal",
+        "client",
+        "external_norm",
+        "external_law",
+        "external_certificate",
+        "safety",
       ],
       quality_signature_action: [
         "approval",
