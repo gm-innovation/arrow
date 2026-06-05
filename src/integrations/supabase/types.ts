@@ -990,6 +990,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "api_integrations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       api_request_logs: {
@@ -1786,6 +1793,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "company_holidays_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       contact_vessel_links: {
@@ -1928,6 +1942,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conversations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "conversations_service_order_id_fkey"
             columns: ["service_order_id"]
             isOneToOne: false
@@ -2010,6 +2031,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "corp_audit_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       corp_badges: {
@@ -2075,6 +2103,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_badges_awarded_by_fkey"
+            columns: ["awarded_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_badges_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -2115,6 +2150,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2212,6 +2254,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_documents_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_documents_related_request_id_fkey"
             columns: ["related_request_id"]
             isOneToOne: false
@@ -2238,6 +2287,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2330,6 +2386,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_feed_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_feed_comments_post_id_fkey"
             columns: ["post_id"]
             isOneToOne: false
@@ -2381,6 +2444,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_feed_discussion_replies_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "corp_feed_discussion_replies_discussion_id_fkey"
@@ -2443,6 +2513,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_feed_discussions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "corp_feed_discussions_company_id_fkey"
@@ -2517,6 +2594,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_feed_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -2632,6 +2716,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "corp_feed_poll_votes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       corp_feed_polls: {
@@ -2742,6 +2833,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_feed_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_feed_posts_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -2809,6 +2907,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_group_discussion_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_group_discussion_posts_discussion_id_fkey"
             columns: ["discussion_id"]
             isOneToOne: false
@@ -2869,6 +2974,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_group_discussions_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "corp_group_discussions_group_id_fkey"
@@ -2965,6 +3077,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "corp_group_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       corp_groups: {
@@ -3047,6 +3166,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "corp_groups_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       corp_kudos: {
@@ -3121,6 +3247,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_kudos_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_kudos_to_user_id_fkey"
             columns: ["to_user_id"]
             isOneToOne: false
@@ -3140,6 +3273,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_kudos_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -3199,6 +3339,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_request_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -3394,6 +3541,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_requests_director_approver_id_fkey"
+            columns: ["director_approver_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_requests_manager_approver_id_fkey"
             columns: ["manager_approver_id"]
             isOneToOne: false
@@ -3413,6 +3567,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_requests_manager_approver_id_fkey"
+            columns: ["manager_approver_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "corp_requests_requester_id_fkey"
@@ -3436,6 +3597,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "corp_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "corp_requests_target_user_id_fkey"
             columns: ["target_user_id"]
             isOneToOne: false
@@ -3455,6 +3623,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "corp_requests_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "corp_requests_type_id_fkey"
@@ -3620,6 +3795,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "crm_client_recurrences_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "crm_client_recurrences_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
@@ -3743,6 +3925,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "crm_integration_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       crm_knowledge_base: {
@@ -3818,6 +4007,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_knowledge_base_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "crm_knowledge_base_company_id_fkey"
@@ -3942,6 +4138,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "crm_opportunities_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "crm_opportunities_buyer_id_fkey"
             columns: ["buyer_id"]
             isOneToOne: false
@@ -3996,6 +4199,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "crm_opportunities_service_order_id_fkey"
@@ -4062,6 +4272,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunity_activities_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -4200,6 +4417,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "crm_opportunity_transfers_decided_by_fkey"
+            columns: ["decided_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "crm_opportunity_transfers_from_user_id_fkey"
             columns: ["from_user_id"]
             isOneToOne: false
@@ -4219,6 +4443,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunity_transfers_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "crm_opportunity_transfers_opportunity_id_fkey"
@@ -4247,6 +4478,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunity_transfers_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -4651,6 +4889,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "crm_tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "crm_tasks_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
@@ -4698,6 +4943,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "crm_tasks_opportunity_id_fkey"
@@ -4755,6 +5007,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "department_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -4828,6 +5087,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "departments_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5062,6 +5328,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "epi_deliveries_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "epi_deliveries_epi_item_id_fkey"
             columns: ["epi_item_id"]
             isOneToOne: false
@@ -5088,6 +5361,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_deliveries_recipient_profile_id_fkey"
+            columns: ["recipient_profile_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5174,6 +5454,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "epi_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       epi_stock_movements: {
@@ -5249,6 +5536,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epi_stock_movements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "epi_stock_movements_epi_item_id_fkey"
@@ -5395,6 +5689,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "finance_payables_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "finance_payables_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
@@ -5442,6 +5743,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_payables_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "finance_payables_purchase_request_id_fkey"
@@ -5567,6 +5875,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "finance_receivables_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       finance_reimbursement_attachments: {
@@ -5625,6 +5940,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_reimbursement_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5703,6 +6025,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "finance_reimbursements_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "finance_reimbursements_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
@@ -5750,6 +6079,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_reimbursements_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5848,6 +6184,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "finance_transactions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5948,6 +6291,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "forecast_history_coordinator_id_fkey"
+            columns: ["coordinator_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "forecast_history_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -5967,6 +6317,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forecast_history_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -6116,6 +6473,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "hr_partnerships_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       hr_time_adjustments: {
@@ -6179,6 +6543,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_time_adjustments_adjusted_by_fkey"
+            columns: ["adjusted_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "hr_time_adjustments_company_id_fkey"
@@ -6910,6 +7281,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "measurements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "measurements_finalized_by_fkey"
             columns: ["finalized_by"]
             isOneToOne: false
@@ -6929,6 +7307,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "measurements_finalized_by_fkey"
+            columns: ["finalized_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "measurements_service_order_id_fkey"
@@ -7504,6 +7889,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "public_site_leads_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "public_site_leads_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -7676,6 +8068,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "purchase_requests_director_approver_id_fkey"
+            columns: ["director_approver_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "purchase_requests_manager_approver_id_fkey"
             columns: ["manager_approver_id"]
             isOneToOne: false
@@ -7697,6 +8096,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "purchase_requests_manager_approver_id_fkey"
+            columns: ["manager_approver_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "purchase_requests_requester_id_fkey"
             columns: ["requester_id"]
             isOneToOne: false
@@ -7716,6 +8122,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchase_requests_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -7826,6 +8239,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_items_who_fkey"
+            columns: ["who"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -7940,6 +8360,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_action_plans_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_action_plans_ncr_id_fkey"
             columns: ["ncr_id"]
             isOneToOne: false
@@ -7968,6 +8395,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_action_plans_responsible_id_fkey"
+            columns: ["responsible_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_action_plans_verified_by_fkey"
             columns: ["verified_by"]
             isOneToOne: false
@@ -7987,6 +8421,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_plans_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -8143,6 +8584,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quality_audit_findings_responsible_id_fkey"
+            columns: ["responsible_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       quality_audits: {
@@ -8247,6 +8695,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_audits_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_audits_lead_auditor_id_fkey"
             columns: ["lead_auditor_id"]
             isOneToOne: false
@@ -8266,6 +8721,205 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_audits_lead_auditor_id_fkey"
+            columns: ["lead_auditor_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      quality_competencies: {
+        Row: {
+          active: boolean
+          category: Database["public"]["Enums"]["quality_competency_category"]
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category?: Database["public"]["Enums"]["quality_competency_category"]
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category?: Database["public"]["Enums"]["quality_competency_category"]
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_competencies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_competencies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_competencies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      quality_competency_evidences: {
+        Row: {
+          company_id: string
+          created_at: string
+          evidence_date: string
+          evidence_type: Database["public"]["Enums"]["quality_evidence_type"]
+          id: string
+          level_contribution: Database["public"]["Enums"]["quality_competency_level"]
+          source_id: string | null
+          source_label: string | null
+          user_competency_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          evidence_date?: string
+          evidence_type: Database["public"]["Enums"]["quality_evidence_type"]
+          id?: string
+          level_contribution?: Database["public"]["Enums"]["quality_competency_level"]
+          source_id?: string | null
+          source_label?: string | null
+          user_competency_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          evidence_date?: string
+          evidence_type?: Database["public"]["Enums"]["quality_evidence_type"]
+          id?: string
+          level_contribution?: Database["public"]["Enums"]["quality_competency_level"]
+          source_id?: string | null
+          source_label?: string | null
+          user_competency_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_competency_evidences_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_competency_evidences_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_competency_evidences_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_competency_evidences_user_competency_id_fkey"
+            columns: ["user_competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_user_competencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_competency_mappings: {
+        Row: {
+          company_id: string
+          competency_id: string
+          created_at: string
+          evidence_type: Database["public"]["Enums"]["quality_evidence_type"]
+          grants_level: Database["public"]["Enums"]["quality_competency_level"]
+          id: string
+          source_id: string | null
+          source_label: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          competency_id: string
+          created_at?: string
+          evidence_type: Database["public"]["Enums"]["quality_evidence_type"]
+          grants_level?: Database["public"]["Enums"]["quality_competency_level"]
+          id?: string
+          source_id?: string | null
+          source_label?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          competency_id?: string
+          created_at?: string
+          evidence_type?: Database["public"]["Enums"]["quality_evidence_type"]
+          grants_level?: Database["public"]["Enums"]["quality_competency_level"]
+          id?: string
+          source_id?: string | null
+          source_label?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_competency_mappings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_competency_mappings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_competency_mappings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_competency_mappings_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_competency_mappings_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["competency_id"]
           },
         ]
       }
@@ -9170,6 +9824,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_management_review_outputs_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_management_review_outputs_review_id_fkey"
             columns: ["review_id"]
             isOneToOne: false
@@ -9247,6 +9908,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -9328,6 +9996,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_management_reviews_chair_user_id_fkey"
+            columns: ["chair_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_management_reviews_closed_by_fkey"
             columns: ["closed_by"]
             isOneToOne: false
@@ -9347,6 +10022,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "quality_management_reviews_company_id_fkey"
@@ -9389,6 +10071,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "quality_management_reviews_minutes_document_id_fkey"
@@ -9462,6 +10151,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_ncr_attachments_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -9561,6 +10257,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_ncrs_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_ncrs_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -9603,6 +10306,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_ncrs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_ncrs_detected_by_fkey"
             columns: ["detected_by"]
             isOneToOne: false
@@ -9624,6 +10334,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "quality_ncrs_detected_by_fkey"
+            columns: ["detected_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "quality_ncrs_responsible_id_fkey"
             columns: ["responsible_id"]
             isOneToOne: false
@@ -9643,6 +10360,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_ncrs_responsible_id_fkey"
+            columns: ["responsible_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -9787,6 +10511,78 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_documents"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_role_requirements: {
+        Row: {
+          company_id: string
+          competency_id: string
+          created_at: string
+          id: string
+          is_mandatory: boolean
+          notes: string | null
+          required_level: Database["public"]["Enums"]["quality_competency_level"]
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          competency_id: string
+          created_at?: string
+          id?: string
+          is_mandatory?: boolean
+          notes?: string | null
+          required_level?: Database["public"]["Enums"]["quality_competency_level"]
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          competency_id?: string
+          created_at?: string
+          id?: string
+          is_mandatory?: boolean
+          notes?: string | null
+          required_level?: Database["public"]["Enums"]["quality_competency_level"]
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_role_requirements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_role_requirements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_role_requirements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_role_requirements_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_role_requirements_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["competency_id"]
           },
         ]
       }
@@ -10180,6 +10976,192 @@ export type Database = {
           },
         ]
       }
+      quality_training_plans: {
+        Row: {
+          auto_generated: boolean
+          company_id: string
+          competency_id: string
+          completed_at: string | null
+          completed_evidence_id: string | null
+          created_at: string
+          current_level: Database["public"]["Enums"]["quality_competency_level"]
+          due_date: string | null
+          generated_at: string
+          id: string
+          linked_course_id: string | null
+          linked_trail_id: string | null
+          notes: string | null
+          required_level: Database["public"]["Enums"]["quality_competency_level"]
+          responsible_id: string | null
+          status: Database["public"]["Enums"]["quality_training_plan_status"]
+          target_level: Database["public"]["Enums"]["quality_competency_level"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_generated?: boolean
+          company_id: string
+          competency_id: string
+          completed_at?: string | null
+          completed_evidence_id?: string | null
+          created_at?: string
+          current_level: Database["public"]["Enums"]["quality_competency_level"]
+          due_date?: string | null
+          generated_at?: string
+          id?: string
+          linked_course_id?: string | null
+          linked_trail_id?: string | null
+          notes?: string | null
+          required_level: Database["public"]["Enums"]["quality_competency_level"]
+          responsible_id?: string | null
+          status?: Database["public"]["Enums"]["quality_training_plan_status"]
+          target_level: Database["public"]["Enums"]["quality_competency_level"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_generated?: boolean
+          company_id?: string
+          competency_id?: string
+          completed_at?: string | null
+          completed_evidence_id?: string | null
+          created_at?: string
+          current_level?: Database["public"]["Enums"]["quality_competency_level"]
+          due_date?: string | null
+          generated_at?: string
+          id?: string
+          linked_course_id?: string | null
+          linked_trail_id?: string | null
+          notes?: string | null
+          required_level?: Database["public"]["Enums"]["quality_competency_level"]
+          responsible_id?: string | null
+          status?: Database["public"]["Enums"]["quality_training_plan_status"]
+          target_level?: Database["public"]["Enums"]["quality_competency_level"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_training_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_training_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_training_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_training_plans_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_training_plans_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["competency_id"]
+          },
+        ]
+      }
+      quality_user_competencies: {
+        Row: {
+          assessed_by: string | null
+          assessment_notes: string | null
+          auto_suggested_level: Database["public"]["Enums"]["quality_competency_level"]
+          auto_suggestion_reason: string | null
+          company_id: string
+          competency_id: string
+          created_at: string
+          current_level: Database["public"]["Enums"]["quality_competency_level"]
+          id: string
+          last_assessed_at: string | null
+          manual_override: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assessed_by?: string | null
+          assessment_notes?: string | null
+          auto_suggested_level?: Database["public"]["Enums"]["quality_competency_level"]
+          auto_suggestion_reason?: string | null
+          company_id: string
+          competency_id: string
+          created_at?: string
+          current_level?: Database["public"]["Enums"]["quality_competency_level"]
+          id?: string
+          last_assessed_at?: string | null
+          manual_override?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assessed_by?: string | null
+          assessment_notes?: string | null
+          auto_suggested_level?: Database["public"]["Enums"]["quality_competency_level"]
+          auto_suggestion_reason?: string | null
+          company_id?: string
+          competency_id?: string
+          created_at?: string
+          current_level?: Database["public"]["Enums"]["quality_competency_level"]
+          id?: string
+          last_assessed_at?: string | null
+          manual_override?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_user_competencies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_user_competencies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_user_competencies_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_user_competencies_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_user_competencies_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["competency_id"]
+          },
+        ]
+      }
       report_embeddings: {
         Row: {
           content_hash: string | null
@@ -10282,6 +11264,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_history_performed_by_fkey"
+            columns: ["performed_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "service_history_service_order_id_fkey"
@@ -10451,6 +11440,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "service_orders_coordinator_id_fkey"
+            columns: ["coordinator_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "service_orders_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
@@ -10470,6 +11466,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "service_orders_parent_docking_id_fkey"
@@ -10505,6 +11508,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_orders_supervisor_id_fkey"
+            columns: ["supervisor_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "service_orders_vessel_id_fkey"
@@ -10633,6 +11643,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "service_visits_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "service_visits_scheduled_by_fkey"
             columns: ["scheduled_by"]
             isOneToOne: false
@@ -10652,6 +11669,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_visits_scheduled_by_fkey"
+            columns: ["scheduled_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "service_visits_service_order_id_fkey"
@@ -10913,6 +11937,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_reports_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "task_reports_task_uuid_fkey"
@@ -11235,6 +12266,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "technician_absences_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "technician_absences_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -11275,6 +12313,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_absences_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "technician_absences_technician_id_fkey"
@@ -11522,6 +12567,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "technician_on_call_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "technician_on_call_technician_id_fkey"
             columns: ["technician_id"]
             isOneToOne: false
@@ -11647,6 +12699,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technician_reservations_reserved_by_fkey"
+            columns: ["reserved_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "technician_reservations_service_order_id_fkey"
@@ -11781,6 +12840,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technicians_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -11952,6 +13018,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "university_certificates_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       university_courses: {
@@ -12037,6 +13110,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "university_courses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       university_enrollments: {
@@ -12099,6 +13179,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "university_enrollments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "university_enrollments_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -12146,6 +13233,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "university_enrollments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -12397,6 +13491,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "university_trails_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       user_roles: {
@@ -12589,6 +13690,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "visit_technicians_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "visit_technicians_technician_id_fkey"
             columns: ["technician_id"]
             isOneToOne: false
@@ -12663,6 +13771,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -12847,6 +13962,54 @@ export type Database = {
           title: string | null
         }
         Relationships: []
+      }
+      quality_competency_matrix_v: {
+        Row: {
+          auto_suggested_level:
+            | Database["public"]["Enums"]["quality_competency_level"]
+            | null
+          category:
+            | Database["public"]["Enums"]["quality_competency_category"]
+            | null
+          company_id: string | null
+          competency_id: string | null
+          competency_name: string | null
+          current_level:
+            | Database["public"]["Enums"]["quality_competency_level"]
+            | null
+          full_name: string | null
+          gap: number | null
+          is_mandatory: boolean | null
+          manual_override: boolean | null
+          required_level:
+            | Database["public"]["Enums"]["quality_competency_level"]
+            | null
+          role: Database["public"]["Enums"]["app_role"] | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
       }
       quality_improvements_v: {
         Row: {
@@ -13036,6 +14199,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technicians_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -13232,6 +14402,10 @@ export type Database = {
           source_id: string
         }[]
       }
+      quality_accept_auto_suggestion: {
+        Args: { p_competency_id: string; p_user_id: string }
+        Returns: undefined
+      }
       quality_build_review_inputs: {
         Args: { p_review_id: string }
         Returns: undefined
@@ -13241,6 +14415,10 @@ export type Database = {
         Returns: string
       }
       quality_generate_alert_notifications: { Args: never; Returns: number }
+      quality_generate_training_plans: {
+        Args: { p_user_id: string }
+        Returns: number
+      }
       quality_get_invite_public: {
         Args: { p_token: string }
         Returns: {
@@ -13251,9 +14429,28 @@ export type Database = {
           invite_id: string
         }[]
       }
+      quality_int_to_level: {
+        Args: { p_int: number }
+        Returns: Database["public"]["Enums"]["quality_competency_level"]
+      }
+      quality_is_master: { Args: { _user_id: string }; Returns: boolean }
       quality_kpi_get_overview: {
         Args: { p_company_id: string }
         Returns: Json
+      }
+      quality_level_to_int: {
+        Args: {
+          p_level: Database["public"]["Enums"]["quality_competency_level"]
+        }
+        Returns: number
+      }
+      quality_recompute_user_competencies_all: {
+        Args: { p_user_id: string }
+        Returns: undefined
+      }
+      quality_recompute_user_competency: {
+        Args: { p_competency_id: string; p_user_id: string }
+        Returns: undefined
       }
       quality_register_acknowledgement: {
         Args: { p_assignment_id: string; p_ip?: string; p_user_agent?: string }
@@ -13261,6 +14458,15 @@ export type Database = {
       }
       quality_seed_safety_document_types: {
         Args: { p_company_id: string }
+        Returns: undefined
+      }
+      quality_set_manual_level: {
+        Args: {
+          p_competency_id: string
+          p_level: Database["public"]["Enums"]["quality_competency_level"]
+          p_notes?: string
+          p_user_id: string
+        }
         Returns: undefined
       }
       quality_submit_satisfaction_response: {
@@ -13395,6 +14601,18 @@ export type Database = {
         | "quality_alert"
       payment_status: "paid" | "pending" | "overdue"
       quality_access_action: "view" | "print" | "download"
+      quality_competency_category:
+        | "technical"
+        | "behavioral"
+        | "regulatory"
+        | "safety"
+        | "management"
+      quality_competency_level:
+        | "none"
+        | "basic"
+        | "intermediate"
+        | "advanced"
+        | "expert"
       quality_controlled_copy_status:
         | "issued"
         | "returned"
@@ -13409,6 +14627,12 @@ export type Database = {
         | "published"
         | "obsolete"
         | "archived"
+      quality_evidence_type:
+        | "university_course"
+        | "university_trail"
+        | "hr_certificate"
+        | "acknowledgement"
+        | "manual"
       quality_origin:
         | "internal"
         | "client"
@@ -13439,6 +14663,11 @@ export type Database = {
         | "closure"
         | "issuance"
         | "other"
+      quality_training_plan_status:
+        | "proposed"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
       satisfaction_campaign_status: "draft" | "active" | "closed"
       satisfaction_target_kind: "all_clients" | "selected"
       service_order_status:
@@ -13642,6 +14871,20 @@ export const Constants = {
       ],
       payment_status: ["paid", "pending", "overdue"],
       quality_access_action: ["view", "print", "download"],
+      quality_competency_category: [
+        "technical",
+        "behavioral",
+        "regulatory",
+        "safety",
+        "management",
+      ],
+      quality_competency_level: [
+        "none",
+        "basic",
+        "intermediate",
+        "advanced",
+        "expert",
+      ],
       quality_controlled_copy_status: [
         "issued",
         "returned",
@@ -13657,6 +14900,13 @@ export const Constants = {
         "published",
         "obsolete",
         "archived",
+      ],
+      quality_evidence_type: [
+        "university_course",
+        "university_trail",
+        "hr_certificate",
+        "acknowledgement",
+        "manual",
       ],
       quality_origin: [
         "internal",
@@ -13691,6 +14941,12 @@ export const Constants = {
         "closure",
         "issuance",
         "other",
+      ],
+      quality_training_plan_status: [
+        "proposed",
+        "in_progress",
+        "completed",
+        "cancelled",
       ],
       satisfaction_campaign_status: ["draft", "active", "closed"],
       satisfaction_target_kind: ["all_clients", "selected"],
