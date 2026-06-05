@@ -2785,6 +2785,8 @@ export type Database = {
           id: string
           pinned: boolean
           post_type: string
+          quality_document_id: string | null
+          sgq_tag: boolean
           title: string | null
           updated_at: string
         }
@@ -2796,6 +2798,8 @@ export type Database = {
           id?: string
           pinned?: boolean
           post_type?: string
+          quality_document_id?: string | null
+          sgq_tag?: boolean
           title?: string | null
           updated_at?: string
         }
@@ -2807,6 +2811,8 @@ export type Database = {
           id?: string
           pinned?: boolean
           post_type?: string
+          quality_document_id?: string | null
+          sgq_tag?: boolean
           title?: string | null
           updated_at?: string
         }
@@ -2859,6 +2865,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_kpi_timeseries_v"
             referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "corp_feed_posts_quality_document_id_fkey"
+            columns: ["quality_document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -9288,6 +9301,85 @@ export type Database = {
           },
         ]
       }
+      quality_document_required_courses: {
+        Row: {
+          company_id: string
+          course_id: string | null
+          created_at: string
+          created_by: string | null
+          document_id: string
+          id: string
+          is_mandatory: boolean
+          notes: string | null
+          trail_id: string | null
+        }
+        Insert: {
+          company_id: string
+          course_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_id: string
+          id?: string
+          is_mandatory?: boolean
+          notes?: string | null
+          trail_id?: string | null
+        }
+        Update: {
+          company_id?: string
+          course_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          document_id?: string
+          id?: string
+          is_mandatory?: boolean
+          notes?: string | null
+          trail_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_required_courses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_required_courses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_document_required_courses_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_document_required_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "university_courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_required_courses_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_required_courses_trail_id_fkey"
+            columns: ["trail_id"]
+            isOneToOne: false
+            referencedRelation: "university_trails"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_document_types: {
         Row: {
           code_prefix: string
@@ -9436,6 +9528,7 @@ export type Database = {
           id: string
           next_review_date: string | null
           normative_reference: string | null
+          notify_on_publish: boolean
           obsolete_at: string | null
           origin: Database["public"]["Enums"]["quality_origin"]
           published_at: string | null
@@ -9462,6 +9555,7 @@ export type Database = {
           id?: string
           next_review_date?: string | null
           normative_reference?: string | null
+          notify_on_publish?: boolean
           obsolete_at?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
@@ -9488,6 +9582,7 @@ export type Database = {
           id?: string
           next_review_date?: string | null
           normative_reference?: string | null
+          notify_on_publish?: boolean
           obsolete_at?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
@@ -10511,6 +10606,278 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_documents"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_risk_actions: {
+        Row: {
+          company_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          due_date: string | null
+          evidence_url: string | null
+          id: string
+          notes: string | null
+          responsible_id: string | null
+          risk_id: string
+          status: Database["public"]["Enums"]["quality_risk_action_status"]
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          due_date?: string | null
+          evidence_url?: string | null
+          id?: string
+          notes?: string | null
+          responsible_id?: string | null
+          risk_id: string
+          status?: Database["public"]["Enums"]["quality_risk_action_status"]
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          due_date?: string | null
+          evidence_url?: string | null
+          id?: string
+          notes?: string | null
+          responsible_id?: string | null
+          risk_id?: string
+          status?: Database["public"]["Enums"]["quality_risk_action_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_risk_actions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_risk_actions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_risk_actions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_risk_actions_risk_id_fkey"
+            columns: ["risk_id"]
+            isOneToOne: false
+            referencedRelation: "quality_risks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_risk_events: {
+        Row: {
+          at: string
+          by_user_id: string | null
+          company_id: string
+          event_type: string
+          id: string
+          new_value: Json | null
+          old_value: Json | null
+          risk_id: string
+        }
+        Insert: {
+          at?: string
+          by_user_id?: string | null
+          company_id: string
+          event_type: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          risk_id: string
+        }
+        Update: {
+          at?: string
+          by_user_id?: string | null
+          company_id?: string
+          event_type?: string
+          id?: string
+          new_value?: Json | null
+          old_value?: Json | null
+          risk_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_risk_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_risk_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_risk_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_risk_events_risk_id_fkey"
+            columns: ["risk_id"]
+            isOneToOne: false
+            referencedRelation: "quality_risks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_risks: {
+        Row: {
+          category: string | null
+          closed_at: string | null
+          closure_notes: string | null
+          code: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          impact: number
+          kind: Database["public"]["Enums"]["quality_risk_kind"]
+          last_reviewed_at: string | null
+          next_review_due_at: string | null
+          owner_user_id: string | null
+          probability: number
+          residual_impact: number | null
+          residual_probability: number | null
+          residual_score: number | null
+          residual_severity: string | null
+          review_frequency_months: number
+          reviewed_by: string | null
+          score: number | null
+          severity: string | null
+          source: Database["public"]["Enums"]["quality_risk_source"]
+          source_ref_id: string | null
+          status: Database["public"]["Enums"]["quality_risk_status"]
+          status_changed_at: string
+          title: string
+          treatment:
+            | Database["public"]["Enums"]["quality_risk_treatment"]
+            | null
+          treatment_due_date: string | null
+          treatment_plan: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          closed_at?: string | null
+          closure_notes?: string | null
+          code?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          impact: number
+          kind?: Database["public"]["Enums"]["quality_risk_kind"]
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
+          owner_user_id?: string | null
+          probability: number
+          residual_impact?: number | null
+          residual_probability?: number | null
+          residual_score?: number | null
+          residual_severity?: string | null
+          review_frequency_months?: number
+          reviewed_by?: string | null
+          score?: number | null
+          severity?: string | null
+          source?: Database["public"]["Enums"]["quality_risk_source"]
+          source_ref_id?: string | null
+          status?: Database["public"]["Enums"]["quality_risk_status"]
+          status_changed_at?: string
+          title: string
+          treatment?:
+            | Database["public"]["Enums"]["quality_risk_treatment"]
+            | null
+          treatment_due_date?: string | null
+          treatment_plan?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          closed_at?: string | null
+          closure_notes?: string | null
+          code?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          impact?: number
+          kind?: Database["public"]["Enums"]["quality_risk_kind"]
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
+          owner_user_id?: string | null
+          probability?: number
+          residual_impact?: number | null
+          residual_probability?: number | null
+          residual_score?: number | null
+          residual_severity?: string | null
+          review_frequency_months?: number
+          reviewed_by?: string | null
+          score?: number | null
+          severity?: string | null
+          source?: Database["public"]["Enums"]["quality_risk_source"]
+          source_ref_id?: string | null
+          status?: Database["public"]["Enums"]["quality_risk_status"]
+          status_changed_at?: string
+          title?: string
+          treatment?:
+            | Database["public"]["Enums"]["quality_risk_treatment"]
+            | null
+          treatment_due_date?: string | null
+          treatment_plan?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_risks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_risks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_risks_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -14414,6 +14781,10 @@ export type Database = {
         Args: { p_complaint_id: string }
         Returns: string
       }
+      quality_compute_risk_severity: {
+        Args: { p_score: number }
+        Returns: string
+      }
       quality_generate_alert_notifications: { Args: never; Returns: number }
       quality_generate_training_plans: {
         Args: { p_user_id: string }
@@ -14456,6 +14827,13 @@ export type Database = {
         Args: { p_assignment_id: string; p_ip?: string; p_user_agent?: string }
         Returns: string
       }
+      quality_risk_next_code: {
+        Args: {
+          p_company_id: string
+          p_kind: Database["public"]["Enums"]["quality_risk_kind"]
+        }
+        Returns: string
+      }
       quality_seed_safety_document_types: {
         Args: { p_company_id: string }
         Returns: undefined
@@ -14479,6 +14857,19 @@ export type Database = {
           p_token: string
         }
         Returns: string
+      }
+      quality_user_has_completed_prerequisites: {
+        Args: { p_document_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      quality_user_missing_prerequisites: {
+        Args: { p_document_id: string; p_user_id: string }
+        Returns: {
+          kind: string
+          label: string
+          ref_id: string
+          required_id: string
+        }[]
       }
       recalculate_measurement: {
         Args: { p_measurement_id: string }
@@ -14656,6 +15047,32 @@ export type Database = {
         | "decision"
       quality_review_participant_role: "chair" | "member" | "guest"
       quality_review_status: "draft" | "in_progress" | "closed"
+      quality_risk_action_status: "open" | "in_progress" | "done" | "cancelled"
+      quality_risk_kind: "risk" | "opportunity"
+      quality_risk_source:
+        | "context"
+        | "interested_party"
+        | "process"
+        | "audit"
+        | "ncr"
+        | "management_review"
+        | "manual"
+      quality_risk_status:
+        | "identified"
+        | "analyzing"
+        | "treating"
+        | "monitoring"
+        | "accepted"
+        | "closed"
+      quality_risk_treatment:
+        | "avoid"
+        | "mitigate"
+        | "transfer"
+        | "accept"
+        | "exploit"
+        | "enhance"
+        | "share"
+        | "ignore"
       quality_signature_action:
         | "approval"
         | "acknowledgment"
@@ -14934,6 +15351,35 @@ export const Constants = {
       ],
       quality_review_participant_role: ["chair", "member", "guest"],
       quality_review_status: ["draft", "in_progress", "closed"],
+      quality_risk_action_status: ["open", "in_progress", "done", "cancelled"],
+      quality_risk_kind: ["risk", "opportunity"],
+      quality_risk_source: [
+        "context",
+        "interested_party",
+        "process",
+        "audit",
+        "ncr",
+        "management_review",
+        "manual",
+      ],
+      quality_risk_status: [
+        "identified",
+        "analyzing",
+        "treating",
+        "monitoring",
+        "accepted",
+        "closed",
+      ],
+      quality_risk_treatment: [
+        "avoid",
+        "mitigate",
+        "transfer",
+        "accept",
+        "exploit",
+        "enhance",
+        "share",
+        "ignore",
+      ],
       quality_signature_action: [
         "approval",
         "acknowledgment",
