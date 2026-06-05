@@ -7842,6 +7842,8 @@ export type Database = {
           ncr_id: string | null
           plan_type: string
           responsible_id: string | null
+          source: string | null
+          source_id: string | null
           start_date: string | null
           status: string
           target_date: string | null
@@ -7862,6 +7864,8 @@ export type Database = {
           ncr_id?: string | null
           plan_type?: string
           responsible_id?: string | null
+          source?: string | null
+          source_id?: string | null
           start_date?: string | null
           status?: string
           target_date?: string | null
@@ -7882,6 +7886,8 @@ export type Database = {
           ncr_id?: string | null
           plan_type?: string
           responsible_id?: string | null
+          source?: string | null
+          source_id?: string | null
           start_date?: string | null
           status?: string
           target_date?: string | null
@@ -8803,6 +8809,62 @@ export type Database = {
             columns: ["document_type_id"]
             isOneToOne: false
             referencedRelation: "quality_document_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_improvements_manual: {
+        Row: {
+          action_plan_id: string | null
+          category: string | null
+          company_id: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string
+          responsible_id: string | null
+          status: string
+          submitted_by: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action_plan_id?: string | null
+          category?: string | null
+          company_id: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          responsible_id?: string | null
+          status?: string
+          submitted_by: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action_plan_id?: string | null
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string
+          responsible_id?: string | null
+          status?: string
+          submitted_by?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_improvements_manual_action_plan_id_fkey"
+            columns: ["action_plan_id"]
+            isOneToOne: false
+            referencedRelation: "quality_action_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -12645,6 +12707,24 @@ export type Database = {
           due_date: string | null
           entity_id: string | null
           source: string | null
+          status: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
+      quality_improvements_v: {
+        Row: {
+          action_plan_id: string | null
+          company_id: string | null
+          description: string | null
+          due_date: string | null
+          id: string | null
+          opened_at: string | null
+          owner_user_id: string | null
+          priority: string | null
+          source: string | null
+          source_label: string | null
+          source_url: string | null
           status: string | null
           title: string | null
         }
