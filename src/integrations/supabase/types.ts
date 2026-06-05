@@ -7920,6 +7920,339 @@ export type Database = {
           },
         ]
       }
+      quality_management_review_inputs: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          input_type: Database["public"]["Enums"]["quality_review_input_type"]
+          is_snapshot: boolean
+          notes: string | null
+          review_id: string
+          snapshot_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          input_type: Database["public"]["Enums"]["quality_review_input_type"]
+          is_snapshot?: boolean
+          notes?: string | null
+          review_id: string
+          snapshot_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          input_type?: Database["public"]["Enums"]["quality_review_input_type"]
+          is_snapshot?: boolean
+          notes?: string | null
+          review_id?: string
+          snapshot_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_management_review_inputs_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "quality_management_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_management_review_outputs: {
+        Row: {
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          linked_action_plan_id: string | null
+          output_type: Database["public"]["Enums"]["quality_review_output_type"]
+          responsible_user_id: string | null
+          review_id: string
+          status: Database["public"]["Enums"]["quality_review_output_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          linked_action_plan_id?: string | null
+          output_type: Database["public"]["Enums"]["quality_review_output_type"]
+          responsible_user_id?: string | null
+          review_id: string
+          status?: Database["public"]["Enums"]["quality_review_output_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          linked_action_plan_id?: string | null
+          output_type?: Database["public"]["Enums"]["quality_review_output_type"]
+          responsible_user_id?: string | null
+          review_id?: string
+          status?: Database["public"]["Enums"]["quality_review_output_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_management_review_outputs_linked_action_plan_id_fkey"
+            columns: ["linked_action_plan_id"]
+            isOneToOne: true
+            referencedRelation: "quality_action_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_outputs_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_outputs_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_outputs_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_outputs_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "quality_management_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_management_review_participants: {
+        Row: {
+          attended: boolean
+          confirmed_at: string | null
+          created_at: string
+          id: string
+          review_id: string
+          role_in_meeting: Database["public"]["Enums"]["quality_review_participant_role"]
+          signature_event_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attended?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          review_id: string
+          role_in_meeting?: Database["public"]["Enums"]["quality_review_participant_role"]
+          signature_event_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attended?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          review_id?: string
+          role_in_meeting?: Database["public"]["Enums"]["quality_review_participant_role"]
+          signature_event_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_management_review_participants_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "quality_management_reviews"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_participants_signature_event_id_fkey"
+            columns: ["signature_event_id"]
+            isOneToOne: false
+            referencedRelation: "quality_signature_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_review_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_management_reviews: {
+        Row: {
+          chair_user_id: string | null
+          closed_at: string | null
+          closed_by: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          minutes_document_id: string | null
+          next_due_date: string | null
+          period_end: string
+          period_start: string
+          review_date: string
+          signed_event_id: string | null
+          status: Database["public"]["Enums"]["quality_review_status"]
+          summary: string | null
+          updated_at: string
+        }
+        Insert: {
+          chair_user_id?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          minutes_document_id?: string | null
+          next_due_date?: string | null
+          period_end: string
+          period_start: string
+          review_date: string
+          signed_event_id?: string | null
+          status?: Database["public"]["Enums"]["quality_review_status"]
+          summary?: string | null
+          updated_at?: string
+        }
+        Update: {
+          chair_user_id?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          minutes_document_id?: string | null
+          next_due_date?: string | null
+          period_end?: string
+          period_start?: string
+          review_date?: string
+          signed_event_id?: string | null
+          status?: Database["public"]["Enums"]["quality_review_status"]
+          summary?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_management_reviews_chair_user_id_fkey"
+            columns: ["chair_user_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_chair_user_id_fkey"
+            columns: ["chair_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_chair_user_id_fkey"
+            columns: ["chair_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_closed_by_fkey"
+            columns: ["closed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_minutes_document_id_fkey"
+            columns: ["minutes_document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_management_reviews_signed_event_id_fkey"
+            columns: ["signed_event_id"]
+            isOneToOne: false
+            referencedRelation: "quality_signature_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_ncr_attachments: {
         Row: {
           created_at: string
@@ -11074,6 +11407,10 @@ export type Database = {
           source_id: string
         }[]
       }
+      quality_build_review_inputs: {
+        Args: { p_review_id: string }
+        Returns: undefined
+      }
       quality_generate_alert_notifications: { Args: never; Returns: number }
       recalculate_measurement: {
         Args: { p_measurement_id: string }
@@ -11203,6 +11540,22 @@ export type Database = {
         | "external_law"
         | "external_certificate"
         | "safety"
+      quality_review_input_type:
+        | "previous_actions_status"
+        | "external_internal_changes"
+        | "qms_performance"
+        | "resources_adequacy"
+        | "stakeholder_feedback"
+        | "improvement_opportunities"
+        | "risks_opportunities"
+      quality_review_output_status: "open" | "in_progress" | "done"
+      quality_review_output_type:
+        | "improvement_opportunity"
+        | "qms_change"
+        | "resource_need"
+        | "decision"
+      quality_review_participant_role: "chair" | "member" | "guest"
+      quality_review_status: "draft" | "in_progress" | "closed"
       quality_signature_action:
         | "approval"
         | "acknowledgment"
@@ -11419,6 +11772,24 @@ export const Constants = {
         "external_certificate",
         "safety",
       ],
+      quality_review_input_type: [
+        "previous_actions_status",
+        "external_internal_changes",
+        "qms_performance",
+        "resources_adequacy",
+        "stakeholder_feedback",
+        "improvement_opportunities",
+        "risks_opportunities",
+      ],
+      quality_review_output_status: ["open", "in_progress", "done"],
+      quality_review_output_type: [
+        "improvement_opportunity",
+        "qms_change",
+        "resource_need",
+        "decision",
+      ],
+      quality_review_participant_role: ["chair", "member", "guest"],
+      quality_review_status: ["draft", "in_progress", "closed"],
       quality_signature_action: [
         "approval",
         "acknowledgment",
