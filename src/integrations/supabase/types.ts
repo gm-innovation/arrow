@@ -8274,6 +8274,7 @@ export type Database = {
           description: string
           id: string
           is_anonymous: boolean
+          kind: Database["public"]["Enums"]["complaint_kind"]
           linked_ncr_id: string | null
           linked_response_id: string | null
           received_at: string
@@ -8297,6 +8298,7 @@ export type Database = {
           description: string
           id?: string
           is_anonymous?: boolean
+          kind?: Database["public"]["Enums"]["complaint_kind"]
           linked_ncr_id?: string | null
           linked_response_id?: string | null
           received_at?: string
@@ -8320,6 +8322,7 @@ export type Database = {
           description?: string
           id?: string
           is_anonymous?: boolean
+          kind?: Database["public"]["Enums"]["complaint_kind"]
           linked_ncr_id?: string | null
           linked_response_id?: string | null
           received_at?: string
@@ -13133,6 +13136,7 @@ export type Database = {
         | "financeiro"
         | "coordinator"
         | "marketing"
+      complaint_kind: "complaint" | "suggestion"
       complaint_source:
         | "survey"
         | "email"
@@ -13376,6 +13380,7 @@ export const Constants = {
         "coordinator",
         "marketing",
       ],
+      complaint_kind: ["complaint", "suggestion"],
       complaint_source: [
         "survey",
         "email",
