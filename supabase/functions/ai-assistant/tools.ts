@@ -242,9 +242,9 @@ export function buildToolCatalog(): ToolDef[] {
     basicQueryTool({
       module: "crm_leads",
       name: "query_crm_leads",
-      description: "Lista leads comerciais (site/pipeline). Status válidos (em INGLÊS na coluna): 'new', 'contacted', 'qualified', 'converted', 'discarded'. IMPORTANTE: quando o usuário disser 'lead novo/novos', use status='new' (refere-se ao funil), NUNCA use since_days. since_days é apenas para recortes temporais explícitos como 'últimos 7 dias'.",
+      description: "Lista leads comerciais (site/pipeline). Retorna também 'message' (texto livre da solicitação do lead) e 'items' (produtos/serviços de interesse) — use esses campos para responder follow-ups sobre 'o que cada lead pediu' / 'quais as solicitações'. Status válidos (em INGLÊS na coluna): 'new', 'contacted', 'qualified', 'converted', 'discarded'. IMPORTANTE: quando o usuário disser 'lead novo/novos', use status='new' (refere-se ao funil), NUNCA use since_days. since_days é apenas para recortes temporais explícitos como 'últimos 7 dias'.",
       table: "public_site_leads",
-      fields: ["id", "name", "email", "phone", "company_name", "status", "source", "created_at"],
+      fields: ["id", "name", "email", "phone", "company_name", "status", "source", "type", "message", "items", "created_at"],
       searchFields: ["name", "email", "company_name"],
       statusField: "status",
       dateField: "created_at",
