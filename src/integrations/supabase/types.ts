@@ -8283,6 +8283,7 @@ export type Database = {
           effectiveness_verified: boolean | null
           id: string
           ncr_id: string | null
+          objective_id: string | null
           plan_type: string
           responsible_id: string | null
           source: string | null
@@ -8305,6 +8306,7 @@ export type Database = {
           effectiveness_verified?: boolean | null
           id?: string
           ncr_id?: string | null
+          objective_id?: string | null
           plan_type?: string
           responsible_id?: string | null
           source?: string | null
@@ -8327,6 +8329,7 @@ export type Database = {
           effectiveness_verified?: boolean | null
           id?: string
           ncr_id?: string | null
+          objective_id?: string | null
           plan_type?: string
           responsible_id?: string | null
           source?: string | null
@@ -8394,6 +8397,13 @@ export type Database = {
             columns: ["ncr_id"]
             isOneToOne: false
             referencedRelation: "quality_ncrs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_action_plans_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "quality_objectives"
             referencedColumns: ["id"]
           },
           {
@@ -10317,6 +10327,160 @@ export type Database = {
           },
         ]
       }
+      quality_indicator_measurements: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          indicator_id: string
+          measured_by: string | null
+          note: string | null
+          period_end: string
+          period_label: string
+          period_start: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          indicator_id: string
+          measured_by?: string | null
+          note?: string | null
+          period_end: string
+          period_label: string
+          period_start: string
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          indicator_id?: string
+          measured_by?: string | null
+          note?: string | null
+          period_end?: string
+          period_label?: string
+          period_start?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_indicator_measurements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_indicator_measurements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_indicator_measurements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_indicator_measurements_indicator_id_fkey"
+            columns: ["indicator_id"]
+            isOneToOne: false
+            referencedRelation: "quality_indicators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_indicators: {
+        Row: {
+          code: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          formula: string | null
+          frequency: string
+          id: string
+          name: string
+          notes: string | null
+          objective_id: string | null
+          responsible_user_id: string | null
+          status: string
+          target_value: number | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          code?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          formula?: string | null
+          frequency?: string
+          id?: string
+          name: string
+          notes?: string | null
+          objective_id?: string | null
+          responsible_user_id?: string | null
+          status?: string
+          target_value?: number | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          formula?: string | null
+          frequency?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          objective_id?: string | null
+          responsible_user_id?: string | null
+          status?: string
+          target_value?: number | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_indicators_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_indicators_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_indicators_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_indicators_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "quality_objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_interested_parties: {
         Row: {
           category: string
@@ -11255,6 +11419,92 @@ export type Database = {
           },
         ]
       }
+      quality_objectives: {
+        Row: {
+          code: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          notes: string | null
+          owner_user_id: string | null
+          period_end: string | null
+          period_start: string | null
+          policy_version_id: string | null
+          status: string
+          target_value: number | null
+          title: string
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          code?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          owner_user_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          policy_version_id?: string | null
+          status?: string
+          target_value?: number | null
+          title: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          owner_user_id?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          policy_version_id?: string | null
+          status?: string
+          target_value?: number | null
+          title?: string
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_objectives_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_objectives_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_objectives_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_objectives_policy_version_id_fkey"
+            columns: ["policy_version_id"]
+            isOneToOne: false
+            referencedRelation: "quality_policy_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_org_chart_nodes: {
         Row: {
           active: boolean
@@ -11410,6 +11660,94 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_management_reviews"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_planned_changes: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          change_type: string
+          code: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          impact_assessment: string | null
+          implemented_at: string | null
+          justification: string | null
+          linked_risk_ids: string[]
+          notes: string | null
+          planned_for: string | null
+          requested_by: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          change_type?: string
+          code?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          impact_assessment?: string | null
+          implemented_at?: string | null
+          justification?: string | null
+          linked_risk_ids?: string[]
+          notes?: string | null
+          planned_for?: string | null
+          requested_by?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          change_type?: string
+          code?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          impact_assessment?: string | null
+          implemented_at?: string | null
+          justification?: string | null
+          linked_risk_ids?: string[]
+          notes?: string | null
+          planned_for?: string | null
+          requested_by?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_planned_changes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_planned_changes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_planned_changes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -11868,6 +12206,7 @@ export type Database = {
           evidence_url: string | null
           id: string
           notes: string | null
+          objective_id: string | null
           responsible_id: string | null
           risk_id: string
           status: Database["public"]["Enums"]["quality_risk_action_status"]
@@ -11883,6 +12222,7 @@ export type Database = {
           evidence_url?: string | null
           id?: string
           notes?: string | null
+          objective_id?: string | null
           responsible_id?: string | null
           risk_id: string
           status?: Database["public"]["Enums"]["quality_risk_action_status"]
@@ -11898,6 +12238,7 @@ export type Database = {
           evidence_url?: string | null
           id?: string
           notes?: string | null
+          objective_id?: string | null
           responsible_id?: string | null
           risk_id?: string
           status?: Database["public"]["Enums"]["quality_risk_action_status"]
@@ -11924,6 +12265,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_kpi_timeseries_v"
             referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_risk_actions_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "quality_objectives"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "quality_risk_actions_risk_id_fkey"
