@@ -8932,6 +8932,68 @@ export type Database = {
           },
         ]
       }
+      quality_central_approval_events: {
+        Row: {
+          actor_user_id: string | null
+          approval_id: string
+          comment: string | null
+          company_id: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          actor_user_id?: string | null
+          approval_id: string
+          comment?: string | null
+          company_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          actor_user_id?: string | null
+          approval_id?: string
+          comment?: string | null
+          company_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_central_approval_events_approval_id_fkey"
+            columns: ["approval_id"]
+            isOneToOne: false
+            referencedRelation: "quality_central_approvals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_central_approval_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_central_approval_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_central_approval_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       quality_central_approvals: {
         Row: {
           approved_at: string | null
@@ -11400,6 +11462,58 @@ export type Database = {
           },
         ]
       }
+      quality_policy_versions: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          published_at: string
+          published_by: string | null
+          text: string
+          version: number
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          published_at?: string
+          published_by?: string | null
+          text: string
+          version: number
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          published_at?: string
+          published_by?: string | null
+          text?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_policy_versions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_policy_versions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_policy_versions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       quality_process_activities: {
         Row: {
           activity: string
@@ -12273,11 +12387,14 @@ export type Database = {
       quality_settings: {
         Row: {
           approval_scope: Json
+          central_approval_sla_hours: number
           company_id: string
           created_at: string
           critical_review_required_topics: Json
           document_layout: Json
           id: string
+          master_delegate_until: string | null
+          master_delegate_user_id: string | null
           quality_master_user_id: string | null
           quality_policy_published_at: string | null
           quality_policy_text: string | null
@@ -12288,11 +12405,14 @@ export type Database = {
         }
         Insert: {
           approval_scope?: Json
+          central_approval_sla_hours?: number
           company_id: string
           created_at?: string
           critical_review_required_topics?: Json
           document_layout?: Json
           id?: string
+          master_delegate_until?: string | null
+          master_delegate_user_id?: string | null
           quality_master_user_id?: string | null
           quality_policy_published_at?: string | null
           quality_policy_text?: string | null
@@ -12303,11 +12423,14 @@ export type Database = {
         }
         Update: {
           approval_scope?: Json
+          central_approval_sla_hours?: number
           company_id?: string
           created_at?: string
           critical_review_required_topics?: Json
           document_layout?: Json
           id?: string
+          master_delegate_until?: string | null
+          master_delegate_user_id?: string | null
           quality_master_user_id?: string | null
           quality_policy_published_at?: string | null
           quality_policy_text?: string | null
