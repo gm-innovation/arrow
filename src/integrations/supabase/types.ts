@@ -11319,6 +11319,9 @@ export type Database = {
       }
       quality_satisfaction_campaigns: {
         Row: {
+          collects_ces: boolean
+          collects_csat: boolean
+          collects_nps: boolean
           company_id: string
           created_at: string
           created_by: string | null
@@ -11333,6 +11336,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          collects_ces?: boolean
+          collects_csat?: boolean
+          collects_nps?: boolean
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -11347,6 +11353,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          collects_ces?: boolean
+          collects_csat?: boolean
+          collects_nps?: boolean
           company_id?: string
           created_at?: string
           created_by?: string | null
@@ -11406,16 +11415,17 @@ export type Database = {
       quality_satisfaction_responses: {
         Row: {
           campaign_id: string | null
+          ces_score: number | null
           client_id: string | null
           comment: string | null
           company_id: string
           created_at: string
-          csat_score: number
+          csat_score: number | null
           derived_csat: string | null
           derived_nps: string | null
           id: string
           invite_id: string | null
-          nps_score: number
+          nps_score: number | null
           responded_at: string
           responder_email: string | null
           responder_ip: string | null
@@ -11425,16 +11435,17 @@ export type Database = {
         }
         Insert: {
           campaign_id?: string | null
+          ces_score?: number | null
           client_id?: string | null
           comment?: string | null
           company_id: string
           created_at?: string
-          csat_score: number
+          csat_score?: number | null
           derived_csat?: string | null
           derived_nps?: string | null
           id?: string
           invite_id?: string | null
-          nps_score: number
+          nps_score?: number | null
           responded_at?: string
           responder_email?: string | null
           responder_ip?: string | null
@@ -11444,16 +11455,17 @@ export type Database = {
         }
         Update: {
           campaign_id?: string | null
+          ces_score?: number | null
           client_id?: string | null
           comment?: string | null
           company_id?: string
           created_at?: string
-          csat_score?: number
+          csat_score?: number | null
           derived_csat?: string | null
           derived_nps?: string | null
           id?: string
           invite_id?: string | null
-          nps_score?: number
+          nps_score?: number | null
           responded_at?: string
           responder_email?: string | null
           responder_ip?: string | null
