@@ -8861,6 +8861,7 @@ export type Database = {
           certificate_file_name: string | null
           certificate_file_url: string | null
           certificate_number: string | null
+          certificate_pdf_url: string | null
           company_id: string
           cost: number | null
           created_at: string
@@ -8884,6 +8885,7 @@ export type Database = {
           certificate_file_name?: string | null
           certificate_file_url?: string | null
           certificate_number?: string | null
+          certificate_pdf_url?: string | null
           company_id: string
           cost?: number | null
           created_at?: string
@@ -8907,6 +8909,7 @@ export type Database = {
           certificate_file_name?: string | null
           certificate_file_url?: string | null
           certificate_number?: string | null
+          certificate_pdf_url?: string | null
           company_id?: string
           cost?: number | null
           created_at?: string
