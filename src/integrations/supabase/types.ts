@@ -11172,6 +11172,87 @@ export type Database = {
           },
         ]
       }
+      quality_org_chart_nodes: {
+        Row: {
+          active: boolean
+          authority: string | null
+          company_id: string
+          created_at: string
+          department_id: string | null
+          id: string
+          order_index: number
+          parent_id: string | null
+          responsibilities: string | null
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          active?: boolean
+          authority?: string | null
+          company_id: string
+          created_at?: string
+          department_id?: string | null
+          id?: string
+          order_index?: number
+          parent_id?: string | null
+          responsibilities?: string | null
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          active?: boolean
+          authority?: string | null
+          company_id?: string
+          created_at?: string
+          department_id?: string | null
+          id?: string
+          order_index?: number
+          parent_id?: string | null
+          responsibilities?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_org_chart_nodes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_org_chart_nodes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_org_chart_nodes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_org_chart_nodes_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_org_chart_nodes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "quality_org_chart_nodes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_org_context: {
         Row: {
           applicable_scope: string | null
