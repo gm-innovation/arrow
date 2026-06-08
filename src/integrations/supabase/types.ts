@@ -9412,6 +9412,7 @@ export type Database = {
           review_notes: string | null
           reviewed_at: string
           reviewed_by: string | null
+          scenario: string | null
           scope: string | null
           version_number: number
         }
@@ -9429,6 +9430,7 @@ export type Database = {
           review_notes?: string | null
           reviewed_at?: string
           reviewed_by?: string | null
+          scenario?: string | null
           scope?: string | null
           version_number: number
         }
@@ -9446,6 +9448,7 @@ export type Database = {
           review_notes?: string | null
           reviewed_at?: string
           reviewed_by?: string | null
+          scenario?: string | null
           scope?: string | null
           version_number?: number
         }
@@ -9517,6 +9520,82 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_document_versions"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_deviations: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string
+          description: string
+          expires_at: string | null
+          id: string
+          justification: string | null
+          notes: string | null
+          origin_ref_id: string | null
+          origin_type: string
+          requested_by: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id: string
+          created_at?: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          justification?: string | null
+          notes?: string | null
+          origin_ref_id?: string | null
+          origin_type: string
+          requested_by?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          justification?: string | null
+          notes?: string | null
+          origin_ref_id?: string | null
+          origin_type?: string
+          requested_by?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_deviations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_deviations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_deviations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -10275,6 +10354,70 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_interested_parties"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_it_safeguards: {
+        Row: {
+          company_id: string
+          created_at: string
+          evidence_url: string | null
+          id: string
+          kind: string
+          notes: string | null
+          performed_at: string
+          performed_by: string | null
+          result: string
+          target: string | null
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          kind: string
+          notes?: string | null
+          performed_at?: string
+          performed_by?: string | null
+          result?: string
+          target?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          kind?: string
+          notes?: string | null
+          performed_at?: string
+          performed_by?: string | null
+          result?: string
+          target?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_it_safeguards_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_it_safeguards_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_it_safeguards_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -11106,6 +11249,55 @@ export type Database = {
           },
         ]
       }
+      quality_policy_acknowledgements: {
+        Row: {
+          acknowledged_at: string
+          company_id: string
+          created_at: string
+          id: string
+          policy_version: number
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          company_id: string
+          created_at?: string
+          id?: string
+          policy_version: number
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          company_id?: string
+          created_at?: string
+          id?: string
+          policy_version?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_policy_acknowledgements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_policy_acknowledgements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_policy_acknowledgements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       quality_process_activities: {
         Row: {
           activity: string
@@ -11872,8 +12064,12 @@ export type Database = {
           company_id: string
           created_at: string
           critical_review_required_topics: Json
+          document_layout: Json
           id: string
           quality_master_user_id: string | null
+          quality_policy_published_at: string | null
+          quality_policy_text: string | null
+          quality_policy_version: number
           review_cycles: Json
           updated_at: string
         }
@@ -11882,8 +12078,12 @@ export type Database = {
           company_id: string
           created_at?: string
           critical_review_required_topics?: Json
+          document_layout?: Json
           id?: string
           quality_master_user_id?: string | null
+          quality_policy_published_at?: string | null
+          quality_policy_text?: string | null
+          quality_policy_version?: number
           review_cycles?: Json
           updated_at?: string
         }
@@ -11892,8 +12092,12 @@ export type Database = {
           company_id?: string
           created_at?: string
           critical_review_required_topics?: Json
+          document_layout?: Json
           id?: string
           quality_master_user_id?: string | null
+          quality_policy_published_at?: string | null
+          quality_policy_text?: string | null
+          quality_policy_version?: number
           review_cycles?: Json
           updated_at?: string
         }
