@@ -16138,6 +16138,7 @@ export type Database = {
           company_id: string | null
           description: string | null
           due_date: string | null
+          effectiveness_status: string | null
           id: string | null
           opened_at: string | null
           owner_user_id: string | null
