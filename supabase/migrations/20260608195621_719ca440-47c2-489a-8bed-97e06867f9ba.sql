@@ -1,0 +1,1 @@
+ALTER TABLE public.quality_calibrations ADD COLUMN IF NOT EXISTS certificate_pdf_url text;
