@@ -9160,6 +9160,107 @@ export type Database = {
           },
         ]
       }
+      quality_context_items: {
+        Row: {
+          category: string
+          company_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          impact_level: string | null
+          linked_risk_id: string | null
+          position: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          impact_level?: string | null
+          linked_risk_id?: string | null
+          position?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          impact_level?: string | null
+          linked_risk_id?: string | null
+          position?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_context_items_linked_risk_id_fkey"
+            columns: ["linked_risk_id"]
+            isOneToOne: false
+            referencedRelation: "quality_risks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_context_versions: {
+        Row: {
+          approved: boolean
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string
+          external_issues: string | null
+          id: string
+          internal_issues: string | null
+          items_snapshot: Json
+          review_notes: string | null
+          reviewed_at: string
+          reviewed_by: string | null
+          scope: string | null
+          version_number: number
+        }
+        Insert: {
+          approved?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id: string
+          created_at?: string
+          external_issues?: string | null
+          id?: string
+          internal_issues?: string | null
+          items_snapshot?: Json
+          review_notes?: string | null
+          reviewed_at?: string
+          reviewed_by?: string | null
+          scope?: string | null
+          version_number: number
+        }
+        Update: {
+          approved?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          external_issues?: string | null
+          id?: string
+          internal_issues?: string | null
+          items_snapshot?: Json
+          review_notes?: string | null
+          reviewed_at?: string
+          reviewed_by?: string | null
+          scope?: string | null
+          version_number?: number
+        }
+        Relationships: []
+      }
       quality_controlled_copies: {
         Row: {
           copy_number: number
