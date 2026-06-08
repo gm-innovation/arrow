@@ -8484,6 +8484,47 @@ export type Database = {
         }
         Relationships: []
       }
+      quality_audit_attachments: {
+        Row: {
+          audit_id: string
+          created_at: string
+          file_name: string
+          file_url: string
+          id: string
+          kind: string
+          notes: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          audit_id: string
+          created_at?: string
+          file_name: string
+          file_url: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          audit_id?: string
+          created_at?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          kind?: string
+          notes?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_audit_attachments_audit_id_fkey"
+            columns: ["audit_id"]
+            isOneToOne: false
+            referencedRelation: "quality_audits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_audit_checklist_items: {
         Row: {
           audit_id: string
@@ -8628,7 +8669,9 @@ export type Database = {
           department: string | null
           id: string
           lead_auditor_id: string | null
+          next_due_at: string | null
           planned_date: string
+          recurrence: string
           scope: string | null
           standard_reference: string | null
           status: string
@@ -8647,7 +8690,9 @@ export type Database = {
           department?: string | null
           id?: string
           lead_auditor_id?: string | null
+          next_due_at?: string | null
           planned_date: string
+          recurrence?: string
           scope?: string | null
           standard_reference?: string | null
           status?: string
@@ -8666,7 +8711,9 @@ export type Database = {
           department?: string | null
           id?: string
           lead_auditor_id?: string | null
+          next_due_at?: string | null
           planned_date?: string
+          recurrence?: string
           scope?: string | null
           standard_reference?: string | null
           status?: string
@@ -8882,6 +8929,146 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_suppliers"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_central_approvals: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          notes: string | null
+          requested_at: string
+          requested_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          notes?: string | null
+          requested_at?: string
+          requested_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          notes?: string | null
+          requested_at?: string
+          requested_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_central_approvals_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_central_approvals_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_central_approvals_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      quality_company_documents: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          document_type: string
+          expires_at: string | null
+          file_name: string | null
+          file_url: string | null
+          id: string
+          issued_at: string | null
+          notes: string | null
+          owner_user_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          document_type: string
+          expires_at?: string | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          issued_at?: string | null
+          notes?: string | null
+          owner_user_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          document_type?: string
+          expires_at?: string | null
+          file_name?: string | null
+          file_url?: string | null
+          id?: string
+          issued_at?: string | null
+          notes?: string | null
+          owner_user_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -9220,6 +9407,7 @@ export type Database = {
           external_issues: string | null
           id: string
           internal_issues: string | null
+          is_official: boolean
           items_snapshot: Json
           review_notes: string | null
           reviewed_at: string
@@ -9236,6 +9424,7 @@ export type Database = {
           external_issues?: string | null
           id?: string
           internal_issues?: string | null
+          is_official?: boolean
           items_snapshot?: Json
           review_notes?: string | null
           reviewed_at?: string
@@ -9252,6 +9441,7 @@ export type Database = {
           external_issues?: string | null
           id?: string
           internal_issues?: string | null
+          is_official?: boolean
           items_snapshot?: Json
           review_notes?: string | null
           reviewed_at?: string
@@ -10636,6 +10826,7 @@ export type Database = {
           immediate_action: string | null
           ncr_number: number
           ncr_type: string
+          process_id: string | null
           responsible_id: string | null
           root_cause: string | null
           severity: string
@@ -10660,6 +10851,7 @@ export type Database = {
           immediate_action?: string | null
           ncr_number?: number
           ncr_type?: string
+          process_id?: string | null
           responsible_id?: string | null
           root_cause?: string | null
           severity?: string
@@ -10684,6 +10876,7 @@ export type Database = {
           immediate_action?: string | null
           ncr_number?: number
           ncr_type?: string
+          process_id?: string | null
           responsible_id?: string | null
           root_cause?: string | null
           severity?: string
@@ -10800,6 +10993,13 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "quality_ncrs_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "quality_processes"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "quality_ncrs_responsible_id_fkey"
             columns: ["responsible_id"]
             isOneToOne: false
@@ -10837,6 +11037,7 @@ export type Database = {
           external_issues: string | null
           id: string
           internal_issues: string | null
+          last_management_review_id: string | null
           last_review_notes: string | null
           last_reviewed_at: string | null
           last_reviewed_by: string | null
@@ -10851,6 +11052,7 @@ export type Database = {
           external_issues?: string | null
           id?: string
           internal_issues?: string | null
+          last_management_review_id?: string | null
           last_review_notes?: string | null
           last_reviewed_at?: string | null
           last_reviewed_by?: string | null
@@ -10865,6 +11067,7 @@ export type Database = {
           external_issues?: string | null
           id?: string
           internal_issues?: string | null
+          last_management_review_id?: string | null
           last_review_notes?: string | null
           last_reviewed_at?: string | null
           last_reviewed_by?: string | null
@@ -10893,6 +11096,169 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "quality_kpi_timeseries_v"
             referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_org_context_last_management_review_id_fkey"
+            columns: ["last_management_review_id"]
+            isOneToOne: false
+            referencedRelation: "quality_management_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_process_activities: {
+        Row: {
+          activity: string
+          created_at: string
+          id: string
+          indicators: string | null
+          order_index: number
+          process_id: string
+          responsible_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          activity: string
+          created_at?: string
+          id?: string
+          indicators?: string | null
+          order_index?: number
+          process_id: string
+          responsible_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activity?: string
+          created_at?: string
+          id?: string
+          indicators?: string | null
+          order_index?: number
+          process_id?: string
+          responsible_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_process_activities_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "quality_processes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_process_sipoc: {
+        Row: {
+          activities: string | null
+          created_at: string
+          customers: string | null
+          id: string
+          inputs: string | null
+          outputs: string | null
+          process_id: string
+          suppliers: string | null
+          updated_at: string
+        }
+        Insert: {
+          activities?: string | null
+          created_at?: string
+          customers?: string | null
+          id?: string
+          inputs?: string | null
+          outputs?: string | null
+          process_id: string
+          suppliers?: string | null
+          updated_at?: string
+        }
+        Update: {
+          activities?: string | null
+          created_at?: string
+          customers?: string | null
+          id?: string
+          inputs?: string | null
+          outputs?: string | null
+          process_id?: string
+          suppliers?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_process_sipoc_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: true
+            referencedRelation: "quality_processes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_processes: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          current_document_id: string | null
+          description: string | null
+          id: string
+          name: string
+          owner_user_id: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          current_document_id?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          owner_user_id?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          current_document_id?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          owner_user_id?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_processes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_processes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_processes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_processes_current_document_id_fkey"
+            columns: ["current_document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -11129,6 +11495,7 @@ export type Database = {
           next_review_due_at: string | null
           owner_user_id: string | null
           probability: number
+          process_id: string | null
           residual_impact: number | null
           residual_probability: number | null
           residual_score: number | null
@@ -11165,6 +11532,7 @@ export type Database = {
           next_review_due_at?: string | null
           owner_user_id?: string | null
           probability: number
+          process_id?: string | null
           residual_impact?: number | null
           residual_probability?: number | null
           residual_score?: number | null
@@ -11201,6 +11569,7 @@ export type Database = {
           next_review_due_at?: string | null
           owner_user_id?: string | null
           probability?: number
+          process_id?: string | null
           residual_impact?: number | null
           residual_probability?: number | null
           residual_score?: number | null
@@ -11242,6 +11611,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_kpi_timeseries_v"
             referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_risks_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "quality_processes"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -11492,26 +11868,32 @@ export type Database = {
       }
       quality_settings: {
         Row: {
+          approval_scope: Json
           company_id: string
           created_at: string
           critical_review_required_topics: Json
           id: string
+          quality_master_user_id: string | null
           review_cycles: Json
           updated_at: string
         }
         Insert: {
+          approval_scope?: Json
           company_id: string
           created_at?: string
           critical_review_required_topics?: Json
           id?: string
+          quality_master_user_id?: string | null
           review_cycles?: Json
           updated_at?: string
         }
         Update: {
+          approval_scope?: Json
           company_id?: string
           created_at?: string
           critical_review_required_topics?: Json
           id?: string
+          quality_master_user_id?: string | null
           review_cycles?: Json
           updated_at?: string
         }
@@ -15673,6 +16055,7 @@ export type Database = {
         Returns: boolean
       }
       is_operational_role: { Args: { _user_id: string }; Returns: boolean }
+      is_quality_master: { Args: { _company_id: string }; Returns: boolean }
       is_tech_assigned_to_order: {
         Args: { _service_order_id: string; _user_id: string }
         Returns: boolean
