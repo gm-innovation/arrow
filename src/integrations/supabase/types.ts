@@ -10189,7 +10189,13 @@ export type Database = {
           created_at: string
           description: string | null
           due_date: string | null
+          effectiveness_notes: string | null
+          effectiveness_status: string
+          effectiveness_verified_at: string | null
+          effectiveness_verified_by: string | null
           id: string
+          origin_id: string | null
+          origin_type: string
           priority: string
           responsible_id: string | null
           status: string
@@ -10204,7 +10210,13 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          effectiveness_notes?: string | null
+          effectiveness_status?: string
+          effectiveness_verified_at?: string | null
+          effectiveness_verified_by?: string | null
           id?: string
+          origin_id?: string | null
+          origin_type?: string
           priority?: string
           responsible_id?: string | null
           status?: string
@@ -10219,7 +10231,13 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          effectiveness_notes?: string | null
+          effectiveness_status?: string
+          effectiveness_verified_at?: string | null
+          effectiveness_verified_by?: string | null
           id?: string
+          origin_id?: string | null
+          origin_type?: string
           priority?: string
           responsible_id?: string | null
           status?: string
@@ -10255,6 +10273,7 @@ export type Database = {
           relevance: string
           review_frequency_months: number | null
           status: string
+          treatment_status: string
           updated_at: string
         }
         Insert: {
@@ -10274,6 +10293,7 @@ export type Database = {
           relevance?: string
           review_frequency_months?: number | null
           status?: string
+          treatment_status?: string
           updated_at?: string
         }
         Update: {
@@ -10293,6 +10313,7 @@ export type Database = {
           relevance?: string
           review_frequency_months?: number | null
           status?: string
+          treatment_status?: string
           updated_at?: string
         }
         Relationships: []
@@ -11420,6 +11441,82 @@ export type Database = {
           },
         ]
       }
+      quality_process_document_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          company_id: string
+          id: string
+          new_document_id: string | null
+          previous_document_id: string | null
+          process_id: string
+          reason: string | null
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          company_id: string
+          id?: string
+          new_document_id?: string | null
+          previous_document_id?: string | null
+          process_id: string
+          reason?: string | null
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          company_id?: string
+          id?: string
+          new_document_id?: string | null
+          previous_document_id?: string | null
+          process_id?: string
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_process_document_history_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_process_document_history_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_process_document_history_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_process_document_history_new_document_id_fkey"
+            columns: ["new_document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_process_document_history_previous_document_id_fkey"
+            columns: ["previous_document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_process_document_history_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "quality_processes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_process_sipoc: {
         Row: {
           activities: string | null
@@ -11537,6 +11634,8 @@ export type Database = {
       }
       quality_reference_norms: {
         Row: {
+          attachment_name: string | null
+          attachment_url: string | null
           code: string
           company_id: string
           created_at: string
@@ -11545,13 +11644,22 @@ export type Database = {
           id: string
           is_active: boolean
           issuer: string | null
+          last_reviewed_at: string | null
+          next_review_due_at: string | null
           notes: string | null
+          responsible_user_id: string | null
+          review_frequency_months: number | null
+          revision: string | null
+          status: string
+          superseded_by_id: string | null
           title: string
           updated_at: string
           valid_from: string | null
           valid_until: string | null
         }
         Insert: {
+          attachment_name?: string | null
+          attachment_url?: string | null
           code: string
           company_id: string
           created_at?: string
@@ -11560,13 +11668,22 @@ export type Database = {
           id?: string
           is_active?: boolean
           issuer?: string | null
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
           notes?: string | null
+          responsible_user_id?: string | null
+          review_frequency_months?: number | null
+          revision?: string | null
+          status?: string
+          superseded_by_id?: string | null
           title: string
           updated_at?: string
           valid_from?: string | null
           valid_until?: string | null
         }
         Update: {
+          attachment_name?: string | null
+          attachment_url?: string | null
           code?: string
           company_id?: string
           created_at?: string
@@ -11575,7 +11692,14 @@ export type Database = {
           id?: string
           is_active?: boolean
           issuer?: string | null
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
           notes?: string | null
+          responsible_user_id?: string | null
+          review_frequency_months?: number | null
+          revision?: string | null
+          status?: string
+          superseded_by_id?: string | null
           title?: string
           updated_at?: string
           valid_from?: string | null
@@ -11608,6 +11732,13 @@ export type Database = {
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms"
             referencedColumns: ["id"]
           },
         ]
@@ -12151,6 +12282,7 @@ export type Database = {
           quality_policy_published_at: string | null
           quality_policy_text: string | null
           quality_policy_version: number
+          require_active_process_document: boolean
           review_cycles: Json
           updated_at: string
         }
@@ -12165,6 +12297,7 @@ export type Database = {
           quality_policy_published_at?: string | null
           quality_policy_text?: string | null
           quality_policy_version?: number
+          require_active_process_document?: boolean
           review_cycles?: Json
           updated_at?: string
         }
@@ -12179,6 +12312,7 @@ export type Database = {
           quality_policy_published_at?: string | null
           quality_policy_text?: string | null
           quality_policy_version?: number
+          require_active_process_document?: boolean
           review_cycles?: Json
           updated_at?: string
         }
@@ -12890,9 +13024,15 @@ export type Database = {
           created_by: string | null
           definition: string
           id: string
+          last_reviewed_at: string | null
+          next_review_due_at: string | null
+          responsible_user_id: string | null
+          review_frequency_months: number | null
           source_norm_id: string | null
+          status: string
           term: string
           updated_at: string
+          version: number
         }
         Insert: {
           company_id: string
@@ -12900,9 +13040,15 @@ export type Database = {
           created_by?: string | null
           definition: string
           id?: string
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
+          responsible_user_id?: string | null
+          review_frequency_months?: number | null
           source_norm_id?: string | null
+          status?: string
           term: string
           updated_at?: string
+          version?: number
         }
         Update: {
           company_id?: string
@@ -12910,9 +13056,15 @@ export type Database = {
           created_by?: string | null
           definition?: string
           id?: string
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
+          responsible_user_id?: string | null
+          review_frequency_months?: number | null
           source_norm_id?: string | null
+          status?: string
           term?: string
           updated_at?: string
+          version?: number
         }
         Relationships: [
           {
