@@ -9071,6 +9071,138 @@ export type Database = {
           },
         ]
       }
+      quality_communication_log: {
+        Row: {
+          company_id: string
+          created_at: string
+          evidence_url: string | null
+          executed_at: string
+          executed_by: string | null
+          id: string
+          notes: string | null
+          plan_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          evidence_url?: string | null
+          executed_at?: string
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          plan_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          evidence_url?: string | null
+          executed_at?: string
+          executed_by?: string | null
+          id?: string
+          notes?: string | null
+          plan_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_communication_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_communication_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_communication_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_communication_log_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "quality_communication_plan"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_communication_plan: {
+        Row: {
+          channel: string
+          communication_type: Database["public"]["Enums"]["quality_communication_type"]
+          company_id: string
+          created_at: string
+          frequency: string
+          id: string
+          next_scheduled_at: string | null
+          notes: string | null
+          owner_id: string | null
+          status: string
+          subject: string
+          target_audience: string
+          updated_at: string
+        }
+        Insert: {
+          channel?: string
+          communication_type?: Database["public"]["Enums"]["quality_communication_type"]
+          company_id: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          next_scheduled_at?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          status?: string
+          subject: string
+          target_audience?: string
+          updated_at?: string
+        }
+        Update: {
+          channel?: string
+          communication_type?: Database["public"]["Enums"]["quality_communication_type"]
+          company_id?: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          next_scheduled_at?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          status?: string
+          subject?: string
+          target_audience?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_communication_plan_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_communication_plan_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_communication_plan_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       quality_company_documents: {
         Row: {
           company_id: string
@@ -10262,6 +10394,8 @@ export type Database = {
           description: string | null
           due_date: string | null
           effectiveness_notes: string | null
+          effectiveness_review_due_at: string | null
+          effectiveness_review_period_days: number | null
           effectiveness_status: string
           effectiveness_verified_at: string | null
           effectiveness_verified_by: string | null
@@ -10283,6 +10417,8 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           effectiveness_notes?: string | null
+          effectiveness_review_due_at?: string | null
+          effectiveness_review_period_days?: number | null
           effectiveness_status?: string
           effectiveness_verified_at?: string | null
           effectiveness_verified_by?: string | null
@@ -10304,6 +10440,8 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           effectiveness_notes?: string | null
+          effectiveness_review_due_at?: string | null
+          effectiveness_review_period_days?: number | null
           effectiveness_status?: string
           effectiveness_verified_at?: string | null
           effectiveness_verified_by?: string | null
@@ -10661,6 +10799,91 @@ export type Database = {
           },
           {
             foreignKeyName: "quality_it_safeguards_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      quality_knowledge_articles: {
+        Row: {
+          author_id: string | null
+          body: string
+          category: string | null
+          company_id: string
+          created_at: string
+          id: string
+          published_at: string | null
+          review_due_at: string | null
+          review_period_months: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_id: string | null
+          source_type: string | null
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          author_id?: string | null
+          body?: string
+          category?: string | null
+          company_id: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          review_due_at?: string | null
+          review_period_months?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          category?: string | null
+          company_id?: string
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          review_due_at?: string | null
+          review_period_months?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_id?: string | null
+          source_type?: string | null
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_knowledge_articles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_knowledge_articles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_knowledge_articles_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "quality_kpi_timeseries_v"
@@ -11591,6 +11814,7 @@ export type Database = {
           applicable_scope: string | null
           company_id: string
           created_at: string
+          excluded_clauses: Json
           external_issues: string | null
           id: string
           internal_issues: string | null
@@ -11606,6 +11830,7 @@ export type Database = {
           applicable_scope?: string | null
           company_id: string
           created_at?: string
+          excluded_clauses?: Json
           external_issues?: string | null
           id?: string
           internal_issues?: string | null
@@ -11621,6 +11846,7 @@ export type Database = {
           applicable_scope?: string | null
           company_id?: string
           created_at?: string
+          excluded_clauses?: Json
           external_issues?: string | null
           id?: string
           internal_issues?: string | null
@@ -12740,6 +12966,7 @@ export type Database = {
           created_at: string
           critical_review_required_topics: Json
           document_layout: Json
+          enable_push_notifications: boolean
           id: string
           master_delegate_until: string | null
           master_delegate_user_id: string | null
@@ -12758,6 +12985,7 @@ export type Database = {
           created_at?: string
           critical_review_required_topics?: Json
           document_layout?: Json
+          enable_push_notifications?: boolean
           id?: string
           master_delegate_until?: string | null
           master_delegate_user_id?: string | null
@@ -12776,6 +13004,7 @@ export type Database = {
           created_at?: string
           critical_review_required_topics?: Json
           document_layout?: Json
+          enable_push_notifications?: boolean
           id?: string
           master_delegate_until?: string | null
           master_delegate_user_id?: string | null
@@ -17245,6 +17474,14 @@ export type Database = {
         | "approved"
         | "approved_with_restriction"
         | "reproved"
+      quality_communication_type:
+        | "training"
+        | "quality_policy"
+        | "meeting"
+        | "campaign"
+        | "alert"
+        | "management_review"
+        | "other"
       quality_competency_category:
         | "technical"
         | "behavioral"
@@ -17577,6 +17814,15 @@ export const Constants = {
         "approved",
         "approved_with_restriction",
         "reproved",
+      ],
+      quality_communication_type: [
+        "training",
+        "quality_policy",
+        "meeting",
+        "campaign",
+        "alert",
+        "management_review",
+        "other",
       ],
       quality_competency_category: [
         "technical",
