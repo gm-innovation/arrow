@@ -15737,6 +15737,9 @@ export type Database = {
           campaign_id: string
           campaign_name: string
           campaign_status: string
+          collects_ces: boolean
+          collects_csat: boolean
+          collects_nps: boolean
           invite_id: string
         }[]
       }
@@ -15789,6 +15792,7 @@ export type Database = {
       }
       quality_submit_satisfaction_response: {
         Args: {
+          p_ces?: number
           p_comment: string
           p_csat: number
           p_nps: number
