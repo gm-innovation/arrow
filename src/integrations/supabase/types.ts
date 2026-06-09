@@ -10508,6 +10508,67 @@ export type Database = {
           },
         ]
       }
+      quality_homologations: {
+        Row: {
+          company_id: string
+          created_at: string
+          cycle: string
+          homologated_by: string
+          id: string
+          notes: string | null
+          pdf_path: string | null
+          signed_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          cycle: string
+          homologated_by: string
+          id?: string
+          notes?: string | null
+          pdf_path?: string | null
+          signed_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          cycle?: string
+          homologated_by?: string
+          id?: string
+          notes?: string | null
+          pdf_path?: string | null
+          signed_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_homologations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_homologations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_homologations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       quality_improvements_manual: {
         Row: {
           action_plan_id: string | null
