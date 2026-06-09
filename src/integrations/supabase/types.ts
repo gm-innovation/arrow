@@ -11765,6 +11765,78 @@ export type Database = {
           },
         ]
       }
+      quality_objective_parties: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          objective_id: string
+          party_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          objective_id: string
+          party_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          objective_id?: string
+          party_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_objective_parties_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "quality_objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_objective_parties_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "quality_interested_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_objective_risks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          objective_id: string
+          risk_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          objective_id: string
+          risk_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          objective_id?: string
+          risk_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_objective_risks_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "quality_objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_objective_risks_risk_id_fkey"
+            columns: ["risk_id"]
+            isOneToOne: false
+            referencedRelation: "quality_risks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_objectives: {
         Row: {
           code: string | null
@@ -12012,6 +12084,44 @@ export type Database = {
           },
         ]
       }
+      quality_party_treatments: {
+        Row: {
+          created_at: string
+          decided_at: string
+          decided_by: string | null
+          id: string
+          notes: string | null
+          party_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          decided_at?: string
+          decided_by?: string | null
+          id?: string
+          notes?: string | null
+          party_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          decided_at?: string
+          decided_by?: string | null
+          id?: string
+          notes?: string | null
+          party_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_party_treatments_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "quality_interested_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_planned_changes: {
         Row: {
           approved_at: string | null
@@ -12022,6 +12132,10 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          effectiveness_notes: string | null
+          effectiveness_reviewed_at: string | null
+          effectiveness_reviewed_by: string | null
+          effectiveness_status: string | null
           id: string
           impact_assessment: string | null
           implemented_at: string | null
@@ -12030,6 +12144,7 @@ export type Database = {
           notes: string | null
           planned_for: string | null
           requested_by: string | null
+          resources_assessment: string | null
           status: string
           title: string
           updated_at: string
@@ -12043,6 +12158,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          effectiveness_notes?: string | null
+          effectiveness_reviewed_at?: string | null
+          effectiveness_reviewed_by?: string | null
+          effectiveness_status?: string | null
           id?: string
           impact_assessment?: string | null
           implemented_at?: string | null
@@ -12051,6 +12170,7 @@ export type Database = {
           notes?: string | null
           planned_for?: string | null
           requested_by?: string | null
+          resources_assessment?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -12064,6 +12184,10 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          effectiveness_notes?: string | null
+          effectiveness_reviewed_at?: string | null
+          effectiveness_reviewed_by?: string | null
+          effectiveness_status?: string | null
           id?: string
           impact_assessment?: string | null
           implemented_at?: string | null
@@ -12072,6 +12196,7 @@ export type Database = {
           notes?: string | null
           planned_for?: string | null
           requested_by?: string | null
+          resources_assessment?: string | null
           status?: string
           title?: string
           updated_at?: string
