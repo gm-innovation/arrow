@@ -8811,6 +8811,90 @@ export type Database = {
           },
         ]
       }
+      quality_awareness_attendees: {
+        Row: {
+          acknowledged_at: string
+          event_id: string
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          event_id: string
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          event_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_awareness_attendees_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "quality_awareness_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_awareness_events: {
+        Row: {
+          company_id: string
+          conducted_by: string | null
+          created_at: string
+          description: string | null
+          event_date: string
+          evidence_url: string | null
+          id: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          conducted_by?: string | null
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          evidence_url?: string | null
+          id?: string
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          conducted_by?: string | null
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          evidence_url?: string | null
+          id?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_awareness_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_awareness_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_awareness_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       quality_calibration_checkpoints: {
         Row: {
           calibration_id: string
@@ -10006,6 +10090,42 @@ export type Database = {
             columns: ["version_id"]
             isOneToOne: false
             referencedRelation: "quality_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_document_norms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          document_id: string
+          norm_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          document_id: string
+          norm_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          document_id?: string
+          norm_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_norms_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_document_norms_norm_id_fkey"
+            columns: ["norm_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms"
             referencedColumns: ["id"]
           },
         ]
@@ -13800,9 +13920,75 @@ export type Database = {
           },
         ]
       }
+      quality_training_effectiveness: {
+        Row: {
+          company_id: string
+          created_at: string
+          evaluation_date: string
+          evaluator_id: string | null
+          id: string
+          notes: string | null
+          result: string
+          training_id: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          evaluation_date?: string
+          evaluator_id?: string | null
+          id?: string
+          notes?: string | null
+          result: string
+          training_id: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          evaluation_date?: string
+          evaluator_id?: string | null
+          id?: string
+          notes?: string | null
+          result?: string
+          training_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_training_effectiveness_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_training_effectiveness_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_training_effectiveness_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_training_effectiveness_training_id_fkey"
+            columns: ["training_id"]
+            isOneToOne: false
+            referencedRelation: "quality_training_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_training_plans: {
         Row: {
           auto_generated: boolean
+          certificate_url: string | null
           company_id: string
           competency_id: string
           completed_at: string | null
@@ -13810,20 +13996,28 @@ export type Database = {
           created_at: string
           current_level: Database["public"]["Enums"]["quality_competency_level"]
           due_date: string | null
+          executed_date: string | null
           generated_at: string
           id: string
+          institution: string | null
+          instructor: string | null
           linked_course_id: string | null
           linked_trail_id: string | null
           notes: string | null
+          origin_type: string | null
+          planned_date: string | null
+          program_year: number | null
           required_level: Database["public"]["Enums"]["quality_competency_level"]
           responsible_id: string | null
           status: Database["public"]["Enums"]["quality_training_plan_status"]
           target_level: Database["public"]["Enums"]["quality_competency_level"]
+          type: string
           updated_at: string
           user_id: string
         }
         Insert: {
           auto_generated?: boolean
+          certificate_url?: string | null
           company_id: string
           competency_id: string
           completed_at?: string | null
@@ -13831,20 +14025,28 @@ export type Database = {
           created_at?: string
           current_level: Database["public"]["Enums"]["quality_competency_level"]
           due_date?: string | null
+          executed_date?: string | null
           generated_at?: string
           id?: string
+          institution?: string | null
+          instructor?: string | null
           linked_course_id?: string | null
           linked_trail_id?: string | null
           notes?: string | null
+          origin_type?: string | null
+          planned_date?: string | null
+          program_year?: number | null
           required_level: Database["public"]["Enums"]["quality_competency_level"]
           responsible_id?: string | null
           status?: Database["public"]["Enums"]["quality_training_plan_status"]
           target_level: Database["public"]["Enums"]["quality_competency_level"]
+          type?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           auto_generated?: boolean
+          certificate_url?: string | null
           company_id?: string
           competency_id?: string
           completed_at?: string | null
@@ -13852,15 +14054,22 @@ export type Database = {
           created_at?: string
           current_level?: Database["public"]["Enums"]["quality_competency_level"]
           due_date?: string | null
+          executed_date?: string | null
           generated_at?: string
           id?: string
+          institution?: string | null
+          instructor?: string | null
           linked_course_id?: string | null
           linked_trail_id?: string | null
           notes?: string | null
+          origin_type?: string | null
+          planned_date?: string | null
+          program_year?: number | null
           required_level?: Database["public"]["Enums"]["quality_competency_level"]
           responsible_id?: string | null
           status?: Database["public"]["Enums"]["quality_training_plan_status"]
           target_level?: Database["public"]["Enums"]["quality_competency_level"]
+          type?: string
           updated_at?: string
           user_id?: string
         }
