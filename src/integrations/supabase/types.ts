@@ -10128,6 +10128,13 @@ export type Database = {
             referencedRelation: "quality_reference_norms"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "quality_document_norms_norm_id_fkey"
+            columns: ["norm_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms_status"
+            referencedColumns: ["id"]
+          },
         ]
       }
       quality_document_permissions: {
@@ -12628,6 +12635,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           document_id: string | null
+          expiry_warning_sent_at: string | null
           id: string
           is_active: boolean
           issuer: string | null
@@ -12652,6 +12660,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           document_id?: string | null
+          expiry_warning_sent_at?: string | null
           id?: string
           is_active?: boolean
           issuer?: string | null
@@ -12676,6 +12685,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           document_id?: string | null
+          expiry_warning_sent_at?: string | null
           id?: string
           is_active?: boolean
           issuer?: string | null
@@ -12726,6 +12736,13 @@ export type Database = {
             columns: ["superseded_by_id"]
             isOneToOne: false
             referencedRelation: "quality_reference_norms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms_status"
             referencedColumns: ["id"]
           },
         ]
@@ -14102,6 +14119,13 @@ export type Database = {
             columns: ["source_norm_id"]
             isOneToOne: false
             referencedRelation: "quality_reference_norms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_terms_source_norm_id_fkey"
+            columns: ["source_norm_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms_status"
             referencedColumns: ["id"]
           },
         ]
@@ -17354,6 +17378,130 @@ export type Database = {
         }
         Relationships: []
       }
+      quality_reference_norms_status: {
+        Row: {
+          attachment_name: string | null
+          attachment_url: string | null
+          code: string | null
+          company_id: string | null
+          created_at: string | null
+          created_by: string | null
+          document_id: string | null
+          effective_status: string | null
+          expiry_warning_sent_at: string | null
+          id: string | null
+          is_active: boolean | null
+          issuer: string | null
+          last_reviewed_at: string | null
+          next_review_due_at: string | null
+          notes: string | null
+          responsible_user_id: string | null
+          review_frequency_months: number | null
+          revision: string | null
+          status: string | null
+          superseded_by_id: string | null
+          title: string | null
+          updated_at: string | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_url?: string | null
+          code?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          document_id?: string | null
+          effective_status?: never
+          expiry_warning_sent_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          issuer?: string | null
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
+          notes?: string | null
+          responsible_user_id?: string | null
+          review_frequency_months?: number | null
+          revision?: string | null
+          status?: string | null
+          superseded_by_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_url?: string | null
+          code?: string | null
+          company_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          document_id?: string | null
+          effective_status?: never
+          expiry_warning_sent_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          issuer?: string | null
+          last_reviewed_at?: string | null
+          next_review_due_at?: string | null
+          notes?: string | null
+          responsible_user_id?: string | null
+          review_frequency_months?: number | null
+          revision?: string | null
+          status?: string | null
+          superseded_by_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_reference_norms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_reference_norms_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "quality_reference_norms_status"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_review_status_v: {
         Row: {
           company_id: string | null
@@ -17644,6 +17792,14 @@ export type Database = {
         Returns: boolean
       }
       quality_device_status_refresh: { Args: never; Returns: undefined }
+      quality_doc_user_perms: {
+        Args: { _document_id: string }
+        Returns: {
+          can_download: boolean
+          can_print: boolean
+          can_view: boolean
+        }[]
+      }
       quality_generate_alert_notifications: { Args: never; Returns: number }
       quality_generate_training_plans: {
         Args: { p_user_id: string }
@@ -17677,6 +17833,7 @@ export type Database = {
         }
         Returns: number
       }
+      quality_norms_expire_tick: { Args: never; Returns: undefined }
       quality_recompute_user_competencies_all: {
         Args: { p_user_id: string }
         Returns: undefined
@@ -17862,7 +18019,12 @@ export type Database = {
         | "approval_pending"
         | "quality_alert"
       payment_status: "paid" | "pending" | "overdue"
-      quality_access_action: "view" | "print" | "download"
+      quality_access_action:
+        | "view"
+        | "print"
+        | "download"
+        | "denied_print"
+        | "denied_download"
       quality_calibration_kind:
         | "internal"
         | "external_lab"
@@ -18201,7 +18363,13 @@ export const Constants = {
         "quality_alert",
       ],
       payment_status: ["paid", "pending", "overdue"],
-      quality_access_action: ["view", "print", "download"],
+      quality_access_action: [
+        "view",
+        "print",
+        "download",
+        "denied_print",
+        "denied_download",
+      ],
       quality_calibration_kind: [
         "internal",
         "external_lab",
