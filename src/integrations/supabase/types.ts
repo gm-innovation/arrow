@@ -7712,6 +7712,7 @@ export type Database = {
           cover_url: string | null
           cpf: string | null
           created_at: string
+          direct_manager_id: string | null
           email: string
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
@@ -7734,6 +7735,7 @@ export type Database = {
           cover_url?: string | null
           cpf?: string | null
           created_at?: string
+          direct_manager_id?: string | null
           email: string
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
@@ -7756,6 +7758,7 @@ export type Database = {
           cover_url?: string | null
           cpf?: string | null
           created_at?: string
+          direct_manager_id?: string | null
           email?: string
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
@@ -7791,6 +7794,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_kpi_timeseries_v"
             referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "profiles_direct_manager_id_fkey"
+            columns: ["direct_manager_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_direct_manager_id_fkey"
+            columns: ["direct_manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_direct_manager_id_fkey"
+            columns: ["direct_manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_direct_manager_id_fkey"
+            columns: ["direct_manager_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -17619,6 +17650,7 @@ export type Database = {
           name: string
         }[]
       }
+      get_employee_approver: { Args: { _employee_id: string }; Returns: string }
       get_employee_hr_profile: {
         Args: { _user_id: string }
         Returns: {
