@@ -6391,6 +6391,92 @@ export type Database = {
           },
         ]
       }
+      hr_document_catalog: {
+        Row: {
+          applies_to_all: boolean
+          category: string
+          code: string | null
+          company_id: string
+          created_at: string
+          created_by: string | null
+          default_validity_months: number | null
+          description: string | null
+          has_expiry: boolean
+          id: string
+          is_active: boolean
+          is_required: boolean
+          name: string
+          renewal_warning_days: number
+          responsible_role: string
+          updated_at: string
+        }
+        Insert: {
+          applies_to_all?: boolean
+          category?: string
+          code?: string | null
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          default_validity_months?: number | null
+          description?: string | null
+          has_expiry?: boolean
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          name: string
+          renewal_warning_days?: number
+          responsible_role?: string
+          updated_at?: string
+        }
+        Update: {
+          applies_to_all?: boolean
+          category?: string
+          code?: string | null
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          default_validity_months?: number | null
+          description?: string | null
+          has_expiry?: boolean
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          name?: string
+          renewal_warning_days?: number
+          responsible_role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_document_catalog_positions: {
+        Row: {
+          catalog_id: string
+          created_at: string
+          id: string
+          position: string
+        }
+        Insert: {
+          catalog_id: string
+          created_at?: string
+          id?: string
+          position: string
+        }
+        Update: {
+          catalog_id?: string
+          created_at?: string
+          id?: string
+          position?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_document_catalog_positions_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "hr_document_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hr_partnerships: {
         Row: {
           benefit: string | null
@@ -7723,6 +7809,7 @@ export type Database = {
           id: string
           nationality: string | null
           phone: string | null
+          position: string | null
           rg: string | null
           status: string
           updated_at: string
@@ -7746,6 +7833,7 @@ export type Database = {
           id: string
           nationality?: string | null
           phone?: string | null
+          position?: string | null
           rg?: string | null
           status?: string
           updated_at?: string
@@ -7769,6 +7857,7 @@ export type Database = {
           id?: string
           nationality?: string | null
           phone?: string | null
+          position?: string | null
           rg?: string | null
           status?: string
           updated_at?: string
