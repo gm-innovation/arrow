@@ -18049,6 +18049,11 @@ export type Database = {
         Returns: boolean
       }
       quality_device_status_refresh: { Args: never; Returns: undefined }
+      quality_doc_company_id: { Args: { _doc_id: string }; Returns: string }
+      quality_doc_user_can_view: {
+        Args: { _doc_id: string; _user: string }
+        Returns: boolean
+      }
       quality_doc_user_perms: {
         Args: { _document_id: string }
         Returns: {
@@ -18156,6 +18161,7 @@ export type Database = {
           required_id: string
         }[]
       }
+      quality_version_doc_id: { Args: { _version_id: string }; Returns: string }
       recalculate_measurement: {
         Args: { p_measurement_id: string }
         Returns: undefined
