@@ -17958,6 +17958,25 @@ export type Database = {
           status: string
         }[]
       }
+      hr_pending_reviews: {
+        Args: { _company_id: string }
+        Returns: {
+          catalog_category: string
+          catalog_id: string
+          catalog_name: string
+          document_id: string
+          employee_id: string
+          employee_name: string
+          employee_position: string
+          file_name: string
+          file_path: string
+          issue_date: string
+          notes: string
+          uploaded_at: string
+          uploaded_by: string
+          uploader_name: string
+        }[]
+      }
       import_historical_time_entries: { Args: never; Returns: number }
       is_assigned_to_visit: {
         Args: { _user_id: string; _visit_id: string }
@@ -18256,6 +18275,7 @@ export type Database = {
         | "document_received"
         | "approval_pending"
         | "quality_alert"
+        | "document_review"
       payment_status: "paid" | "pending" | "overdue"
       quality_access_action:
         | "view"
@@ -18599,6 +18619,7 @@ export const Constants = {
         "document_received",
         "approval_pending",
         "quality_alert",
+        "document_review",
       ],
       payment_status: ["paid", "pending", "overdue"],
       quality_access_action: [
