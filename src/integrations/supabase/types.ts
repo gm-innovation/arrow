@@ -6477,6 +6477,105 @@ export type Database = {
           },
         ]
       }
+      hr_employee_documents: {
+        Row: {
+          catalog_id: string
+          company_id: string
+          created_at: string
+          employee_id: string
+          expiry_date: string | null
+          file_name: string
+          file_path: string
+          id: string
+          is_current: boolean
+          issue_date: string | null
+          notes: string | null
+          rejection_reason: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          updated_at: string
+          uploaded_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          catalog_id: string
+          company_id: string
+          created_at?: string
+          employee_id: string
+          expiry_date?: string | null
+          file_name: string
+          file_path: string
+          id?: string
+          is_current?: boolean
+          issue_date?: string | null
+          notes?: string | null
+          rejection_reason?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          catalog_id?: string
+          company_id?: string
+          created_at?: string
+          employee_id?: string
+          expiry_date?: string | null
+          file_name?: string
+          file_path?: string
+          id?: string
+          is_current?: boolean
+          issue_date?: string | null
+          notes?: string | null
+          rejection_reason?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_employee_documents_catalog_id_fkey"
+            columns: ["catalog_id"]
+            isOneToOne: false
+            referencedRelation: "hr_document_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       hr_partnerships: {
         Row: {
           benefit: string | null
@@ -17840,6 +17939,24 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      hr_employee_document_status: {
+        Args: { _company_id: string }
+        Returns: {
+          catalog_category: string
+          catalog_id: string
+          catalog_name: string
+          direct_manager_id: string
+          document_id: string
+          due_in_days: number
+          employee_id: string
+          employee_name: string
+          employee_position: string
+          expiry_date: string
+          renewal_warning_days: number
+          responsible_role: string
+          status: string
+        }[]
       }
       import_historical_time_entries: { Args: never; Returns: number }
       is_assigned_to_visit: {
