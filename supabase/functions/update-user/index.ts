@@ -133,6 +133,19 @@ serve(async (req) => {
 
     if (profileError) throw profileError;
 
+    // Sync auth user metadata (full_name + phone) so user_metadata stays coherent
+    // with the profiles table. Failures here are logged but non-blocking.
+    try {
+      const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(user_id, {
+        user_metadata: { full_name, phone: phone || null },
+      });
+      if (metaError) {
+        console.error('Failed to sync auth user metadata:', metaError.message);
+      }
+    } catch (e: any) {
+      console.error('Failed to sync auth user metadata:', e?.message ?? e);
+    }
+
     // Update role if provided
     if (role) {
       // Delete existing roles
