@@ -10482,6 +10482,50 @@ export type Database = {
           },
         ]
       }
+      quality_document_status_log: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          document_id: string
+          from_status:
+            | Database["public"]["Enums"]["quality_document_status"]
+            | null
+          id: string
+          reason: string | null
+          to_status: Database["public"]["Enums"]["quality_document_status"]
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          document_id: string
+          from_status?:
+            | Database["public"]["Enums"]["quality_document_status"]
+            | null
+          id?: string
+          reason?: string | null
+          to_status: Database["public"]["Enums"]["quality_document_status"]
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          document_id?: string
+          from_status?:
+            | Database["public"]["Enums"]["quality_document_status"]
+            | null
+          id?: string
+          reason?: string | null
+          to_status?: Database["public"]["Enums"]["quality_document_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_status_log_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_document_types: {
         Row: {
           code_prefix: string
@@ -10632,6 +10676,8 @@ export type Database = {
           normative_reference: string | null
           notify_on_publish: boolean
           obsolete_at: string | null
+          obsolete_by: string | null
+          obsolete_reason: string | null
           origin: Database["public"]["Enums"]["quality_origin"]
           published_at: string | null
           requires_strong_acknowledgement: boolean
@@ -10659,6 +10705,8 @@ export type Database = {
           normative_reference?: string | null
           notify_on_publish?: boolean
           obsolete_at?: string | null
+          obsolete_by?: string | null
+          obsolete_reason?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
           requires_strong_acknowledgement?: boolean
@@ -10686,6 +10734,8 @@ export type Database = {
           normative_reference?: string | null
           notify_on_publish?: boolean
           obsolete_at?: string | null
+          obsolete_by?: string | null
+          obsolete_reason?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
           requires_strong_acknowledgement?: boolean
