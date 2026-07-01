@@ -9777,6 +9777,205 @@ export type Database = {
           },
         ]
       }
+      quality_competitor_analyses: {
+        Row: {
+          analysis_period: string | null
+          author_user_id: string | null
+          company_id: string
+          conclusions: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          methodology: string | null
+          next_review_at: string | null
+          performed_at: string
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          analysis_period?: string | null
+          author_user_id?: string | null
+          company_id: string
+          conclusions?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          methodology?: string | null
+          next_review_at?: string | null
+          performed_at?: string
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          analysis_period?: string | null
+          author_user_id?: string | null
+          company_id?: string
+          conclusions?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          methodology?: string | null
+          next_review_at?: string | null
+          performed_at?: string
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      quality_competitor_analysis_items: {
+        Row: {
+          analysis_id: string
+          competitor_id: string | null
+          competitor_position: string | null
+          created_at: string
+          dimension: string
+          gap_description: string | null
+          gap_type: string | null
+          id: string
+          linked_context_item_id: string | null
+          linked_risk_id: string | null
+          our_position: string | null
+          recommended_action: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          analysis_id: string
+          competitor_id?: string | null
+          competitor_position?: string | null
+          created_at?: string
+          dimension: string
+          gap_description?: string | null
+          gap_type?: string | null
+          id?: string
+          linked_context_item_id?: string | null
+          linked_risk_id?: string | null
+          our_position?: string | null
+          recommended_action?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          analysis_id?: string
+          competitor_id?: string | null
+          competitor_position?: string | null
+          created_at?: string
+          dimension?: string
+          gap_description?: string | null
+          gap_type?: string | null
+          id?: string
+          linked_context_item_id?: string | null
+          linked_risk_id?: string | null
+          our_position?: string | null
+          recommended_action?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_competitor_analysis_items_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competitor_analyses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_competitor_analysis_items_competitor_id_fkey"
+            columns: ["competitor_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competitors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_competitor_analysis_items_linked_context_item_id_fkey"
+            columns: ["linked_context_item_id"]
+            isOneToOne: false
+            referencedRelation: "quality_context_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_competitor_analysis_items_linked_risk_id_fkey"
+            columns: ["linked_risk_id"]
+            isOneToOne: false
+            referencedRelation: "quality_risks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_competitors: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          estimated_market_share: number | null
+          id: string
+          interested_party_id: string | null
+          is_active: boolean
+          market_segment: string | null
+          name: string
+          notes: string | null
+          positioning: string | null
+          price_range: string | null
+          size_category: string | null
+          strengths: string | null
+          updated_at: string
+          weaknesses: string | null
+          website: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          estimated_market_share?: number | null
+          id?: string
+          interested_party_id?: string | null
+          is_active?: boolean
+          market_segment?: string | null
+          name: string
+          notes?: string | null
+          positioning?: string | null
+          price_range?: string | null
+          size_category?: string | null
+          strengths?: string | null
+          updated_at?: string
+          weaknesses?: string | null
+          website?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          estimated_market_share?: number | null
+          id?: string
+          interested_party_id?: string | null
+          is_active?: boolean
+          market_segment?: string | null
+          name?: string
+          notes?: string | null
+          positioning?: string | null
+          price_range?: string | null
+          size_category?: string | null
+          strengths?: string | null
+          updated_at?: string
+          weaknesses?: string | null
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_competitors_interested_party_id_fkey"
+            columns: ["interested_party_id"]
+            isOneToOne: false
+            referencedRelation: "quality_interested_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_complaints: {
         Row: {
           acknowledged_at: string | null
@@ -12349,13 +12548,17 @@ export type Database = {
           created_by: string | null
           description: string | null
           id: string
+          linked_to: string | null
           notes: string | null
+          objective_scope: string
           owner_user_id: string | null
+          parent_objective_id: string | null
           period_end: string | null
           period_start: string | null
           policy_version_id: string | null
           status: string
           target_value: number | null
+          time_horizon: string | null
           title: string
           unit: string | null
           updated_at: string
@@ -12367,13 +12570,17 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
+          linked_to?: string | null
           notes?: string | null
+          objective_scope?: string
           owner_user_id?: string | null
+          parent_objective_id?: string | null
           period_end?: string | null
           period_start?: string | null
           policy_version_id?: string | null
           status?: string
           target_value?: number | null
+          time_horizon?: string | null
           title: string
           unit?: string | null
           updated_at?: string
@@ -12385,13 +12592,17 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           id?: string
+          linked_to?: string | null
           notes?: string | null
+          objective_scope?: string
           owner_user_id?: string | null
+          parent_objective_id?: string | null
           period_end?: string | null
           period_start?: string | null
           policy_version_id?: string | null
           status?: string
           target_value?: number | null
+          time_horizon?: string | null
           title?: string
           unit?: string | null
           updated_at?: string
@@ -12417,6 +12628,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_kpi_timeseries_v"
             referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_objectives_parent_objective_id_fkey"
+            columns: ["parent_objective_id"]
+            isOneToOne: false
+            referencedRelation: "quality_objectives"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "quality_objectives_policy_version_id_fkey"
