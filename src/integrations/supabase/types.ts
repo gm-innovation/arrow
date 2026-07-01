@@ -10532,6 +10532,7 @@ export type Database = {
           company_id: string
           created_at: string
           default_classification: string | null
+          default_control_mode: string | null
           default_review_interval_months: number | null
           description: string | null
           id: string
@@ -10544,6 +10545,7 @@ export type Database = {
           company_id: string
           created_at?: string
           default_classification?: string | null
+          default_control_mode?: string | null
           default_review_interval_months?: number | null
           description?: string | null
           id?: string
@@ -10556,6 +10558,7 @@ export type Database = {
           company_id?: string
           created_at?: string
           default_classification?: string | null
+          default_control_mode?: string | null
           default_review_interval_months?: number | null
           description?: string | null
           id?: string
@@ -10664,6 +10667,7 @@ export type Database = {
           classification: string | null
           code: string
           company_id: string
+          control_mode: string | null
           created_at: string
           created_by: string | null
           current_version_id: string | null
@@ -10681,6 +10685,7 @@ export type Database = {
           origin: Database["public"]["Enums"]["quality_origin"]
           published_at: string | null
           requires_strong_acknowledgement: boolean
+          responsible_user_id: string | null
           status: Database["public"]["Enums"]["quality_document_status"]
           title: string
           updated_at: string
@@ -10693,6 +10698,7 @@ export type Database = {
           classification?: string | null
           code: string
           company_id: string
+          control_mode?: string | null
           created_at?: string
           created_by?: string | null
           current_version_id?: string | null
@@ -10710,6 +10716,7 @@ export type Database = {
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
           requires_strong_acknowledgement?: boolean
+          responsible_user_id?: string | null
           status?: Database["public"]["Enums"]["quality_document_status"]
           title: string
           updated_at?: string
@@ -10722,6 +10729,7 @@ export type Database = {
           classification?: string | null
           code?: string
           company_id?: string
+          control_mode?: string | null
           created_at?: string
           created_by?: string | null
           current_version_id?: string | null
@@ -10739,6 +10747,7 @@ export type Database = {
           origin?: Database["public"]["Enums"]["quality_origin"]
           published_at?: string | null
           requires_strong_acknowledgement?: boolean
+          responsible_user_id?: string | null
           status?: Database["public"]["Enums"]["quality_document_status"]
           title?: string
           updated_at?: string
@@ -10781,6 +10790,34 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "quality_document_types"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_responsible_user_id_fkey"
+            columns: ["responsible_user_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
           },
         ]
       }
