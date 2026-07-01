@@ -9037,7 +9037,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          acknowledged_at?: string
+          acknowledged_at: string
           event_id: string
           user_id: string
         }
@@ -9064,6 +9064,7 @@ export type Database = {
           description: string | null
           event_date: string
           evidence_url: string | null
+          external_attendees: Json
           id: string
           topic: string
           updated_at: string
@@ -9075,6 +9076,7 @@ export type Database = {
           description?: string | null
           event_date?: string
           evidence_url?: string | null
+          external_attendees?: Json
           id?: string
           topic: string
           updated_at?: string
@@ -9086,6 +9088,7 @@ export type Database = {
           description?: string | null
           event_date?: string
           evidence_url?: string | null
+          external_attendees?: Json
           id?: string
           topic?: string
           updated_at?: string
