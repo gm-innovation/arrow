@@ -11197,7 +11197,7 @@ export type Database = {
       }
       quality_interested_parties: {
         Row: {
-          category: string
+          category: string | null
           company_id: string
           created_at: string
           created_by: string | null
@@ -11219,7 +11219,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          category: string
+          category?: string | null
           company_id: string
           created_at?: string
           created_by?: string | null
@@ -11241,7 +11241,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          category?: string
+          category?: string | null
           company_id?: string
           created_at?: string
           created_by?: string | null

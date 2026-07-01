@@ -1,0 +1,1 @@
+ALTER TABLE public.quality_interested_parties ALTER COLUMN category DROP NOT NULL;
