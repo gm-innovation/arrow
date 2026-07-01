@@ -12521,9 +12521,12 @@ export type Database = {
           last_review_notes: string | null
           last_reviewed_at: string | null
           last_reviewed_by: string | null
+          mission: string | null
           next_review_due_at: string | null
           review_frequency_months: number | null
           updated_at: string
+          values: string | null
+          vision: string | null
         }
         Insert: {
           applicable_scope?: string | null
@@ -12537,9 +12540,12 @@ export type Database = {
           last_review_notes?: string | null
           last_reviewed_at?: string | null
           last_reviewed_by?: string | null
+          mission?: string | null
           next_review_due_at?: string | null
           review_frequency_months?: number | null
           updated_at?: string
+          values?: string | null
+          vision?: string | null
         }
         Update: {
           applicable_scope?: string | null
@@ -12553,9 +12559,12 @@ export type Database = {
           last_review_notes?: string | null
           last_reviewed_at?: string | null
           last_reviewed_by?: string | null
+          mission?: string | null
           next_review_due_at?: string | null
           review_frequency_months?: number | null
           updated_at?: string
+          values?: string | null
+          vision?: string | null
         }
         Relationships: [
           {
@@ -12940,6 +12949,78 @@ export type Database = {
           },
           {
             foreignKeyName: "quality_process_document_history_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "quality_processes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_process_documents: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          document_id: string
+          id: string
+          notes: string | null
+          process_id: string
+          relationship_type: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          document_id: string
+          id?: string
+          notes?: string | null
+          process_id: string
+          relationship_type: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          document_id?: string
+          id?: string
+          notes?: string | null
+          process_id?: string
+          relationship_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_process_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_process_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_process_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "quality_process_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_process_documents_process_id_fkey"
             columns: ["process_id"]
             isOneToOne: false
             referencedRelation: "quality_processes"
