@@ -10403,6 +10403,59 @@ export type Database = {
           },
         ]
       }
+      quality_document_public_links: {
+        Row: {
+          access_count: number
+          company_id: string
+          created_at: string
+          created_by: string
+          document_id: string
+          expires_at: string
+          id: string
+          max_uses: number | null
+          revoked_at: string | null
+          revoked_by: string | null
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          access_count?: number
+          company_id: string
+          created_at?: string
+          created_by: string
+          document_id: string
+          expires_at: string
+          id?: string
+          max_uses?: number | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Update: {
+          access_count?: number
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          expires_at?: string
+          id?: string
+          max_uses?: number | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_document_public_links_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "quality_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quality_document_required_courses: {
         Row: {
           company_id: string
