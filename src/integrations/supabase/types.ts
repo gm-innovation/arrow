@@ -9862,10 +9862,12 @@ export type Database = {
       }
       quality_context_items: {
         Row: {
+          analysis_period: string | null
           category: string
           company_id: string
           created_at: string
           created_by: string | null
+          department_id: string | null
           description: string | null
           id: string
           impact_level: string | null
@@ -9875,10 +9877,12 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          analysis_period?: string | null
           category: string
           company_id: string
           created_at?: string
           created_by?: string | null
+          department_id?: string | null
           description?: string | null
           id?: string
           impact_level?: string | null
@@ -9888,10 +9892,12 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          analysis_period?: string | null
           category?: string
           company_id?: string
           created_at?: string
           created_by?: string | null
+          department_id?: string | null
           description?: string | null
           id?: string
           impact_level?: string | null
@@ -9901,6 +9907,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "quality_context_items_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "quality_context_items_linked_risk_id_fkey"
             columns: ["linked_risk_id"]
@@ -10739,6 +10752,7 @@ export type Database = {
           obsolete_by: string | null
           obsolete_reason: string | null
           origin: Database["public"]["Enums"]["quality_origin"]
+          process_id: string | null
           published_at: string | null
           requires_strong_acknowledgement: boolean
           responsible_user_id: string | null
@@ -10770,6 +10784,7 @@ export type Database = {
           obsolete_by?: string | null
           obsolete_reason?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
+          process_id?: string | null
           published_at?: string | null
           requires_strong_acknowledgement?: boolean
           responsible_user_id?: string | null
@@ -10801,6 +10816,7 @@ export type Database = {
           obsolete_by?: string | null
           obsolete_reason?: string | null
           origin?: Database["public"]["Enums"]["quality_origin"]
+          process_id?: string | null
           published_at?: string | null
           requires_strong_acknowledgement?: boolean
           responsible_user_id?: string | null
@@ -10845,6 +10861,13 @@ export type Database = {
             columns: ["document_type_id"]
             isOneToOne: false
             referencedRelation: "quality_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_documents_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "quality_processes"
             referencedColumns: ["id"]
           },
           {
@@ -11179,6 +11202,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           id: string
+          interest_level: number | null
           last_review_notes: string | null
           last_reviewed_at: string | null
           last_reviewed_by: string | null
@@ -11187,6 +11211,7 @@ export type Database = {
           needs_expectations: string | null
           next_review_due_at: string | null
           owner_user_id: string | null
+          power_level: number | null
           relevance: string
           review_frequency_months: number | null
           status: string
@@ -11199,6 +11224,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          interest_level?: number | null
           last_review_notes?: string | null
           last_reviewed_at?: string | null
           last_reviewed_by?: string | null
@@ -11207,6 +11233,7 @@ export type Database = {
           needs_expectations?: string | null
           next_review_due_at?: string | null
           owner_user_id?: string | null
+          power_level?: number | null
           relevance?: string
           review_frequency_months?: number | null
           status?: string
@@ -11219,6 +11246,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           id?: string
+          interest_level?: number | null
           last_review_notes?: string | null
           last_reviewed_at?: string | null
           last_reviewed_by?: string | null
@@ -11227,6 +11255,7 @@ export type Database = {
           needs_expectations?: string | null
           next_review_due_at?: string | null
           owner_user_id?: string | null
+          power_level?: number | null
           relevance?: string
           review_frequency_months?: number | null
           status?: string
@@ -11291,6 +11320,51 @@ export type Database = {
             columns: ["party_id"]
             isOneToOne: false
             referencedRelation: "quality_interested_parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quality_interested_party_processes: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string | null
+          party_id: string
+          process_id: string
+          relationship_type: Database["public"]["Enums"]["quality_party_process_relationship"]
+          relevance: Database["public"]["Enums"]["quality_party_process_relevance"]
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by?: string | null
+          party_id: string
+          process_id: string
+          relationship_type?: Database["public"]["Enums"]["quality_party_process_relationship"]
+          relevance?: Database["public"]["Enums"]["quality_party_process_relevance"]
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string | null
+          party_id?: string
+          process_id?: string
+          relationship_type?: Database["public"]["Enums"]["quality_party_process_relationship"]
+          relevance?: Database["public"]["Enums"]["quality_party_process_relevance"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quality_interested_party_processes_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "quality_interested_parties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quality_interested_party_processes_process_id_fkey"
+            columns: ["process_id"]
+            isOneToOne: false
+            referencedRelation: "quality_processes"
             referencedColumns: ["id"]
           },
         ]
@@ -18494,6 +18568,15 @@ export type Database = {
         | "external_law"
         | "external_certificate"
         | "safety"
+      quality_party_process_relationship:
+        | "cliente"
+        | "fornecedor"
+        | "fiscaliza"
+        | "recebe_informacao"
+        | "executa"
+        | "impacta"
+        | "influencia"
+      quality_party_process_relevance: "low" | "medium" | "high"
       quality_review_input_type:
         | "previous_actions_status"
         | "external_internal_changes"
@@ -18850,6 +18933,16 @@ export const Constants = {
         "external_certificate",
         "safety",
       ],
+      quality_party_process_relationship: [
+        "cliente",
+        "fornecedor",
+        "fiscaliza",
+        "recebe_informacao",
+        "executa",
+        "impacta",
+        "influencia",
+      ],
+      quality_party_process_relevance: ["low", "medium", "high"],
       quality_review_input_type: [
         "previous_actions_status",
         "external_internal_changes",
