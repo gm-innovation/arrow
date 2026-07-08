@@ -129,27 +129,40 @@ serve(async (req) => {
     console.log(`User ${callerId} (${callerRole}) updating user ${user_id}`);
 
     // Update profile
+    const profileUpdate: Record<string, any> = {
+      full_name,
+      phone: phone || null,
+      company_id,
+    };
+    if (email) profileUpdate.email = String(email).toLowerCase().trim();
+
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
-      .update({
-        full_name,
-        phone: phone || null,
-        company_id,
-      })
+      .update(profileUpdate)
       .eq('id', user_id);
 
     if (profileError) throw profileError;
 
-    // Sync auth user metadata (full_name + phone) so user_metadata stays coherent
-    // with the profiles table. Failures here are logged but non-blocking.
+    // Sync auth user (email, password, metadata)
     try {
-      const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(user_id, {
+      const authUpdate: Record<string, any> = {
         user_metadata: { full_name, phone: phone || null },
-      });
+      };
+      if (email) {
+        authUpdate.email = String(email).toLowerCase().trim();
+        authUpdate.email_confirm = true;
+      }
+      if (password) {
+        authUpdate.password = String(password);
+      }
+      const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(user_id, authUpdate);
       if (metaError) {
-        console.error('Failed to sync auth user metadata:', metaError.message);
+        console.error('Failed to sync auth user:', metaError.message);
+        throw new Error(metaError.message);
       }
     } catch (e: any) {
+      // If email/password update failed, surface the error; metadata-only failures are non-blocking.
+      if (email || password) throw e;
       console.error('Failed to sync auth user metadata:', e?.message ?? e);
     }
 
