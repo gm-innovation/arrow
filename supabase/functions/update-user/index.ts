@@ -57,7 +57,14 @@ serve(async (req) => {
       throw new Error('Forbidden: Only HR, directors and super admins can update users');
     }
 
-    const { user_id, full_name, phone, company_id, role } = await req.json();
+    const { user_id, full_name, phone, company_id, role, email, password } = await req.json();
+
+    if (password !== undefined && password !== null && password !== "" && String(password).length < 6) {
+      throw new Error('Password must be at least 6 characters');
+    }
+    if (email !== undefined && email !== null && email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email))) {
+      throw new Error('Invalid email');
+    }
 
     if (!user_id) {
       throw new Error('user_id is required');
@@ -122,27 +129,40 @@ serve(async (req) => {
     console.log(`User ${callerId} (${callerRole}) updating user ${user_id}`);
 
     // Update profile
+    const profileUpdate: Record<string, any> = {
+      full_name,
+      phone: phone || null,
+      company_id,
+    };
+    if (email) profileUpdate.email = String(email).toLowerCase().trim();
+
     const { error: profileError } = await supabaseAdmin
       .from('profiles')
-      .update({
-        full_name,
-        phone: phone || null,
-        company_id,
-      })
+      .update(profileUpdate)
       .eq('id', user_id);
 
     if (profileError) throw profileError;
 
-    // Sync auth user metadata (full_name + phone) so user_metadata stays coherent
-    // with the profiles table. Failures here are logged but non-blocking.
+    // Sync auth user (email, password, metadata)
     try {
-      const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(user_id, {
+      const authUpdate: Record<string, any> = {
         user_metadata: { full_name, phone: phone || null },
-      });
+      };
+      if (email) {
+        authUpdate.email = String(email).toLowerCase().trim();
+        authUpdate.email_confirm = true;
+      }
+      if (password) {
+        authUpdate.password = String(password);
+      }
+      const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(user_id, authUpdate);
       if (metaError) {
-        console.error('Failed to sync auth user metadata:', metaError.message);
+        console.error('Failed to sync auth user:', metaError.message);
+        throw new Error(metaError.message);
       }
     } catch (e: any) {
+      // If email/password update failed, surface the error; metadata-only failures are non-blocking.
+      if (email || password) throw e;
       console.error('Failed to sync auth user metadata:', e?.message ?? e);
     }
 
