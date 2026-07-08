@@ -57,7 +57,14 @@ serve(async (req) => {
       throw new Error('Forbidden: Only HR, directors and super admins can update users');
     }
 
-    const { user_id, full_name, phone, company_id, role } = await req.json();
+    const { user_id, full_name, phone, company_id, role, email, password } = await req.json();
+
+    if (password !== undefined && password !== null && password !== "" && String(password).length < 6) {
+      throw new Error('Password must be at least 6 characters');
+    }
+    if (email !== undefined && email !== null && email !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email))) {
+      throw new Error('Invalid email');
+    }
 
     if (!user_id) {
       throw new Error('user_id is required');
