@@ -6992,6 +6992,304 @@ export type Database = {
           },
         ]
       }
+      hr_vacation_approvals: {
+        Row: {
+          approver_id: string
+          comment: string | null
+          created_at: string
+          decision: string
+          id: string
+          request_id: string
+          stage: string
+        }
+        Insert: {
+          approver_id: string
+          comment?: string | null
+          created_at?: string
+          decision: string
+          id?: string
+          request_id: string
+          stage: string
+        }
+        Update: {
+          approver_id?: string
+          comment?: string | null
+          created_at?: string
+          decision?: string
+          id?: string
+          request_id?: string
+          stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_vacation_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_approvals_approver_id_fkey"
+            columns: ["approver_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_approvals_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "hr_vacation_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hr_vacation_periods: {
+        Row: {
+          concession_deadline: string
+          created_at: string
+          employee_id: string
+          entitled_days: number
+          id: string
+          notes: string | null
+          period_end: string
+          period_start: string
+          sold_days: number
+          status: Database["public"]["Enums"]["vacation_period_status"]
+          updated_at: string
+          used_days: number
+        }
+        Insert: {
+          concession_deadline: string
+          created_at?: string
+          employee_id: string
+          entitled_days?: number
+          id?: string
+          notes?: string | null
+          period_end: string
+          period_start: string
+          sold_days?: number
+          status?: Database["public"]["Enums"]["vacation_period_status"]
+          updated_at?: string
+          used_days?: number
+        }
+        Update: {
+          concession_deadline?: string
+          created_at?: string
+          employee_id?: string
+          entitled_days?: number
+          id?: string
+          notes?: string | null
+          period_end?: string
+          period_start?: string
+          sold_days?: number
+          status?: Database["public"]["Enums"]["vacation_period_status"]
+          updated_at?: string
+          used_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_vacation_periods_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_periods_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_periods_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_periods_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      hr_vacation_requests: {
+        Row: {
+          advance_13th: boolean
+          created_at: string
+          employee_id: string
+          end_date: string
+          hr_comment: string | null
+          hr_decision_at: string | null
+          hr_decision_by: string | null
+          id: string
+          justification: string | null
+          manager_comment: string | null
+          manager_decision_at: string | null
+          manager_id: string | null
+          period_id: string | null
+          request_type: Database["public"]["Enums"]["vacation_request_type"]
+          requested_days: number
+          sell_days: number
+          start_date: string
+          status: Database["public"]["Enums"]["vacation_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          advance_13th?: boolean
+          created_at?: string
+          employee_id: string
+          end_date: string
+          hr_comment?: string | null
+          hr_decision_at?: string | null
+          hr_decision_by?: string | null
+          id?: string
+          justification?: string | null
+          manager_comment?: string | null
+          manager_decision_at?: string | null
+          manager_id?: string | null
+          period_id?: string | null
+          request_type?: Database["public"]["Enums"]["vacation_request_type"]
+          requested_days: number
+          sell_days?: number
+          start_date: string
+          status?: Database["public"]["Enums"]["vacation_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          advance_13th?: boolean
+          created_at?: string
+          employee_id?: string
+          end_date?: string
+          hr_comment?: string | null
+          hr_decision_at?: string | null
+          hr_decision_by?: string | null
+          id?: string
+          justification?: string | null
+          manager_comment?: string | null
+          manager_decision_at?: string | null
+          manager_id?: string | null
+          period_id?: string | null
+          request_type?: Database["public"]["Enums"]["vacation_request_type"]
+          requested_days?: number
+          sell_days?: number
+          start_date?: string
+          status?: Database["public"]["Enums"]["vacation_request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_vacation_requests_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_hr_decision_by_fkey"
+            columns: ["hr_decision_by"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_hr_decision_by_fkey"
+            columns: ["hr_decision_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_hr_decision_by_fkey"
+            columns: ["hr_decision_by"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_hr_decision_by_fkey"
+            columns: ["hr_decision_by"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_manager_id_fkey"
+            columns: ["manager_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "hr_vacation_requests_period_id_fkey"
+            columns: ["period_id"]
+            isOneToOne: false
+            referencedRelation: "hr_vacation_periods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       job_application_notes: {
         Row: {
           application_id: string
@@ -18810,6 +19108,17 @@ export type Database = {
           status_type: string
         }[]
       }
+      get_vacation_balance: {
+        Args: { _employee_id: string }
+        Returns: {
+          available_days: number
+          next_deadline: string
+          open_periods: number
+          total_entitled: number
+          total_sold: number
+          total_used: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -19334,6 +19643,19 @@ export type Database = {
       technician_role: "tecnico" | "auxiliar" | "engenheiro" | "supervisor"
       time_entry_type: "work_normal" | "work_extra" | "work_night" | "standby"
       travel_type: "carro_proprio" | "carro_alugado" | "passagem_aerea"
+      vacation_period_status:
+        | "open"
+        | "partially_used"
+        | "fully_used"
+        | "expired"
+      vacation_request_status:
+        | "draft"
+        | "pending_manager"
+        | "pending_hr"
+        | "approved"
+        | "rejected"
+        | "cancelled"
+      vacation_request_type: "vacation" | "sell_days" | "advance_13th"
       visit_type: "initial" | "continuation" | "return"
       work_type: "trabalho" | "espera_deslocamento" | "laboratorio"
     }
@@ -19724,6 +20046,21 @@ export const Constants = {
       technician_role: ["tecnico", "auxiliar", "engenheiro", "supervisor"],
       time_entry_type: ["work_normal", "work_extra", "work_night", "standby"],
       travel_type: ["carro_proprio", "carro_alugado", "passagem_aerea"],
+      vacation_period_status: [
+        "open",
+        "partially_used",
+        "fully_used",
+        "expired",
+      ],
+      vacation_request_status: [
+        "draft",
+        "pending_manager",
+        "pending_hr",
+        "approved",
+        "rejected",
+        "cancelled",
+      ],
+      vacation_request_type: ["vacation", "sell_days", "advance_13th"],
       visit_type: ["initial", "continuation", "return"],
       work_type: ["trabalho", "espera_deslocamento", "laboratorio"],
     },
