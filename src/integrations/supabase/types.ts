@@ -18977,6 +18977,10 @@ export type Database = {
         Returns: number
       }
       can_admin_manage_report: { Args: { _task_id: string }; Returns: boolean }
+      can_edit_measurement_by_so: {
+        Args: { _service_order_id: string }
+        Returns: boolean
+      }
       can_manager_view_role: {
         Args: { _manager_id: string; _target_user_id: string }
         Returns: boolean
