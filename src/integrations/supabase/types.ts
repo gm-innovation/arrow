@@ -17874,39 +17874,87 @@ export type Database = {
     Views: {
       crm_client_options: {
         Row: {
+          address: string | null
+          annual_revenue: number | null
+          cep: string | null
+          city: string | null
           cnpj: string | null
           commercial_status: string | null
           company_id: string | null
+          contact_person: string | null
           created_at: string | null
+          crm_visible: boolean | null
+          email: string | null
           entity_type: string | null
           id: string | null
+          ignore_omie_sync: boolean | null
+          last_contact_date: string | null
           name: string | null
+          notes: string | null
           omie_client_id: number | null
           parent_client_id: string | null
+          phone: string | null
+          segment: string | null
+          source: string | null
+          state: string | null
+          street: string | null
+          street_number: string | null
           updated_at: string | null
         }
         Insert: {
+          address?: string | null
+          annual_revenue?: number | null
+          cep?: string | null
+          city?: string | null
           cnpj?: string | null
           commercial_status?: string | null
           company_id?: string | null
+          contact_person?: string | null
           created_at?: string | null
+          crm_visible?: boolean | null
+          email?: string | null
           entity_type?: string | null
           id?: string | null
+          ignore_omie_sync?: boolean | null
+          last_contact_date?: string | null
           name?: string | null
+          notes?: string | null
           omie_client_id?: number | null
           parent_client_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          source?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           updated_at?: string | null
         }
         Update: {
+          address?: string | null
+          annual_revenue?: number | null
+          cep?: string | null
+          city?: string | null
           cnpj?: string | null
           commercial_status?: string | null
           company_id?: string | null
+          contact_person?: string | null
           created_at?: string | null
+          crm_visible?: boolean | null
+          email?: string | null
           entity_type?: string | null
           id?: string | null
+          ignore_omie_sync?: boolean | null
+          last_contact_date?: string | null
           name?: string | null
+          notes?: string | null
           omie_client_id?: number | null
           parent_client_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          source?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
           updated_at?: string | null
         }
         Relationships: [
