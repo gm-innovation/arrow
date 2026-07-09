@@ -6666,6 +6666,122 @@ export type Database = {
           },
         ]
       }
+      hr_health_exam_settings: {
+        Row: {
+          alert_days_before: number
+          created_at: string
+          description: string | null
+          exam_type: Database["public"]["Enums"]["hr_health_exam_type"]
+          id: string
+          periodicity_months: number
+          updated_at: string
+        }
+        Insert: {
+          alert_days_before?: number
+          created_at?: string
+          description?: string | null
+          exam_type: Database["public"]["Enums"]["hr_health_exam_type"]
+          id?: string
+          periodicity_months?: number
+          updated_at?: string
+        }
+        Update: {
+          alert_days_before?: number
+          created_at?: string
+          description?: string | null
+          exam_type?: Database["public"]["Enums"]["hr_health_exam_type"]
+          id?: string
+          periodicity_months?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hr_health_exams: {
+        Row: {
+          attachment_name: string | null
+          attachment_path: string | null
+          clinic_name: string | null
+          created_at: string
+          created_by: string | null
+          doctor_crm: string | null
+          doctor_name: string | null
+          employee_id: string
+          exam_date: string
+          exam_type: Database["public"]["Enums"]["hr_health_exam_type"]
+          id: string
+          next_exam_date: string | null
+          observations: string | null
+          restrictions: string | null
+          result: Database["public"]["Enums"]["hr_health_exam_result"]
+          updated_at: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_path?: string | null
+          clinic_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          doctor_crm?: string | null
+          doctor_name?: string | null
+          employee_id: string
+          exam_date: string
+          exam_type: Database["public"]["Enums"]["hr_health_exam_type"]
+          id?: string
+          next_exam_date?: string | null
+          observations?: string | null
+          restrictions?: string | null
+          result?: Database["public"]["Enums"]["hr_health_exam_result"]
+          updated_at?: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_path?: string | null
+          clinic_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          doctor_crm?: string | null
+          doctor_name?: string | null
+          employee_id?: string
+          exam_date?: string
+          exam_type?: Database["public"]["Enums"]["hr_health_exam_type"]
+          id?: string
+          next_exam_date?: string | null
+          observations?: string | null
+          restrictions?: string | null
+          result?: Database["public"]["Enums"]["hr_health_exam_result"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hr_health_exams_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employee_celebrations_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_health_exams_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_health_exams_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hr_health_exams_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "quality_competency_matrix_v"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       hr_partnerships: {
         Row: {
           benefit: string | null
@@ -19024,6 +19140,17 @@ export type Database = {
         | "resolved"
         | "rejected"
       expense_type: "hospedagem" | "alimentacao"
+      hr_health_exam_result:
+        | "apto"
+        | "apto_com_restricao"
+        | "inapto"
+        | "pendente"
+      hr_health_exam_type:
+        | "admissional"
+        | "periodico"
+        | "mudanca_funcao"
+        | "retorno_trabalho"
+        | "demissional"
       measurement_category: "CATIVO" | "LABORATORIO" | "EXTERNO" | "ISENTO"
       measurement_status: "draft" | "finalized"
       notification_type:
@@ -19377,6 +19504,19 @@ export const Constants = {
         "rejected",
       ],
       expense_type: ["hospedagem", "alimentacao"],
+      hr_health_exam_result: [
+        "apto",
+        "apto_com_restricao",
+        "inapto",
+        "pendente",
+      ],
+      hr_health_exam_type: [
+        "admissional",
+        "periodico",
+        "mudanca_funcao",
+        "retorno_trabalho",
+        "demissional",
+      ],
       measurement_category: ["CATIVO", "LABORATORIO", "EXTERNO", "ISENTO"],
       measurement_status: ["draft", "finalized"],
       notification_type: [
