@@ -19479,6 +19479,7 @@ export type Database = {
         | "approval_pending"
         | "quality_alert"
         | "document_review"
+        | "lead_received"
       payment_status: "paid" | "pending" | "overdue"
       quality_access_action:
         | "view"
@@ -19858,6 +19859,7 @@ export const Constants = {
         "approval_pending",
         "quality_alert",
         "document_review",
+        "lead_received",
       ],
       payment_status: ["paid", "pending", "overdue"],
       quality_access_action: [
