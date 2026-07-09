@@ -1482,6 +1482,7 @@ export type Database = {
           contact_person: string | null
           created_at: string
           email: string | null
+          entity_type: string
           id: string
           ignore_omie_sync: boolean
           last_contact_date: string | null
@@ -1508,6 +1509,7 @@ export type Database = {
           contact_person?: string | null
           created_at?: string
           email?: string | null
+          entity_type?: string
           id?: string
           ignore_omie_sync?: boolean
           last_contact_date?: string | null
@@ -1534,6 +1536,7 @@ export type Database = {
           contact_person?: string | null
           created_at?: string
           email?: string | null
+          entity_type?: string
           id?: string
           ignore_omie_sync?: boolean
           last_contact_date?: string | null
@@ -18314,6 +18317,10 @@ export type Database = {
       }
     }
     Functions: {
+      admin_merge_clients: {
+        Args: { loser: string; winner: string }
+        Returns: undefined
+      }
       calculate_man_hour_value: {
         Args: {
           _company_id: string
