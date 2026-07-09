@@ -397,6 +397,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "ai_failure_patterns_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "ai_failure_patterns_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -1380,6 +1387,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "client_addresses_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
         ]
       }
       client_contacts: {
@@ -1430,6 +1444,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "client_contacts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
         ]
       }
       client_legal_entities: {
@@ -1468,6 +1489,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "client_legal_entities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
         ]
       }
       clients: {
@@ -1481,6 +1509,7 @@ export type Database = {
           company_id: string
           contact_person: string | null
           created_at: string
+          crm_visible: boolean
           email: string | null
           entity_type: string
           id: string
@@ -1508,6 +1537,7 @@ export type Database = {
           company_id: string
           contact_person?: string | null
           created_at?: string
+          crm_visible?: boolean
           email?: string | null
           entity_type?: string
           id?: string
@@ -1535,6 +1565,7 @@ export type Database = {
           company_id?: string
           contact_person?: string | null
           created_at?: string
+          crm_visible?: boolean
           email?: string | null
           entity_type?: string
           id?: string
@@ -1579,6 +1610,13 @@ export type Database = {
             columns: ["parent_client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_parent_client_id_fkey"
+            columns: ["parent_client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
             referencedColumns: ["id"]
           },
         ]
@@ -3711,6 +3749,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "crm_buyers_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "crm_buyers_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -3822,6 +3867,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_client_recurrences_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
             referencedColumns: ["id"]
           },
           {
@@ -4172,6 +4224,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_opportunities_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
             referencedColumns: ["id"]
           },
           {
@@ -4807,6 +4866,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "crm_sales_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "crm_sales_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -4916,6 +4982,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "crm_tasks_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
             referencedColumns: ["id"]
           },
           {
@@ -5850,6 +5923,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "finance_receivables_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "finance_receivables_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -6262,6 +6342,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forecast_history_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
             referencedColumns: ["id"]
           },
           {
@@ -15379,6 +15466,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "service_orders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "service_orders_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -16640,6 +16734,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "technician_reservations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "technician_reservations_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
@@ -17621,6 +17722,13 @@ export type Database = {
             referencedRelation: "clients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "vessels_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
         ]
       }
       visit_technicians: {
@@ -17764,6 +17872,129 @@ export type Database = {
       }
     }
     Views: {
+      crm_client_options: {
+        Row: {
+          address: string | null
+          annual_revenue: number | null
+          cep: string | null
+          city: string | null
+          cnpj: string | null
+          commercial_status: string | null
+          company_id: string | null
+          contact_person: string | null
+          created_at: string | null
+          crm_visible: boolean | null
+          email: string | null
+          entity_type: string | null
+          id: string | null
+          ignore_omie_sync: boolean | null
+          last_contact_date: string | null
+          name: string | null
+          notes: string | null
+          omie_client_id: number | null
+          parent_client_id: string | null
+          phone: string | null
+          segment: string | null
+          source: string | null
+          state: string | null
+          street: string | null
+          street_number: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          annual_revenue?: number | null
+          cep?: string | null
+          city?: string | null
+          cnpj?: string | null
+          commercial_status?: string | null
+          company_id?: string | null
+          contact_person?: string | null
+          created_at?: string | null
+          crm_visible?: boolean | null
+          email?: string | null
+          entity_type?: string | null
+          id?: string | null
+          ignore_omie_sync?: boolean | null
+          last_contact_date?: string | null
+          name?: string | null
+          notes?: string | null
+          omie_client_id?: number | null
+          parent_client_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          source?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          annual_revenue?: number | null
+          cep?: string | null
+          city?: string | null
+          cnpj?: string | null
+          commercial_status?: string | null
+          company_id?: string | null
+          contact_person?: string | null
+          created_at?: string | null
+          crm_visible?: boolean | null
+          email?: string | null
+          entity_type?: string | null
+          id?: string | null
+          ignore_omie_sync?: boolean | null
+          last_contact_date?: string | null
+          name?: string | null
+          notes?: string | null
+          omie_client_id?: number | null
+          parent_client_id?: string | null
+          phone?: string | null
+          segment?: string | null
+          source?: string | null
+          state?: string | null
+          street?: string | null
+          street_number?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clients_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_snapshot_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "clients_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "quality_kpi_timeseries_v"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "clients_parent_client_id_fkey"
+            columns: ["parent_client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clients_parent_client_id_fkey"
+            columns: ["parent_client_id"]
+            isOneToOne: false
+            referencedRelation: "crm_client_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       employee_celebrations_public: {
         Row: {
           avatar_url: string | null
@@ -18345,6 +18576,13 @@ export type Database = {
         Returns: boolean
       }
       cleanup_old_vessel_positions: { Args: never; Returns: undefined }
+      crm_document_digits: { Args: { _value: string }; Returns: string }
+      crm_is_commercial_client_eligible: {
+        Args: { _client: Database["public"]["Tables"]["clients"]["Row"] }
+        Returns: boolean
+      }
+      crm_is_cpf_like: { Args: { _value: string }; Returns: boolean }
+      crm_normalize_name: { Args: { _value: string }; Returns: string }
       generate_time_entries_for_completed_orders: {
         Args: never
         Returns: number
