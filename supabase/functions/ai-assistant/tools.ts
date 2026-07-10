@@ -661,6 +661,7 @@ function makeUpdateTool(w: WriteSpec): ToolDef {
       parameters: params,
     }},
     handler: async (args, ctx) => {
+      if (!isWriteAllowed(ctx, w.table, "update")) return writeDeniedMsg(w.table, "update");
       const client = ctx.userSupabase ?? ctx.supabase;
       const { [pk]: id, ...patch } = args ?? {};
       if (!id) return { error: `${pk} é obrigatório` };
