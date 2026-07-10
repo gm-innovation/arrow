@@ -95,13 +95,13 @@ serve(async (req) => {
     // ----- Load agent identity (name/persona) -----
     let agentRow: any = null;
     if (agentId) {
-      const { data } = await supabase.from("ai_agents").select("name, identity, behavior, tools_model").eq("id", agentId).maybeSingle();
+      const { data } = await supabase.from("ai_agents").select("name, identity, behavior, tools_model, scope").eq("id", agentId).maybeSingle();
       agentRow = data;
     }
     if (!agentRow) {
       const { data } = await supabase
         .from("ai_agents")
-        .select("name, identity, behavior, tools_model")
+        .select("name, identity, behavior, tools_model, scope")
         .eq("is_default", true)
         .is("company_id", null)
         .maybeSingle();
