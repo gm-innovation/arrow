@@ -690,6 +690,7 @@ function makeDeleteTool(w: WriteSpec, signToken: any, verifyToken: any): ToolDef
       }, required: [pk] },
     }},
     handler: async (args, ctx) => {
+      if (!isWriteAllowed(ctx, w.table, "delete")) return writeDeniedMsg(w.table, "delete");
       const id = args?.[pk];
       if (!id) return { error: `${pk} é obrigatório` };
       const { data: row } = await ctx.supabase.from(w.table).select("*").eq(pk, id).maybeSingle();
