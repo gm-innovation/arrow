@@ -19052,6 +19052,7 @@ export type Database = {
       }
       crm_is_cpf_like: { Args: { _value: string }; Returns: boolean }
       crm_normalize_name: { Args: { _value: string }; Returns: string }
+      expire_vacation_periods: { Args: never; Returns: number }
       generate_time_entries_for_completed_orders: {
         Args: never
         Returns: number
