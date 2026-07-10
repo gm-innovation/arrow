@@ -859,15 +859,13 @@ const WRITE_SPECS: WriteSpec[] = [
 ];
 
 function buildWriteTools(): ToolDef[] {
-  // Late import so the module still exports its own symbols cleanly.
-  // The token helpers live in _shared to keep the file focused.
-  // deno-lint-ignore no-explicit-any
-  const { signConfirmToken, verifyConfirmToken } = (globalThis as any).__aiConfirm ?? {};
-  const sign = signConfirmToken ?? (async () => "");
-  const verify = verifyConfirmToken ?? (async () => ({ ok: false, reason: "helper ausente" }));
   const out: ToolDef[] = [];
   for (const w of WRITE_SPECS) {
-    out.push(makeCreateTool(w), makeUpdateTool(w), makeDeleteTool(w, sign, verify));
+    out.push(
+      makeCreateTool(w),
+      makeUpdateTool(w),
+      makeDeleteTool(w, signConfirmToken, verifyConfirmToken),
+    );
   }
   return out;
 }
