@@ -631,6 +631,7 @@ function makeCreateTool(w: WriteSpec): ToolDef {
       parameters: fieldsToJsonSchema(w.createFields),
     }},
     handler: async (args, ctx) => {
+      if (!isWriteAllowed(ctx, w.table, "create")) return writeDeniedMsg(w.table, "create");
       const client = ctx.userSupabase ?? ctx.supabase;
       const payload: any = { ...args };
       if (w.companyScoped !== false && ctx.companyId) payload.company_id = ctx.companyId;
