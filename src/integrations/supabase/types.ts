@@ -19643,6 +19643,8 @@ export type Database = {
         | "quality_alert"
         | "document_review"
         | "lead_received"
+        | "support_ticket_created"
+        | "support_ticket_reply"
       payment_status: "paid" | "pending" | "overdue"
       quality_access_action:
         | "view"
@@ -20023,6 +20025,8 @@ export const Constants = {
         "quality_alert",
         "document_review",
         "lead_received",
+        "support_ticket_created",
+        "support_ticket_reply",
       ],
       payment_status: ["paid", "pending", "overdue"],
       quality_access_action: [
