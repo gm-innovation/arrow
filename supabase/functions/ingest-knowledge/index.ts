@@ -59,7 +59,7 @@ async function embed(text: string): Promise<number[] | null> {
       Authorization: `Bearer ${LOVABLE_API_KEY}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ model: 'google/text-embedding-004', input: text }),
+    body: JSON.stringify({ model: 'openai/text-embedding-3-small', input: text }),
   });
   if (!res.ok) {
     console.error('embed failed', res.status, await res.text());
