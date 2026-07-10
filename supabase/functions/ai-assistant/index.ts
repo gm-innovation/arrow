@@ -168,7 +168,8 @@ serve(async (req) => {
     if (llmOverride?.model) llmModel = llmOverride.model;
 
     // ----- Tool-calling loop -----
-    const toolCtx = { supabase, userSupabase, companyId: context?.companyId, userId: context?.userId, role: userRole, agentId };
+    const writeActions = (agentRow?.scope?.write_actions ?? {}) as Record<string, { create?: boolean; update?: boolean; delete?: boolean }>;
+    const toolCtx = { supabase, userSupabase, companyId: context?.companyId, userId: context?.userId, role: userRole, agentId, writeActions };
     let finalContent = "";
     const maxIters = 12;
     for (let iter = 0; iter < maxIters; iter++) {
