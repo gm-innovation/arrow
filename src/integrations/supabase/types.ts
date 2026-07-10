@@ -16302,6 +16302,113 @@ export type Database = {
           },
         ]
       }
+      support_ticket_messages: {
+        Row: {
+          author_id: string
+          author_role: string | null
+          body: string
+          created_at: string
+          id: string
+          is_admin: boolean
+          ticket_id: string
+        }
+        Insert: {
+          author_id: string
+          author_role?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          ticket_id: string
+        }
+        Update: {
+          author_id?: string
+          author_role?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          is_admin?: boolean
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_tickets: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          company_id: string | null
+          conversation_excerpt: Json | null
+          created_at: string
+          description: string
+          id: string
+          page_url: string | null
+          priority: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          ticket_number: number
+          title: string
+          updated_at: string
+          user_agent: string | null
+          user_email: string | null
+          user_id: string
+          user_name: string | null
+          user_role: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category?: string
+          company_id?: string | null
+          conversation_excerpt?: Json | null
+          created_at?: string
+          description: string
+          id?: string
+          page_url?: string | null
+          priority?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          ticket_number?: number
+          title: string
+          updated_at?: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id: string
+          user_name?: string | null
+          user_role?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          company_id?: string | null
+          conversation_excerpt?: Json | null
+          created_at?: string
+          description?: string
+          id?: string
+          page_url?: string | null
+          priority?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          ticket_number?: number
+          title?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string
+          user_name?: string | null
+          user_role?: string | null
+        }
+        Relationships: []
+      }
       system_settings: {
         Row: {
           created_at: string
