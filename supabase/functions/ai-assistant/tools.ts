@@ -885,10 +885,141 @@ function buildWriteTools(): ToolDef[] {
 }
 
 
+// ---- Universal tools available to every role ----
+async function embedQuery(text: string): Promise<number[] | null> {
+  const key = Deno.env.get("LOVABLE_API_KEY");
+  if (!key) return null;
+  try {
+    const r = await fetch("https://ai.gateway.lovable.dev/v1/embeddings", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "openai/text-embedding-3-small", input: text }),
+    });
+    if (!r.ok) return null;
+    const j = await r.json();
+    return j.data?.[0]?.embedding ?? null;
+  } catch { return null; }
+}
+
+const NAV_ROUTES: { keywords: string[]; label: string; path: string; roles?: string[] }[] = [
+  { keywords: ["dashboard rh","rh dashboard","recursos humanos"], label: "Dashboard de RH", path: "/hr/dashboard", roles: ["hr","director","super_admin","manager"] },
+  { keywords: ["colaborador","funcionario","funcionário","employee"], label: "Colaboradores", path: "/hr/employees", roles: ["hr","director","super_admin","manager"] },
+  { keywords: ["ferias","férias","vacation"], label: "Gestão de Férias", path: "/hr/vacations", roles: ["hr","director","super_admin","manager"] },
+  { keywords: ["aso","exame ocupacional","exame medico","exame médico"], label: "Exames ocupacionais (ASO)", path: "/hr/health-exams", roles: ["hr","director","super_admin","manager"] },
+  { keywords: ["ponto","time control"], label: "Controle de Ponto", path: "/hr/time-control", roles: ["hr","director","super_admin","manager"] },
+  { keywords: ["folha","payroll"], label: "Exportação de Folha", path: "/hr/payroll-export", roles: ["hr","director","super_admin","manager"] },
+  { keywords: ["compliance documental","documento obrigatorio","documentos obrigatórios"], label: "Compliance documental", path: "/hr/document-compliance", roles: ["hr","director","super_admin","manager"] },
+  { keywords: ["lead","oportunidade","kanban","funil"], label: "Leads & Oportunidades", path: "/commercial/opportunities" },
+  { keywords: ["cliente","clientes","crm"], label: "Clientes", path: "/commercial/clients" },
+  { keywords: ["venda","vendas","sales"], label: "Vendas unificadas", path: "/commercial/sales" },
+  { keywords: ["ai insights","insights comercial","inteligencia comercial"], label: "Inteligência Comercial", path: "/commercial/ai-insights" },
+  { keywords: ["ordem de servico","ordens de serviço","os","serviço","service order"], label: "Ordens de Serviço", path: "/admin/service-orders" },
+  { keywords: ["calendario","calendário","calendar"], label: "Calendário de Serviços", path: "/admin/calendar" },
+  { keywords: ["medicao","medição","measurement"], label: "Medições / Faturamento", path: "/admin/measurements" },
+  { keywords: ["ncr","nao conformidade","não conformidade"], label: "Não-conformidades", path: "/quality/ncrs" },
+  { keywords: ["auditoria","audit"], label: "Auditorias", path: "/quality/audits" },
+  { keywords: ["lista mestra","documento qualidade","procedimento"], label: "Lista Mestra (Qualidade)", path: "/quality/documents" },
+  { keywords: ["swot","contexto","hub"], label: "Hub de Contexto", path: "/quality/context" },
+  { keywords: ["compra","suprimento","purchase"], label: "Solicitações de Compra", path: "/purchasing/requests" },
+  { keywords: ["pagar","payable"], label: "Contas a Pagar", path: "/finance/payables" },
+  { keywords: ["receber","receivable"], label: "Contas a Receber", path: "/finance/receivables" },
+  { keywords: ["configuracao","configurações","conta","meu perfil","perfil"], label: "Minha Conta", path: "/settings" },
+  { keywords: ["universidade","curso","treinamento"], label: "Universidade Corporativa", path: "/university" },
+  { keywords: ["feed","corporativo","corp"], label: "Feed Corporativo", path: "/corp/feed" },
+  { keywords: ["solicita","request"], label: "Solicitações Corporativas", path: "/corp/requests" },
+];
+
+const UNIVERSAL_TOOLS: ToolDef[] = [
+  {
+    module: "knowledge_base",
+    spec: {
+      type: "function",
+      function: {
+        name: "search_help",
+        description: "Busca semântica na base de conhecimento do Arrow (manuais passo a passo dos módulos de RH, Qualidade, Comercial/Marketing, Coordenador, Financeiro etc.). Use SEMPRE que o usuário perguntar 'como faço', 'onde encontro', 'onde fica', 'como uso', 'passo a passo', ou pedir orientação sobre o sistema.",
+        parameters: {
+          type: "object",
+          properties: {
+            query: { type: "string", description: "Pergunta ou termos-chave em linguagem natural" },
+            limit: { type: "number", description: "Máx. de trechos (padrão 5)" },
+          },
+          required: ["query"],
+        },
+      },
+    },
+    handler: async (args, ctx) => {
+      const q = String(args?.query ?? "").trim();
+      if (!q) return { error: "query obrigatória" };
+      const limit = Math.min(Number(args?.limit) || 5, 10);
+      const emb = await embedQuery(q);
+      if (!emb) return { error: "Falha ao gerar embedding da consulta" };
+      const { data, error } = await ctx.supabase.rpc("match_ai_knowledge", {
+        query_embedding: `[${emb.join(",")}]`,
+        p_agent_id: null,
+        p_company_id: null,
+        match_threshold: 0.3,
+        match_count: limit,
+      });
+      if (error) return { error: error.message };
+      const rows = (data ?? []) as any[];
+      if (rows.length === 0) return { count: 0, message: "Nenhum trecho encontrado. Responda com seu melhor conhecimento geral do Arrow e ofereça abrir o manual completo." };
+      // Buscar títulos das sources
+      const sourceIds = [...new Set(rows.map(r => r.source_id).filter(Boolean))];
+      const { data: sources } = await ctx.supabase
+        .from("ai_knowledge_sources")
+        .select("id,title")
+        .in("id", sourceIds);
+      const titleById = new Map((sources ?? []).map((s: any) => [s.id, s.title]));
+      return {
+        count: rows.length,
+        chunks: rows.map(r => ({
+          manual: titleById.get(r.source_id) ?? "Manual",
+          similarity: Number(r.similarity?.toFixed?.(3) ?? r.similarity),
+          content: r.content,
+        })),
+        instrucao: "Use estes trechos como fonte primária. Cite o manual entre parênteses e, se útil, sugira também a rota do sistema usando navigate_to.",
+      };
+    },
+  },
+  {
+    module: "knowledge_base",
+    spec: {
+      type: "function",
+      function: {
+        name: "navigate_to",
+        description: "Sugere ao usuário onde clicar/ir dentro do Arrow para acessar uma tela ou funcionalidade. Retorna o caminho (rota) e o nome da tela. Use após responder 'como faço X' para indicar o local exato.",
+        parameters: {
+          type: "object",
+          properties: {
+            target: { type: "string", description: "Descrição do destino (ex.: 'férias', 'kanban de leads', 'exames ASO')" },
+          },
+          required: ["target"],
+        },
+      },
+    },
+    handler: async (args, ctx) => {
+      const t = String(args?.target ?? "").toLowerCase();
+      if (!t) return { error: "target obrigatório" };
+      const matches = NAV_ROUTES
+        .filter(r => !r.roles || r.roles.includes(ctx.role) || ctx.role === "super_admin" || ctx.role === "director")
+        .map(r => ({ r, score: r.keywords.reduce((s, k) => s + (t.includes(k) ? k.length : 0), 0) }))
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3)
+        .map(x => ({ label: x.r.label, path: x.r.path }));
+      if (matches.length === 0) return { found: false, message: "Não encontrei uma rota específica; oriente o usuário usando o menu lateral." };
+      return { found: true, suggestions: matches, instrucao: "Diga ao usuário: 'Acesse pelo menu lateral em <label>' e mostre o caminho." };
+    },
+  },
+];
+
 export function getToolsForRole(role: string): { specs: any[]; map: Map<string, ToolDef> } {
   const allowed = new Set(modulesForRole(role));
   const catalog = buildToolCatalog().filter(t => allowed.has(t.module));
   const map = new Map<string, ToolDef>();
   for (const t of catalog) map.set(t.spec.function.name, t);
-  return { specs: catalog.map(t => t.spec), map };
+  // Universal tools (help/navigation) — sempre disponíveis
+  for (const t of UNIVERSAL_TOOLS) map.set(t.spec.function.name, t);
+  const specs = [...catalog.map(t => t.spec), ...UNIVERSAL_TOOLS.map(t => t.spec)];
+  return { specs, map };
 }
