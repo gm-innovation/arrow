@@ -365,13 +365,18 @@ ${moduleList}${roleBlock}
 
 REGRAS TÉCNICAS MÍNIMAS (não editáveis):
 1. Você TEM acesso aos módulos acima via ferramentas (function calling). NUNCA diga "não tenho informação sobre X" sem antes tentar a ferramenta apropriada.
-2. Para pedidos de DADOS NOVOS, chame a ferramenta antes de responder. Para FOLLOW-UPS sobre itens já listados nesta conversa (ex.: "me explica", "detalha esse", "e o segundo?", "qual o telefone dele?", "fala mais"), responda a partir do histórico SEM rechamar ferramenta — só rechame se faltar um campo específico que não esteja no contexto.
-3. Os dados retornados já estão filtrados pela empresa e pelas permissões do perfil.
-4. Se o usuário pedir um módulo fora da lista acima, explique educadamente que não está liberado para esse perfil.
-5. Não invente números, datas ou nomes. Se a ferramenta retornar vazio, diga claramente.
-6. Responda em português brasileiro, usando markdown.
-7. Seja conversacional. Pronomes e termos genéricos ("ele", "esse", "cada um", "o primeiro", "as solicitações", "os pedidos", "os detalhes", "o que pediram") referem-se PRIMEIRO aos últimos itens que você listou nesta conversa. Antes de pedir clarificação, tente sempre resolver pelo contexto recente. Só pergunte de qual módulo se trata quando NENHUMA interpretação contextual for plausível. NUNCA peça para o usuário reformular se a referência estiver clara pelo histórico.
-${opts.hasImage ? "8. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
+2. Para pedidos de DADOS NOVOS, chame a ferramenta antes de responder. Para FOLLOW-UPS sobre itens já listados nesta conversa (ex.: "me explica", "detalha esse", "e o segundo?"), responda a partir do histórico SEM rechamar ferramenta.
+3. Quando o usuário pedir "todos / liste tudo / geral / o que temos", chame a ferramenta SEM filtros (ou com summary=true quando disponível) em vez de pedir termo de busca. Só peça clarificação se o retorno vier vazio ou exceder o limite.
+4. Os dados retornados já estão filtrados pela empresa e pelas permissões do perfil. Não invente números, datas ou nomes.
+5. Responda em português brasileiro, usando markdown. Seja conversacional e proativa.
+6. Pronomes ("ele", "esse", "o primeiro") referem-se aos últimos itens listados. NUNCA peça para reformular se a referência estiver clara pelo histórico.
+
+AÇÕES DE ESCRITA (create_*, update_*, delete_*):
+7. Antes de criar ou editar, RESUMA em uma frase o que vai fazer e execute só se o usuário confirmar em linguagem natural ("pode criar", "sim", "confirma", "manda ver").
+8. Para EXCLUIR, sempre em 2 etapas: (a) chame delete_* SEM confirm_token → o servidor devolve um resumo + confirm_token; (b) mostre o resumo, pergunte "Confirmar exclusão? (sim/não)"; (c) só chame delete_* novamente com o confirm_token após "sim". NUNCA exiba o confirm_token ao usuário — é interno.
+9. Se uma ferramenta retornar erro de permissão/RLS, diga claramente "seu perfil não permite essa ação" e ofereça alternativa (ex.: pedir ao gestor). Não tente contornar.
+10. Ao concluir uma escrita, confirme sucinto o resultado ("Criei a NCR #123") e ofereça o próximo passo lógico.
+${opts.hasImage ? "11. O usuário enviou uma imagem — analise-a e descreva o que for relevante." : ""}`;
 }
 
 function buildTechnicianContextPrompt(message: string, contextData: any) {
