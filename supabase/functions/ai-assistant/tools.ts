@@ -27,29 +27,35 @@ export type Module =
   | "crm_products"
   | "crm_recurrences"
   | "crm_tasks"
+  | "crm_buyers"
   | "purchase_requests"
   | "finance_payables"
   | "finance_receivables"
   | "hr_employees"
   | "hr_absences"
+  | "hr_vacation_requests"
+  | "hr_health_exams"
   | "quality_ncrs"
   | "quality_audits"
+  | "quality_documents"
+  | "quality_company_documents"
   | "corp_requests"
   | "knowledge_base"
   | "measurements";
 
 const ALL: Module[] = [
   "service_orders", "technicians", "clients", "vessels",
-  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks",
+  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers",
   "purchase_requests", "finance_payables", "finance_receivables",
-  "hr_employees", "hr_absences", "quality_ncrs", "quality_audits",
+  "hr_employees", "hr_absences", "hr_vacation_requests", "hr_health_exams",
+  "quality_ncrs", "quality_audits", "quality_documents", "quality_company_documents",
   "corp_requests", "knowledge_base", "measurements",
 ];
 
 const COORDINATOR: Module[] = [
   "service_orders", "technicians", "clients", "vessels",
-  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks",
-  "purchase_requests", "quality_ncrs",
+  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers",
+  "purchase_requests", "quality_ncrs", "quality_documents",
   "corp_requests", "knowledge_base", "measurements",
 ];
 
@@ -60,11 +66,12 @@ export const ROLE_MODULES: Record<string, Module[]> = {
   manager: ALL,
   director: ALL,
   super_admin: ALL,
-  hr: ["hr_employees", "hr_absences", "corp_requests", "knowledge_base"],
-  commercial: ["crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "clients", "vessels", "knowledge_base"],
+  hr: ["hr_employees", "hr_absences", "hr_vacation_requests", "hr_health_exams", "corp_requests", "quality_documents", "knowledge_base"],
+  commercial: ["crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers", "clients", "vessels", "knowledge_base"],
+  marketing: ["crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers", "clients", "vessels", "knowledge_base"],
   compras: ["purchase_requests", "knowledge_base", "corp_requests"],
   financeiro: ["finance_payables", "finance_receivables", "knowledge_base", "corp_requests"],
-  qualidade: ["quality_ncrs", "quality_audits", "knowledge_base", "corp_requests"],
+  qualidade: ["quality_ncrs", "quality_audits", "quality_documents", "quality_company_documents", "knowledge_base", "corp_requests"],
 };
 
 export const MODULE_LABELS: Record<Module, string> = {
