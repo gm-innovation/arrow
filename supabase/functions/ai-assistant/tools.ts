@@ -102,13 +102,39 @@ interface ToolDef {
 }
 
 export interface ToolCtx {
-  supabase: any;
+  supabase: any;          // service-role client (read + audit log)
+  userSupabase?: any;     // JWT-authenticated client (writes go through RLS)
   companyId?: string;
   userId?: string;
   role: string;
+  agentId?: string;
 }
 
 const LIMIT = 25;
+
+// ---- audit log helper ----
+async function logAction(ctx: ToolCtx, entry: {
+  tool: string; table: string; row_id?: string | null;
+  action: "create" | "update" | "delete";
+  before?: any; after?: any; success: boolean; error?: string | null;
+}) {
+  try {
+    await ctx.supabase.from("ai_assistant_actions").insert({
+      user_id: ctx.userId ?? null,
+      company_id: ctx.companyId ?? null,
+      role: ctx.role,
+      agent_id: ctx.agentId ?? null,
+      tool_name: entry.tool,
+      table_name: entry.table,
+      row_id: entry.row_id ?? null,
+      action: entry.action,
+      payload_before: entry.before ?? null,
+      payload_after: entry.after ?? null,
+      success: entry.success,
+      error_message: entry.error ?? null,
+    });
+  } catch (e) { console.error("audit log fail", e); }
+}
 
 function pickFields<T extends Record<string, any>>(rows: T[] | null | undefined, fields: string[]): any[] {
   if (!rows) return [];
