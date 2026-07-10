@@ -123,6 +123,17 @@ export interface ToolCtx {
   userId?: string;
   role: string;
   agentId?: string;
+  writeActions?: Record<string, { create?: boolean; update?: boolean; delete?: boolean }>;
+}
+
+function isWriteAllowed(ctx: ToolCtx, table: string, action: "create" | "update" | "delete"): boolean {
+  const cfg = ctx.writeActions?.[table];
+  if (!cfg) return true; // default retrocompatível
+  return cfg[action] !== false;
+}
+const ACTION_PT = { create: "criar", update: "editar", delete: "excluir" } as const;
+function writeDeniedMsg(table: string, action: "create" | "update" | "delete") {
+  return { error: `Esta assistente não está autorizada a ${ACTION_PT[action]} em ${table}. Peça ao super admin para habilitar em Configurações do agente → Ações de Escrita.` };
 }
 
 const LIMIT = 25;
@@ -620,6 +631,7 @@ function makeCreateTool(w: WriteSpec): ToolDef {
       parameters: fieldsToJsonSchema(w.createFields),
     }},
     handler: async (args, ctx) => {
+      if (!isWriteAllowed(ctx, w.table, "create")) return writeDeniedMsg(w.table, "create");
       const client = ctx.userSupabase ?? ctx.supabase;
       const payload: any = { ...args };
       if (w.companyScoped !== false && ctx.companyId) payload.company_id = ctx.companyId;
@@ -649,6 +661,7 @@ function makeUpdateTool(w: WriteSpec): ToolDef {
       parameters: params,
     }},
     handler: async (args, ctx) => {
+      if (!isWriteAllowed(ctx, w.table, "update")) return writeDeniedMsg(w.table, "update");
       const client = ctx.userSupabase ?? ctx.supabase;
       const { [pk]: id, ...patch } = args ?? {};
       if (!id) return { error: `${pk} é obrigatório` };
@@ -677,6 +690,7 @@ function makeDeleteTool(w: WriteSpec, signToken: any, verifyToken: any): ToolDef
       }, required: [pk] },
     }},
     handler: async (args, ctx) => {
+      if (!isWriteAllowed(ctx, w.table, "delete")) return writeDeniedMsg(w.table, "delete");
       const id = args?.[pk];
       if (!id) return { error: `${pk} é obrigatório` };
       const { data: row } = await ctx.supabase.from(w.table).select("*").eq(pk, id).maybeSingle();
