@@ -1011,6 +1011,91 @@ const UNIVERSAL_TOOLS: ToolDef[] = [
       return { found: true, suggestions: matches, instrucao: "Diga ao usuário: 'Acesse pelo menu lateral em <label>' e mostre o caminho." };
     },
   },
+  {
+    module: "knowledge_base",
+    spec: {
+      type: "function",
+      function: {
+        name: "create_support_ticket",
+        description: "Cria um chamado (ticket) para o Super Admin. Use SEMPRE que o usuário reportar um bug, sugerir uma melhoria, fazer uma reclamação ou pedir algo que você não consegue resolver pelo Arrow. Antes de chamar, confirme com o usuário em uma frase o que vai ser registrado.",
+        parameters: {
+          type: "object",
+          properties: {
+            title: { type: "string", description: "Título curto (máx 120 chars)" },
+            description: { type: "string", description: "Descrição detalhada com passos, tela, erro observado etc." },
+            category: { type: "string", enum: ["bug", "feature_request", "question", "complaint", "other"] },
+            priority: { type: "string", enum: ["low", "medium", "high", "critical"], description: "Padrão: medium. Use 'high'/'critical' apenas se afetar operação." },
+          },
+          required: ["title", "description", "category"],
+        },
+      },
+    },
+    handler: async (args, ctx) => {
+      if (!ctx.userId) return { error: "usuário não autenticado" };
+      const client = ctx.userSupabase ?? ctx.supabase;
+      // Buscar dados do usuário
+      const { data: prof } = await ctx.supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", ctx.userId)
+        .maybeSingle();
+      const payload = {
+        user_id: ctx.userId,
+        company_id: ctx.companyId ?? null,
+        user_role: ctx.role,
+        user_name: prof?.full_name ?? null,
+        user_email: prof?.email ?? null,
+        title: String(args?.title ?? "").slice(0, 200),
+        description: String(args?.description ?? ""),
+        category: args?.category ?? "other",
+        priority: args?.priority ?? "medium",
+        page_url: (ctx as any).pageUrl ?? null,
+        conversation_excerpt: (ctx as any).conversationExcerpt ?? null,
+      };
+      const { data, error } = await client
+        .from("support_tickets")
+        .insert(payload)
+        .select("id, ticket_number, status")
+        .maybeSingle();
+      if (error) return { error: error.message };
+      return {
+        ok: true,
+        ticket_number: data?.ticket_number,
+        status: data?.status,
+        message: `Chamado #${data?.ticket_number} criado e encaminhado ao Super Admin. Você pode acompanhar em /account/tickets.`,
+      };
+    },
+  },
+  {
+    module: "knowledge_base",
+    spec: {
+      type: "function",
+      function: {
+        name: "list_my_tickets",
+        description: "Lista os chamados de suporte que o próprio usuário abriu, com status atual.",
+        parameters: {
+          type: "object",
+          properties: {
+            status: { type: "string", enum: ["open", "in_review", "in_progress", "resolved", "wont_fix"] },
+            limit: { type: "number" },
+          },
+        },
+      },
+    },
+    handler: async (args, ctx) => {
+      if (!ctx.userId) return { error: "usuário não autenticado" };
+      let q = ctx.supabase
+        .from("support_tickets")
+        .select("ticket_number, title, category, priority, status, created_at")
+        .eq("user_id", ctx.userId)
+        .order("created_at", { ascending: false })
+        .limit(Math.min(Number(args?.limit) || 20, 50));
+      if (args?.status) q = q.eq("status", args.status);
+      const { data, error } = await q;
+      if (error) return { error: error.message };
+      return { count: data?.length ?? 0, rows: data };
+    },
+  },
 ];
 
 export function getToolsForRole(role: string): { specs: any[]; map: Map<string, ToolDef> } {
