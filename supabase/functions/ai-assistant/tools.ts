@@ -2,6 +2,9 @@
 // public table (executed with service_role) filtered by company_id, and is
 // gated by a per-role capability map.
 
+import { signConfirmToken, verifyConfirmToken } from "../_shared/ai-confirm-token.ts";
+
+
 export type Role =
   | "technician"
   | "coordinator"
