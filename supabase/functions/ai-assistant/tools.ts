@@ -2,6 +2,9 @@
 // public table (executed with service_role) filtered by company_id, and is
 // gated by a per-role capability map.
 
+import { signConfirmToken, verifyConfirmToken } from "../_shared/ai-confirm-token.ts";
+
+
 export type Role =
   | "technician"
   | "coordinator"
@@ -27,29 +30,35 @@ export type Module =
   | "crm_products"
   | "crm_recurrences"
   | "crm_tasks"
+  | "crm_buyers"
   | "purchase_requests"
   | "finance_payables"
   | "finance_receivables"
   | "hr_employees"
   | "hr_absences"
+  | "hr_vacation_requests"
+  | "hr_health_exams"
   | "quality_ncrs"
   | "quality_audits"
+  | "quality_documents"
+  | "quality_company_documents"
   | "corp_requests"
   | "knowledge_base"
   | "measurements";
 
 const ALL: Module[] = [
   "service_orders", "technicians", "clients", "vessels",
-  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks",
+  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers",
   "purchase_requests", "finance_payables", "finance_receivables",
-  "hr_employees", "hr_absences", "quality_ncrs", "quality_audits",
+  "hr_employees", "hr_absences", "hr_vacation_requests", "hr_health_exams",
+  "quality_ncrs", "quality_audits", "quality_documents", "quality_company_documents",
   "corp_requests", "knowledge_base", "measurements",
 ];
 
 const COORDINATOR: Module[] = [
   "service_orders", "technicians", "clients", "vessels",
-  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks",
-  "purchase_requests", "quality_ncrs",
+  "crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers",
+  "purchase_requests", "quality_ncrs", "quality_documents",
   "corp_requests", "knowledge_base", "measurements",
 ];
 
@@ -60,11 +69,12 @@ export const ROLE_MODULES: Record<string, Module[]> = {
   manager: ALL,
   director: ALL,
   super_admin: ALL,
-  hr: ["hr_employees", "hr_absences", "corp_requests", "knowledge_base"],
-  commercial: ["crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "clients", "vessels", "knowledge_base"],
+  hr: ["hr_employees", "hr_absences", "hr_vacation_requests", "hr_health_exams", "corp_requests", "quality_documents", "knowledge_base"],
+  commercial: ["crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers", "clients", "vessels", "knowledge_base"],
+  marketing: ["crm_leads", "crm_opportunities", "crm_sales", "crm_products", "crm_recurrences", "crm_tasks", "crm_buyers", "clients", "vessels", "knowledge_base"],
   compras: ["purchase_requests", "knowledge_base", "corp_requests"],
   financeiro: ["finance_payables", "finance_receivables", "knowledge_base", "corp_requests"],
-  qualidade: ["quality_ncrs", "quality_audits", "knowledge_base", "corp_requests"],
+  qualidade: ["quality_ncrs", "quality_audits", "quality_documents", "quality_company_documents", "knowledge_base", "corp_requests"],
 };
 
 export const MODULE_LABELS: Record<Module, string> = {
@@ -83,8 +93,13 @@ export const MODULE_LABELS: Record<Module, string> = {
   finance_receivables: "Contas a receber",
   hr_employees: "Colaboradores (RH)",
   hr_absences: "Ausências (RH)",
+  hr_vacation_requests: "Solicitações de férias (RH)",
+  hr_health_exams: "Exames ocupacionais (RH)",
+  crm_buyers: "Compradores (CRM)",
   quality_ncrs: "Não-conformidades (Qualidade)",
   quality_audits: "Auditorias (Qualidade)",
+  quality_documents: "Lista Mestra de Documentos (Qualidade)",
+  quality_company_documents: "Documentos da Empresa (Qualidade)",
   corp_requests: "Solicitações corporativas",
   knowledge_base: "Base de conhecimento",
   measurements: "Medições de OS",
@@ -102,13 +117,39 @@ interface ToolDef {
 }
 
 export interface ToolCtx {
-  supabase: any;
+  supabase: any;          // service-role client (read + audit log)
+  userSupabase?: any;     // JWT-authenticated client (writes go through RLS)
   companyId?: string;
   userId?: string;
   role: string;
+  agentId?: string;
 }
 
 const LIMIT = 25;
+
+// ---- audit log helper ----
+async function logAction(ctx: ToolCtx, entry: {
+  tool: string; table: string; row_id?: string | null;
+  action: "create" | "update" | "delete";
+  before?: any; after?: any; success: boolean; error?: string | null;
+}) {
+  try {
+    await ctx.supabase.from("ai_assistant_actions").insert({
+      user_id: ctx.userId ?? null,
+      company_id: ctx.companyId ?? null,
+      role: ctx.role,
+      agent_id: ctx.agentId ?? null,
+      tool_name: entry.tool,
+      table_name: entry.table,
+      row_id: entry.row_id ?? null,
+      action: entry.action,
+      payload_before: entry.before ?? null,
+      payload_after: entry.after ?? null,
+      success: entry.success,
+      error_message: entry.error ?? null,
+    });
+  } catch (e) { console.error("audit log fail", e); }
+}
 
 function pickFields<T extends Record<string, any>>(rows: T[] | null | undefined, fields: string[]): any[] {
   if (!rows) return [];
@@ -405,35 +446,430 @@ export function buildToolCatalog(): ToolDef[] {
         type: "function",
         function: {
           name: "search_knowledge_base",
-          description: "Busca conhecimento interno (manuais, procedimentos, FAQs).",
+          description: "Busca conhecimento interno (manuais, procedimentos, FAQs, artigos de qualidade). Se 'query' for omitido ou vazio, retorna os itens mais recentes.",
           parameters: {
             type: "object",
-            properties: { query: { type: "string", description: "Termos de busca" } },
-            required: ["query"],
+            properties: { query: { type: "string", description: "Termos de busca (opcional)" }, limit: { type: "number" } },
           },
         },
       },
       handler: async (args, ctx) => {
         const q = String(args?.query ?? "").trim();
-        if (!q) return { error: "query vazio" };
-        const { data } = await ctx.supabase
-          .from("crm_knowledge_base")
-          .select("id, title, content, segment, priority, tags")
-          .or(`title.ilike.%${q}%,content.ilike.%${q}%`)
-          .limit(10);
+        const limit = Math.min(Number(args?.limit) || 15, 30);
+        let kb = ctx.supabase.from("crm_knowledge_base").select("id, title, content, segment, tags, updated_at").limit(limit).order("updated_at", { ascending: false });
+        if (q) kb = kb.or(`title.ilike.%${q}%,content.ilike.%${q}%`);
+        const { data: kbData } = await kb;
         return {
-          count: data?.length ?? 0,
-          rows: (data ?? []).map((r: any) => ({
-            title: r.title,
-            segment: r.segment,
+          count: kbData?.length ?? 0,
+          rows: (kbData ?? []).map((r: any) => ({
+            source: "knowledge_base",
+            title: r.title, segment: r.segment,
             excerpt: typeof r.content === "string" ? r.content.slice(0, 400) : null,
             tags: r.tags,
           })),
         };
       },
     },
+    // ---- Quality documents (Lista Mestra) ----
+    {
+      module: "quality_documents",
+      spec: {
+        type: "function",
+        function: {
+          name: "query_quality_master_list",
+          description: "Lista documentos da Lista Mestra (procedimentos, políticas, manuais, formulários). Suporta filtros e resumo agregado. Use sem filtros para obter uma visão geral.",
+          parameters: {
+            type: "object",
+            properties: {
+              search: { type: "string", description: "Busca por código ou título" },
+              status: { type: "string", enum: ["draft", "review", "approved", "published", "obsolete"] },
+              origin: { type: "string", description: "Origem (ex.: 'safety', 'quality')" },
+              limit: { type: "number", description: "Padrão 50, máx 200" },
+              summary: { type: "boolean", description: "Se true, retorna contagens por status/tipo em vez da lista completa" },
+            },
+          },
+        },
+      },
+      handler: async (args, ctx) => {
+        if (!ctx.companyId) return { error: "company_id ausente" };
+        let q = ctx.supabase.from("quality_documents")
+          .select("id, code, title, revision, status, origin, next_review_date, validity_end, updated_at, document_type:quality_document_types(name, code_prefix)")
+          .eq("company_id", ctx.companyId)
+          .order("code", { ascending: true })
+          .limit(Math.min(Number(args?.limit) || 50, 200));
+        if (args?.status) q = q.eq("status", args.status);
+        if (args?.origin) q = q.eq("origin", args.origin);
+        if (args?.search) q = q.or(`code.ilike.%${args.search}%,title.ilike.%${args.search}%`);
+        const { data, error } = await q;
+        if (error) return { error: error.message };
+        if (args?.summary) {
+          const by_status: Record<string, number> = {};
+          const by_type: Record<string, number> = {};
+          for (const r of (data ?? []) as any[]) {
+            by_status[r.status] = (by_status[r.status] ?? 0) + 1;
+            const t = r.document_type?.name ?? "sem tipo";
+            by_type[t] = (by_type[t] ?? 0) + 1;
+          }
+          return { total: data?.length ?? 0, by_status, by_type };
+        }
+        return { count: data?.length ?? 0, rows: data };
+      },
+    },
+    {
+      module: "quality_company_documents",
+      spec: {
+        type: "function",
+        function: {
+          name: "query_quality_company_documents",
+          description: "Lista certificados, licenças e documentos institucionais da empresa. Pode filtrar por vencimento próximo.",
+          parameters: {
+            type: "object",
+            properties: {
+              search: { type: "string" },
+              status: { type: "string", enum: ["active", "expired", "renewing", "archived"] },
+              expiring_within_days: { type: "number", description: "Retorna apenas documentos vencendo em N dias" },
+              limit: { type: "number" },
+            },
+          },
+        },
+      },
+      handler: async (args, ctx) => {
+        if (!ctx.companyId) return { error: "company_id ausente" };
+        let q = ctx.supabase.from("quality_company_documents")
+          .select("id, document_type, title, status, issued_at, expires_at, file_name")
+          .eq("company_id", ctx.companyId)
+          .order("expires_at", { ascending: true, nullsFirst: false })
+          .limit(Math.min(Number(args?.limit) || 50, 100));
+        if (args?.status) q = q.eq("status", args.status);
+        if (args?.search) q = q.or(`title.ilike.%${args.search}%,document_type.ilike.%${args.search}%`);
+        if (args?.expiring_within_days) {
+          const until = new Date(Date.now() + args.expiring_within_days * 86400000).toISOString().slice(0, 10);
+          q = q.lte("expires_at", until).gte("expires_at", new Date().toISOString().slice(0, 10));
+        }
+        const { data, error } = await q;
+        if (error) return { error: error.message };
+        return { count: data?.length ?? 0, rows: data };
+      },
+    },
+    basicQueryTool({
+      module: "hr_vacation_requests",
+      name: "query_hr_vacation_requests",
+      description: "Lista solicitações de férias.",
+      table: "hr_vacation_requests",
+      fields: ["id", "employee_id", "start_date", "end_date", "days", "status", "created_at"],
+      statusField: "status",
+      dateField: "start_date",
+    }),
+    basicQueryTool({
+      module: "hr_health_exams",
+      name: "query_hr_health_exams",
+      description: "Lista exames ocupacionais (ASO) dos colaboradores.",
+      table: "hr_health_exams",
+      fields: ["id", "employee_id", "exam_type", "exam_date", "expires_at", "status"],
+      statusField: "status",
+      dateField: "exam_date",
+    }),
+    basicQueryTool({
+      module: "crm_buyers",
+      name: "query_crm_buyers",
+      description: "Lista compradores/contatos de clientes no CRM.",
+      table: "crm_buyers",
+      fields: ["id", "name", "email", "phone", "position", "client_id", "created_at"],
+      searchFields: ["name", "email"],
+      dateField: "created_at",
+    }),
+
+    // ================= WRITE TOOLS =================
+    ...buildWriteTools(),
   ];
 }
+
+// ---- Generic WRITE tool factory ----
+// Each entry declares the table, allowed fields per action, PK column, and RLS-relying context.
+
+interface WriteSpec {
+  module: Module;
+  table: string;
+  pk?: string;                    // default "id"
+  createFields: Record<string, { type: string; enum?: string[]; description?: string; required?: boolean }>;
+  updateFields: Record<string, { type: string; enum?: string[]; description?: string }>;
+  labelFn?: (row: any) => string; // for delete summary
+  companyScoped?: boolean;        // default true
+  ownerField?: string;            // e.g. "created_by" — set to userId on create
+}
+
+function fieldsToJsonSchema(fields: Record<string, any>) {
+  const properties: Record<string, any> = {};
+  const required: string[] = [];
+  for (const [k, v] of Object.entries(fields)) {
+    const p: any = { type: v.type };
+    if (v.enum) p.enum = v.enum;
+    if (v.description) p.description = v.description;
+    properties[k] = p;
+    if (v.required) required.push(k);
+  }
+  return { type: "object", properties, ...(required.length ? { required } : {}) };
+}
+
+function makeCreateTool(w: WriteSpec): ToolDef {
+  return {
+    module: w.module,
+    spec: { type: "function", function: {
+      name: `create_${w.module}`,
+      description: `Cria um novo registro em ${w.table}. Só execute APÓS o usuário confirmar em linguagem natural o que vai ser criado.`,
+      parameters: fieldsToJsonSchema(w.createFields),
+    }},
+    handler: async (args, ctx) => {
+      const client = ctx.userSupabase ?? ctx.supabase;
+      const payload: any = { ...args };
+      if (w.companyScoped !== false && ctx.companyId) payload.company_id = ctx.companyId;
+      if (w.ownerField && ctx.userId) payload[w.ownerField] = ctx.userId;
+      const { data, error } = await client.from(w.table).insert(payload).select().maybeSingle();
+      await logAction(ctx, {
+        tool: `create_${w.module}`, table: w.table, row_id: data?.[w.pk ?? "id"] ?? null,
+        action: "create", after: data ?? payload, success: !error, error: error?.message,
+      });
+      if (error) return { error: error.message, hint: "Se o erro for de permissão, seu perfil não pode criar neste módulo." };
+      return { ok: true, created: data };
+    },
+  };
+}
+
+function makeUpdateTool(w: WriteSpec): ToolDef {
+  const pk = w.pk ?? "id";
+  const params: any = { type: "object", properties: {
+    [pk]: { type: "string", description: `${pk} do registro a atualizar` },
+    ...fieldsToJsonSchema(w.updateFields).properties,
+  }, required: [pk] };
+  return {
+    module: w.module,
+    spec: { type: "function", function: {
+      name: `update_${w.module}`,
+      description: `Atualiza campos de um registro em ${w.table}. Só execute APÓS o usuário confirmar as mudanças em linguagem natural.`,
+      parameters: params,
+    }},
+    handler: async (args, ctx) => {
+      const client = ctx.userSupabase ?? ctx.supabase;
+      const { [pk]: id, ...patch } = args ?? {};
+      if (!id) return { error: `${pk} é obrigatório` };
+      const { data: before } = await ctx.supabase.from(w.table).select("*").eq(pk, id).maybeSingle();
+      const { data, error } = await client.from(w.table).update(patch).eq(pk, id).select().maybeSingle();
+      await logAction(ctx, {
+        tool: `update_${w.module}`, table: w.table, row_id: String(id),
+        action: "update", before, after: data ?? patch, success: !error, error: error?.message,
+      });
+      if (error) return { error: error.message, hint: "Se o erro for de permissão, seu perfil não pode editar este registro." };
+      return { ok: true, updated: data };
+    },
+  };
+}
+
+function makeDeleteTool(w: WriteSpec, signToken: any, verifyToken: any): ToolDef {
+  const pk = w.pk ?? "id";
+  return {
+    module: w.module,
+    spec: { type: "function", function: {
+      name: `delete_${w.module}`,
+      description: `Exclui um registro em ${w.table}. FLUXO OBRIGATÓRIO EM 2 ETAPAS: (1) chame SEM confirm_token — o servidor devolve um resumo e um token; (2) mostre o resumo ao usuário, peça confirmação textual, e SÓ ENTÃO chame de novo com o mesmo id e o confirm_token recebido.`,
+      parameters: { type: "object", properties: {
+        [pk]: { type: "string" },
+        confirm_token: { type: "string", description: "Token devolvido na primeira chamada" },
+      }, required: [pk] },
+    }},
+    handler: async (args, ctx) => {
+      const id = args?.[pk];
+      if (!id) return { error: `${pk} é obrigatório` };
+      const { data: row } = await ctx.supabase.from(w.table).select("*").eq(pk, id).maybeSingle();
+      if (!row) return { error: "registro não encontrado ou sem permissão de leitura" };
+      if (!args?.confirm_token) {
+        const summary = w.labelFn ? w.labelFn(row) : `${w.table} #${id}`;
+        const token = await signToken({ u: ctx.userId!, t: w.table, r: String(id) });
+        return {
+          requires_confirmation: true,
+          summary: `Excluir ${summary}`,
+          confirm_token: token,
+          expires_in_seconds: 120,
+          instruction: "Mostre o resumo ao usuário, peça 'Confirmar exclusão? (sim/não)' e só rechame esta ferramenta com o mesmo confirm_token após resposta afirmativa.",
+        };
+      }
+      const check = await verifyToken(args.confirm_token, { u: ctx.userId!, t: w.table, r: String(id) });
+      if (!check.ok) return { error: `Confirmação inválida: ${check.reason}. Reinicie o pedido de exclusão.` };
+      const client = ctx.userSupabase ?? ctx.supabase;
+      const { error } = await client.from(w.table).delete().eq(pk, id);
+      await logAction(ctx, {
+        tool: `delete_${w.module}`, table: w.table, row_id: String(id),
+        action: "delete", before: row, success: !error, error: error?.message,
+      });
+      if (error) return { error: error.message, hint: "Se o erro for de permissão, seu perfil não pode excluir este registro." };
+      return { ok: true, deleted: { [pk]: id } };
+    },
+  };
+}
+
+// Write specs per module
+const WRITE_SPECS: WriteSpec[] = [
+  {
+    module: "service_orders", table: "service_orders", ownerField: "created_by",
+    labelFn: r => `OS #${r.order_number ?? r.id} — status ${r.status}`,
+    createFields: {
+      order_number: { type: "string", description: "Número da OS" },
+      client_reference: { type: "string" },
+      scheduled_date: { type: "string", description: "YYYY-MM-DD" },
+      status: { type: "string", enum: ["draft", "scheduled", "in_progress", "completed", "cancelled"] },
+    },
+    updateFields: {
+      order_number: { type: "string" }, client_reference: { type: "string" },
+      scheduled_date: { type: "string" },
+      status: { type: "string", enum: ["draft", "scheduled", "in_progress", "completed", "cancelled"] },
+    },
+  },
+  {
+    module: "clients", table: "clients",
+    labelFn: r => `Cliente "${r.name}" (${r.cnpj ?? "sem CNPJ"})`,
+    createFields: {
+      name: { type: "string", required: true },
+      cnpj: { type: "string" }, city: { type: "string" }, state: { type: "string" },
+      status: { type: "string", enum: ["active", "inactive"] },
+    },
+    updateFields: { name: { type: "string" }, cnpj: { type: "string" }, city: { type: "string" }, state: { type: "string" }, status: { type: "string", enum: ["active", "inactive"] } },
+  },
+  {
+    module: "vessels", table: "vessels",
+    labelFn: r => `Embarcação "${r.name}" (IMO ${r.imo ?? "—"})`,
+    createFields: {
+      name: { type: "string", required: true }, imo: { type: "string" },
+      flag: { type: "string" }, vessel_type: { type: "string" },
+    },
+    updateFields: { name: { type: "string" }, imo: { type: "string" }, flag: { type: "string" }, vessel_type: { type: "string" } },
+  },
+  {
+    module: "crm_opportunities", table: "crm_opportunities", ownerField: "created_by",
+    labelFn: r => `Oportunidade "${r.title}" — estágio ${r.stage}`,
+    createFields: {
+      title: { type: "string", required: true },
+      stage: { type: "string", description: "Estágio do pipeline" },
+      estimated_value: { type: "number" },
+      expected_close_date: { type: "string" },
+    },
+    updateFields: { title: { type: "string" }, stage: { type: "string" }, estimated_value: { type: "number" }, expected_close_date: { type: "string" } },
+  },
+  {
+    module: "crm_tasks", table: "crm_tasks", ownerField: "created_by",
+    labelFn: r => `Tarefa "${r.title}" — ${r.status}`,
+    createFields: {
+      title: { type: "string", required: true },
+      due_date: { type: "string" },
+      priority: { type: "string", enum: ["low", "medium", "high"] },
+      status: { type: "string", enum: ["open", "in_progress", "done", "cancelled"] },
+    },
+    updateFields: { title: { type: "string" }, due_date: { type: "string" }, priority: { type: "string", enum: ["low", "medium", "high"] }, status: { type: "string", enum: ["open", "in_progress", "done", "cancelled"] } },
+  },
+  {
+    module: "crm_buyers", table: "crm_buyers",
+    labelFn: r => `Comprador "${r.name}" (${r.email ?? "sem email"})`,
+    createFields: {
+      name: { type: "string", required: true },
+      email: { type: "string" }, phone: { type: "string" }, position: { type: "string" },
+      client_id: { type: "string" },
+    },
+    updateFields: { name: { type: "string" }, email: { type: "string" }, phone: { type: "string" }, position: { type: "string" } },
+  },
+  {
+    module: "crm_products", table: "crm_products",
+    labelFn: r => `Produto "${r.name}"`,
+    createFields: {
+      name: { type: "string", required: true }, sku: { type: "string" },
+      category: { type: "string" }, unit_price: { type: "number" }, lead_time_days: { type: "number" },
+    },
+    updateFields: { name: { type: "string" }, sku: { type: "string" }, category: { type: "string" }, unit_price: { type: "number" }, lead_time_days: { type: "number" } },
+  },
+  {
+    module: "purchase_requests", table: "purchase_requests", ownerField: "created_by",
+    labelFn: r => `Solicitação de compra #${r.request_number ?? r.id}`,
+    createFields: {
+      request_number: { type: "string" },
+      status: { type: "string" }, total_value: { type: "number" },
+    },
+    updateFields: { status: { type: "string" }, total_value: { type: "number" } },
+  },
+  {
+    module: "quality_ncrs", table: "quality_ncrs", ownerField: "created_by",
+    labelFn: r => `NCR #${r.ncr_number ?? r.id} — "${r.title}"`,
+    createFields: {
+      title: { type: "string", required: true },
+      severity: { type: "string", enum: ["low", "medium", "high", "critical"] },
+      status: { type: "string" },
+    },
+    updateFields: { title: { type: "string" }, severity: { type: "string", enum: ["low", "medium", "high", "critical"] }, status: { type: "string" } },
+  },
+  {
+    module: "quality_audits", table: "quality_audits", ownerField: "created_by",
+    labelFn: r => `Auditoria "${r.title}" — ${r.status}`,
+    createFields: {
+      title: { type: "string", required: true },
+      scheduled_date: { type: "string" }, status: { type: "string" },
+    },
+    updateFields: { title: { type: "string" }, scheduled_date: { type: "string" }, status: { type: "string" } },
+  },
+  {
+    module: "quality_company_documents", table: "quality_company_documents", ownerField: "created_by",
+    labelFn: r => `Documento da empresa "${r.title}" (${r.document_type})`,
+    createFields: {
+      document_type: { type: "string", required: true },
+      title: { type: "string", required: true },
+      issued_at: { type: "string" }, expires_at: { type: "string" },
+      status: { type: "string", enum: ["active", "expired", "renewing", "archived"] },
+      notes: { type: "string" },
+    },
+    updateFields: {
+      title: { type: "string" }, issued_at: { type: "string" }, expires_at: { type: "string" },
+      status: { type: "string", enum: ["active", "expired", "renewing", "archived"] }, notes: { type: "string" },
+    },
+  },
+  {
+    module: "corp_requests", table: "corp_requests", ownerField: "requester_id",
+    labelFn: r => `Solicitação "${r.title}" — ${r.status}`,
+    createFields: {
+      title: { type: "string", required: true },
+      priority: { type: "string", enum: ["low", "medium", "high"] },
+      status: { type: "string" },
+    },
+    updateFields: { title: { type: "string" }, status: { type: "string" }, priority: { type: "string", enum: ["low", "medium", "high"] } },
+  },
+  {
+    module: "finance_payables", table: "finance_payables",
+    labelFn: r => `Conta a pagar "${r.description}" R$ ${r.amount}`,
+    createFields: {
+      description: { type: "string", required: true },
+      amount: { type: "number", required: true },
+      due_date: { type: "string" }, status: { type: "string" },
+    },
+    updateFields: { description: { type: "string" }, amount: { type: "number" }, due_date: { type: "string" }, status: { type: "string" } },
+  },
+  {
+    module: "finance_receivables", table: "finance_receivables",
+    labelFn: r => `Conta a receber "${r.description}" R$ ${r.amount}`,
+    createFields: {
+      description: { type: "string", required: true },
+      amount: { type: "number", required: true },
+      due_date: { type: "string" }, status: { type: "string" },
+    },
+    updateFields: { description: { type: "string" }, amount: { type: "number" }, due_date: { type: "string" }, status: { type: "string" } },
+  },
+];
+
+function buildWriteTools(): ToolDef[] {
+  const out: ToolDef[] = [];
+  for (const w of WRITE_SPECS) {
+    out.push(
+      makeCreateTool(w),
+      makeUpdateTool(w),
+      makeDeleteTool(w, signConfirmToken, verifyConfirmToken),
+    );
+  }
+  return out;
+}
+
 
 export function getToolsForRole(role: string): { specs: any[]; map: Map<string, ToolDef> } {
   const allowed = new Set(modulesForRole(role));

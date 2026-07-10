@@ -157,6 +157,57 @@ export type Database = {
           },
         ]
       }
+      ai_assistant_actions: {
+        Row: {
+          action: string
+          agent_id: string | null
+          company_id: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          payload_after: Json | null
+          payload_before: Json | null
+          role: string | null
+          row_id: string | null
+          success: boolean
+          table_name: string | null
+          tool_name: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          agent_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          payload_after?: Json | null
+          payload_before?: Json | null
+          role?: string | null
+          row_id?: string | null
+          success?: boolean
+          table_name?: string | null
+          tool_name: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          agent_id?: string | null
+          company_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          payload_after?: Json | null
+          payload_before?: Json | null
+          role?: string | null
+          row_id?: string | null
+          success?: boolean
+          table_name?: string | null
+          tool_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       ai_channel_bindings: {
         Row: {
           agent_id: string
