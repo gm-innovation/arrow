@@ -123,6 +123,17 @@ export interface ToolCtx {
   userId?: string;
   role: string;
   agentId?: string;
+  writeActions?: Record<string, { create?: boolean; update?: boolean; delete?: boolean }>;
+}
+
+function isWriteAllowed(ctx: ToolCtx, table: string, action: "create" | "update" | "delete"): boolean {
+  const cfg = ctx.writeActions?.[table];
+  if (!cfg) return true; // default retrocompatível
+  return cfg[action] !== false;
+}
+const ACTION_PT = { create: "criar", update: "editar", delete: "excluir" } as const;
+function writeDeniedMsg(table: string, action: "create" | "update" | "delete") {
+  return { error: `Esta assistente não está autorizada a ${ACTION_PT[action]} em ${table}. Peça ao super admin para habilitar em Configurações do agente → Ações de Escrita.` };
 }
 
 const LIMIT = 25;
