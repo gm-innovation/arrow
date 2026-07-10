@@ -169,7 +169,7 @@ serve(async (req) => {
 
     // ----- Tool-calling loop -----
     const writeActions = (agentRow?.scope?.write_actions ?? {}) as Record<string, { create?: boolean; update?: boolean; delete?: boolean }>;
-    const toolCtx = { supabase, userSupabase, companyId: context?.companyId, userId: context?.userId, role: userRole, agentId, writeActions };
+    const toolCtx = { supabase, userSupabase, companyId: context?.companyId, userId: context?.userId, role: userRole, agentId, writeActions, pageUrl: context?.pageUrl, conversationExcerpt: conversationHistory?.slice(-8) };
     let finalContent = "";
     const maxIters = 12;
     for (let iter = 0; iter < maxIters; iter++) {
