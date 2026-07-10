@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_service_orders_company_scheduled ON public.service_orders (company_id, scheduled_date) WHERE scheduled_date IS NOT NULL;
